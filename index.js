@@ -41,7 +41,7 @@ class TeltonikaParser {
     };
 
     this._codecReader = this._reader;
-
+    //console.log("Parser CODEC ID: " + this._avlObj.codec_id);
     switch (this._avlObj.codec_id) {
       case 7:
         this._codec = new codec7(
@@ -59,6 +59,7 @@ class TeltonikaParser {
         this._codec = new codec12(
           this._codecReader
         );
+	break;
       case 16:
         this._codec = new codec16(
           this._codecReader,

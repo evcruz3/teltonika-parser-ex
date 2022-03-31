@@ -27,11 +27,13 @@ class Codec12 extends Codec {
     //for (var i = 0; i < this.number_of_records; i++) {
     //  this.parseAvlRecords();
     //}
-    this.gprsObj.type = this.toInt(this.reader.ReadBytes(8));
+    this.gprsObj.type = this.reader.ReadInt8();
     this.gprsObj.size = this.reader.ReadInt32();
 
-    if(this.gprsObj.type == 5){
-        parseGprsResponse(this.gprsObj.size);
+    //console.log("GPRS Type: " + this.gprsObj.type);
+    //console.log("GPRS Size: " + this.gprsObj.size);
+    if(this.gprsObj.type == 6){
+        this.parseGprsResponse(this.gprsObj.size);
     }
     
   }
@@ -40,11 +42,11 @@ class Codec12 extends Codec {
    * Parse GPRS Response
    */
   parseGprsResponse(size) {
-    let response = '';
-
-    for (var i = 0; i < size; i++) {
-      response.concat(String.fromCharCode(this.reader.ReadInt16()));
-    }
+    let response = this.reader.ReadBytes(size).toString();
+    //console.log("Parsing GPRS response...");
+    //for (var i = 0; i < size; i++) {
+    //  response.concat(String.fromCharCode(this.reader.ReadInt8()));
+    //}
 
     this.gprsObj.response = response;
   }
