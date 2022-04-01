@@ -41,7 +41,7 @@ class Codec12 extends Codec {
    */
   parseGprsResponse(size) {
     let response = '';
-
+    
     for (var i = 0; i < size; i++) {
       response.concat(String.fromCharCode(this.reader.ReadInt16()));
     }

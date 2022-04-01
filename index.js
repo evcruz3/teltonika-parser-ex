@@ -6,12 +6,14 @@ const codec8 = require('./codecs/codec8');
 const codec16 = require('./codecs/codec8');
 const codec8ex = require('./codecs/codec8ex');
 const codec12 = require('./codecs/codec12');
+const assert = require('assert')
 
 class TeltonikaParser {
   constructor(buffer) {
     this._reader = new binutils.BinaryReader(buffer);
     this._avlObj = {};
     this._gprsObj = {};
+    this._preamble = null;
     this.checkIsImei();
     if (!this.isImei) {
       this.parseHeader();
@@ -21,12 +23,14 @@ class TeltonikaParser {
   }
 
   checkIsImei() {
-    let imeiLength = this._toInt(this._reader.ReadBytes(2));
+    let imeiLength = this._toInt(this._reader.ReadBytes(2)); 
     if (imeiLength > 0) {
       this.isImei = true;
       this.imei = this._reader.ReadBytes(imeiLength).toString();
     } else {
-      this._toInt(this._reader.ReadBytes(2));
+      let tmp = this._toInt(this._reader.ReadBytes(2));
+      this._preamble = Buffer.from(imeiLength.toString(16) + tmp.toString(16), "hex")
+      assert(0x0000 == this._preamble, "Parsed preamble is not 0x000000; " + this._preamble);
     }
   }
 
@@ -34,7 +38,7 @@ class TeltonikaParser {
    * Parsing AVL record header
    */
   parseHeader() {
-    this._avlObj = {
+    this._headerObj = {
       data_length: this._reader.ReadInt32(),
       codec_id: this._toInt(this._reader.ReadBytes(1)),
       number_of_data: this._toInt(this._reader.ReadBytes(1)),
@@ -42,33 +46,36 @@ class TeltonikaParser {
 
     this._codecReader = this._reader;
 
-    switch (this._avlObj.codec_id) {
+    this.isGprs = true ? this._headerObj.codec_id == 12 : false;
+
+    switch (this._headerObj.codec_id) {
       case 7:
         this._codec = new codec7(
           this._codecReader,
-          this._avlObj.number_of_data
+          this._headerObj.number_of_data
         );
         break;
       case 8:
         this._codec = new codec8(
           this._codecReader,
-          this._avlObj.number_of_data
+          this._headerObj.number_of_data
         );
         break;
       case 12:
         this._codec = new codec12(
           this._codecReader
         );
+        break;
       case 16:
         this._codec = new codec16(
           this._codecReader,
-          this._avlObj.number_of_data
+          this._headerObj.number_of_data
         );
         break;
       case 142:
         this._codec = new codec8ex(
           this._codecReader,
-          this._avlObj.number_of_data
+          this._headerObj.number_of_data
         );
         break;
     }
@@ -77,18 +84,25 @@ class TeltonikaParser {
   decodeData() {
     if (this._codec) {
       this._codec.process();
-      let intAvl = this._codec.getAvl();
-      if(intAvl){
-        intAvl.zero = this._avlObj.zero;
-        intAvl.data_length = this._avlObj.data_length;
-        intAvl.codec_id = this._avlObj.codec_id;
-        intAvl.number_of_data = this._avlObj.number_of_data;
-        this._avlObj = intAvl;
-      }
 
-      let intGprs = this._codec.getGprs();
-      if(intGprs){
-        this._gprsObj = intGprs;
+      if(this.isGprs){
+        let intAvl = this._codec.getAvl();
+        if(intAvl){
+          intAvl.zero = this._preamble;
+          intAvl.data_length = this._headerObj.data_length;
+          intAvl.codec_id = this._headerObj.codec_id;
+          intAvl.number_of_data = this._headerObj.number_of_data;
+          this._avlObj = intAvl;
+        }
+      }
+      else{
+        let intGprs = this._codec.getGprs();
+        if(intGprs){
+          intGprs.preamble = this._preamble;
+          intGprs.data_size = this._headerObj.data_length;
+          intGprs.codec_id = this._headerObj.codec_id;
+          this._gprsObj = intGprs;
+        }
       }
     }
   }

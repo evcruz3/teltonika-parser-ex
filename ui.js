@@ -16,26 +16,26 @@ let server = net.createServer((c) => {
 
     c.on('data', (data) => {
         //console.log("Received: " + data.toString("hex"));
-	console.log("Address: " + c.remoteAddress + ":" + c.remotePort);
+	    console.log("Address: " + c.remoteAddress + ":" + c.remotePort);
         let buffer = data;
         let parser = new Parser(buffer);
         if(parser.isImei){
-	    console.log("Received data is IMEI");
+            console.log("Received data is IMEI");
             c.write(Buffer.alloc(1,1));
         }else {
             let avl = parser.getAvl();
-	    console.log("CODEC: " + avl.codec_id);
-	    if(avl.codec_id == 255){
-       		let writer = new binutils.BinaryWriter();
-		let command = Buffer.from("000000000000000F0C010500000007676574696E666F0100004312", "hex");
+	        console.log("CODEC: " + avl.codec_id);
+            
+            if(avl.codec_id == 255){
+                let writer = new binutils.BinaryWriter();
+                let command = Buffer.from("000000000000000F0C010500000007676574696E666F0100004312", "hex");
                 //console.log("Current buffer length: " + writer.Length);
                 writer.WriteBytes(command);
                 let command_message = writer.ByteBuffer;
                 //let response = ByteBuffer.fromHex("000000000000000F0C010500000007676574696E666F0100004312")
                 console.log("Writing test command " + command_message.toString("hex"));
                 c.write(command_message);
-
-	    }
+            }
             if(avl.codec_id == 12){
                 console.log("Received GPRS response")
                 let gprs = parser.getGprs()
@@ -51,10 +51,10 @@ let server = net.createServer((c) => {
                 writer.WriteInt32(avl.number_of_data);
 
                 let response = writer.ByteBuffer;
-		c.write(response);
-		console.log("Writing response to AVL: " + response.toString("hex"));
+                c.write(response);
+                console.log("Writing response to AVL: " + response.toString("hex"));
             }
-            
+                
         }
     });
 });
