@@ -22,7 +22,11 @@ class Devices{
    }
 
    getDeviceByID(id){
-       return devices[id];
+       return this.devices[id];
+   }
+
+   sendMessageToDevice(id, message){
+       this.devices[id].sendCommand(message)
    }
 
    
