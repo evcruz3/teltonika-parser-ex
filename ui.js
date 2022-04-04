@@ -5,6 +5,8 @@ const { parse } = require('path');
 const ByteBuffer = require("bytebuffer");
 var id = 0;
 
+
+
 let server = net.createServer((c) => {
     console.log("client connected");
 
@@ -25,7 +27,7 @@ let server = net.createServer((c) => {
         }else {
             let avl = parser.getAvl();
 	        console.log("CODEC: " + avl.codec_id);
-            
+
             if(avl.codec_id == 255){
                 let writer = new binutils.BinaryWriter();
                 let command = Buffer.from("000000000000000F0C010500000007676574696E666F0100004312", "hex");
@@ -58,6 +60,7 @@ let server = net.createServer((c) => {
         }
     });
 });
+
 
 server.listen(49366, () => {
     console.log("Server started");
