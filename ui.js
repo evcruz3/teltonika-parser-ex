@@ -7,7 +7,7 @@ const Devices = require('./device/devices')
 var id = 0;
 
 
-class ui{
+class UI{
     constructor (){
         this.devices = new Device()
         let server = net.createServer((c) => {
@@ -71,4 +71,4 @@ class ui{
     }
 }
 
-ui_inst = ui()
+ui_inst = new ui()
