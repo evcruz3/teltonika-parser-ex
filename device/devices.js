@@ -26,7 +26,7 @@ class Devices{
    }
 
    getDeviceBySocket(socket){
-       return this.devices.findIndex(socket)
+       return this.devices.indexOf(socket)
     }
 
    sendMessageToDevice(id, message){
@@ -34,7 +34,7 @@ class Devices{
    }
 
    removeDeviceBySocket(socket){
-       let id = this.devices.findIndex(socket)
+       let id = this.devices.indexOf(socket)
        this.devices.splice(id, 1)
    }
 

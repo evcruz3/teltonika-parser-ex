@@ -13,6 +13,7 @@ class UI{
         let server = net.createServer((c) => {
             console.log("client connected");
             this.devices.addDevice(c);
+
             //c.id = id++; 
             c.on('end', () => {
                 let id = this.devices.getDeviceBySocket(c).id
