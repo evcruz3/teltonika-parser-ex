@@ -25,8 +25,17 @@ class Devices{
        return this.devices[id];
    }
 
+   getDeviceBySocket(socket){
+       return this.devices.findIndex(socket)
+    }
+
    sendMessageToDevice(id, message){
        this.devices[id].sendCommand(message)
+   }
+
+   removeDeviceBySocket(socket){
+       let id = this.devices.findIndex(socket)
+       this.devices.splice(id, 1)
    }
 
    

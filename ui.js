@@ -9,18 +9,23 @@ var id = 0;
 
 class UI{
     constructor (){
-        this.devices = new Device()
+        this.devices = new Devices()
         let server = net.createServer((c) => {
             console.log("client connected");
-            this.devices.
+            this.devices.addDevice(c);
             //c.id = id++; 
             c.on('end', () => {
-                console.log("client disconnected");
+                let id = this.devices.getDeviceBySocket(c).id
+                console.log("Device " + id + " disconnected");
+                this.devices.removeDeviceBySocket(c);
                 //clients
             });
         
             c.on('data', (data) => {
                 //console.log("Received: " + data.toString("hex"));
+                let id = this.devices.getDeviceBySocket(c).id
+                console.log("Received data for Device " + id);
+
                 console.log("Address: " + c.remoteAddress + ":" + c.remotePort);
                 let buffer = data;
                 let parser = new Parser(buffer);
@@ -71,4 +76,4 @@ class UI{
     }
 }
 
-ui_inst = new ui()
+ui_inst = new UI()
