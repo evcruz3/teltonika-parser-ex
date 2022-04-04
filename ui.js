@@ -1,9 +1,9 @@
-const Parser = require('teltonika-parser-ex');
+const Parser = require('./utilities/teltonika-parser');
 const binutils = require('binutils64');
 const net = require('net');
 const { parse } = require('path');
 const ByteBuffer = require("bytebuffer");
-const Devices = require('teltonika-parser-ex/devices')
+const Devices = require('./device/devices')
 var id = 0;
 
 
@@ -71,4 +71,4 @@ class ui{
     }
 }
 
-
+ui_inst = ui()
