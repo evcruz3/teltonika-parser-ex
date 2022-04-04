@@ -1,5 +1,5 @@
 'use strict';
-const Device = './device'
+const Device = require('./device')
 
 class Devices{
    /** 
@@ -13,7 +13,7 @@ class Devices{
    
    addDevice(socket){
        let d = new Device(this.id, socket);
-       this.devices[this.id] = device
+       this.devices[this.id] = device;
        this.id = this.id + 1;
    }
 

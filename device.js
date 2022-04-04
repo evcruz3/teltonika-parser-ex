@@ -12,7 +12,7 @@ class Device{
 
    sendCommand(message){
     let command_message = message;
-    this._socket.write(command_message)
+    this.socket.write(command_message)
    }
 
    getID(){
