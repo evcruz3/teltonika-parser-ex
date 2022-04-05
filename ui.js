@@ -78,12 +78,19 @@ class UI{
         
         server.listen(49366, () => {
             console.log("Server started");
-            while(true){
-                if(this.devices.getDeviceByID(0)){
-                    this.displayPrompt()
-                }
-            }
         });
+
+        var stdin = process.openStdin();
+
+        stdin.addListener("data", function(d) {
+            // note:  d is an object, and when converted to a string it will
+            // end with a linefeed.  so we (rather crudely) account for that  
+            // with toString() and then trim() 
+            console.log("you entered: [" + 
+                d.toString().trim() + "]");
+            this.displayPrompt();
+        });
+        
     }
 
     displayPrompt(){
