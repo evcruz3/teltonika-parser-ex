@@ -6,7 +6,8 @@ const codec8 = require('./codecs/codec8');
 const codec16 = require('./codecs/codec8');
 const codec8ex = require('./codecs/codec8ex');
 const codec12 = require('./codecs/codec12');
-const assert = require('assert')
+const assert = require('assert');
+const { Console } = require('console');
 
 class TeltonikaParser {
   constructor(buffer) {
@@ -30,7 +31,10 @@ class TeltonikaParser {
     } else {
       let tmp = this._toInt(this._reader.ReadBytes(2));
       this._preamble = Buffer.from(imeiLength.toString(16).padStart(2,0) + tmp.toString(16).padStart(2,0), "hex")
-      assert("0000" == this._preamble.toString("hex"), "Parsed preamble is not 0x0000; " + this._preamble.toString("hex"));
+      if("0000" != this._preamble.toString("hex")){
+        Console.log("WARNING: Parsed preamble is not 0x0000; " + this._preamble.toString("hex"));
+        this._preamble = Buffer.from("0x0000", "hex")
+      } 
     }
   }
 
