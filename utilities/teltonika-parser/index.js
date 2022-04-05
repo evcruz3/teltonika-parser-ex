@@ -30,7 +30,7 @@ class TeltonikaParser {
     } else {
       let tmp = this._toInt(this._reader.ReadBytes(2));
       this._preamble = Buffer.from(imeiLength.toString(16) + tmp.toString(16), "hex")
-      assert(Buffer.from(0x0000, "hex") == this._preamble, "Parsed preamble is not 0x000000; " + this._preamble.toString("hex"));
+      assert(Buffer.from("0000", "hex") == this._preamble, "Parsed preamble is not 0x000000; " + this._preamble.toString("hex"));
     }
   }
 

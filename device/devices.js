@@ -14,6 +14,7 @@ class Devices{
    addDevice(socket){
        let d = new Device(this.id, socket);
        this.devices[this.id] = d;
+       console.log("Success id assignment for connected device; id: " + this.id)
        this.id = this.id + 1;
    }
 
