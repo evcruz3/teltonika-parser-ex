@@ -78,6 +78,11 @@ class UI{
         
         server.listen(49366, () => {
             console.log("Server started");
+            while(true){
+                if(this.devices.getDeviceByID(0)){
+                    this.displayPrompt()
+                }
+            }
         });
     }
 
@@ -99,11 +104,5 @@ class UI{
 }
 
 ui_inst = new UI()
-while(true){
-    if(ui_inst.devices.getDeviceByID(0)){
-        ui_inst.displayPrompt()
-    }
-    else{
-        console.log("Waiting for device 0...")
-    }
-}
+
+
