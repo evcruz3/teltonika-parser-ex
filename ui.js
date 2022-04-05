@@ -12,6 +12,7 @@ class UI{
         this.devices = new Devices()
         let server = net.createServer((c) => {
             console.log("client connected");
+            console.log(c)
             this.devices.addDevice(c);
 
             //c.id = id++; 
@@ -26,6 +27,7 @@ class UI{
                 //console.log("Received: " + data.toString("hex"));
                 let id = this.devices.getDeviceBySocket(c).id
                 console.log("Received data for Device " + id);
+                console.log(c)
 
                 console.log("Address: " + c.remoteAddress + ":" + c.remotePort);
                 let buffer = data;
