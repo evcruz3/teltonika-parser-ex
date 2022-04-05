@@ -27,7 +27,9 @@ class Devices{
    }
 
    getDeviceBySocket(socket){
-       let id = this.devices.indexOf(socket);
+       let id = this.devices.findIndex( (o) => { 
+            return (o.remoteAddress===socket.remoteAddress) && (o.remotePort === socket.remotePort);
+       });
        console.log("getDeviceBySocket return value: " + id)
        return id
     }
@@ -37,7 +39,9 @@ class Devices{
    }
 
    removeDeviceBySocket(socket){
-       let id = this.devices.indexOf(socket)
+       let id = this.devices.findIndex( (o) => {
+           return (o.remoteAddress===socket.remoteAddress) && (o.remotePort === socket.remotePort);
+        });
        this.devices.splice(id, 1)
    }
 
