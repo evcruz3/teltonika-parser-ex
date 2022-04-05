@@ -31,8 +31,8 @@ class Devices{
        let id = this.devices.findIndex( (o) => { 
             return (o.socket.remoteAddress===socket.remoteAddress) && (o.socket.remotePort === socket.remotePort);
        });
-       console.log("getDeviceBySocket return value: " + id)
-       return id
+       //console.log("getDeviceBySocket return value: " + id)
+       return this.devices[id]
     }
 
    sendMessageToDevice(id, message){
