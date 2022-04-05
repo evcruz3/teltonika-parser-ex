@@ -36,10 +36,10 @@ class UI{
                     console.log("Received data is IMEI");
                     c.write(Buffer.alloc(1,1));
                 }else {
-                    let avl = parser.getAvl();
-                    console.log("CODEC: " + avl.codec_id);
+                    let header = parser.getHeader();
+                    console.log("CODEC: " + header.codec_id);
         
-                    if(avl.codec_id == 255){
+                    if(header.codec_id == 255){
                         let writer = new binutils.BinaryWriter();
                         let command = Buffer.from("000000000000000F0C010500000007676574696E666F0100004312", "hex");
                         //console.log("Current buffer length: " + writer.Length);
@@ -49,12 +49,14 @@ class UI{
                         console.log("Writing test command " + command_message.toString("hex"));
                         c.write(command_message);
                     }
-                    if(avl.codec_id == 12){
+                    if(header.codec_id == 12){
                         console.log("Received GPRS response")
                         let gprs = parser.getGprs()
                         console.log(gprs.response)
                     }
                     else{
+                        let avl = parser.getAvl()
+
                         console.log("Received data is AVL");
                         console.log("AVL Zero: " + avl.zero);
                         console.log("AVL Data Length: " + avl.data_length);

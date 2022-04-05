@@ -128,6 +128,10 @@ class TeltonikaParser {
     return parseInt(bytes.toString('hex'), 16);
   }
 
+  getHeader(){
+    return this._headerObj;
+  }
+
   getAvl() {
     return this._avlObj;
   }
