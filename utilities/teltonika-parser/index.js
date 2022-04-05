@@ -85,7 +85,7 @@ class TeltonikaParser {
     if (this._codec) {
       this._codec.process();
 
-      if(this.isGprs){
+      if(!this.isGprs){
         let intAvl = this._codec.getAvl();
         if(intAvl){
           intAvl.zero = this._preamble;
