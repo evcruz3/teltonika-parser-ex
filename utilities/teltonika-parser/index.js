@@ -29,7 +29,7 @@ class TeltonikaParser {
       this.imei = this._reader.ReadBytes(imeiLength).toString();
     } else {
       let tmp = this._toInt(this._reader.ReadBytes(2));
-      this._preamble = Buffer.from(imeiLength.padStart(4,0).toString(16) + tmp.padStart(4,0).toString(16), "hex")
+      this._preamble = Buffer.from(imeiLength.toString(16).padStart(4,0) + tmp.toString(16).padStart(4,0), "hex")
       assert(Buffer.from("0x0000", "hex") == this._preamble, "Parsed preamble is not 0x000000; " + this._preamble.toString("hex"));
     }
   }
