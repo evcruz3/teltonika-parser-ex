@@ -26,11 +26,12 @@ class UI{
         
             c.on('data', (data) => {
                 //console.log("Received: " + data.toString("hex"));
+                console.log("Received data from Address: " + c.remoteAddress + ":" + c.remotePort);
                 let id = this.devices.getDeviceBySocket(c).id
-                console.log("Received data for Device " + id);
+                console.log("From Device " + id);
                 //console.log(c)
 
-                console.log("Address: " + c.remoteAddress + ":" + c.remotePort);
+                
                 let buffer = data;
                 let parser = new Parser(buffer);
                 if(parser.isImei){
