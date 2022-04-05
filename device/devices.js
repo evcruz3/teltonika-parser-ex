@@ -29,7 +29,7 @@ class Devices{
 
    getDeviceBySocket(socket){
        let id = this.devices.findIndex( (o) => { 
-            return (o.remoteAddress===socket.remoteAddress) && (o.remotePort === socket.remotePort);
+            return (o.socket.remoteAddress===socket.remoteAddress) && (o.socket.remotePort === socket.remotePort);
        });
        console.log("getDeviceBySocket return value: " + id)
        return id
