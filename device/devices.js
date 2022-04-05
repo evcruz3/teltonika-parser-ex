@@ -26,7 +26,9 @@ class Devices{
    }
 
    getDeviceBySocket(socket){
-       return this.devices.indexOf(socket)
+       let id = this.devices.indexOf(socket);
+       console.log("getDeviceBySocket return value: " + id)
+       return id
     }
 
    sendMessageToDevice(id, message){
