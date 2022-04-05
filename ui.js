@@ -103,4 +103,7 @@ while(true){
     if(ui_inst.devices.getDeviceByID(0)){
         ui_inst.displayPrompt()
     }
+    else{
+        console.log("Waiting for device 0...")
+    }
 }
