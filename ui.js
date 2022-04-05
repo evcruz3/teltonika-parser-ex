@@ -4,6 +4,7 @@ const net = require('net');
 const { parse } = require('path');
 const ByteBuffer = require("bytebuffer");
 const Devices = require('./device/devices')
+const prompt = require('prompt-sync')
 var id = 0;
 
 
@@ -79,6 +80,27 @@ class UI{
             console.log("Server started");
         });
     }
+
+    displayPrompt(){
+        //var user_input = prompt("Input a command: ")
+
+        let writer = new binutils.BinaryWriter();
+        let command = Buffer.from("000000000000000F0C010500000007676574696E666F0100004312", "hex");
+        //console.log("Current buffer length: " + writer.Length);
+        writer.WriteBytes(command);
+        let command_message = writer.ByteBuffer;
+        //let response = ByteBuffer.fromHex("000000000000000F0C010500000007676574696E666F0100004312")
+        console.log("Writing test command " + command_message.toString("hex"));
+        //c.write(command_message);
+
+        this.dev0 = this.devices.getDeviceByID(0);
+        this.dev0.socket.write(command_message)
+    }
 }
 
 ui_inst = new UI()
+while(true){
+    if(ui_inst.devices.getDeviceByID(0)){
+        ui_inst.displayPrompt()
+    }
+}
