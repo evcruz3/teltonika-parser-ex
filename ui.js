@@ -111,9 +111,9 @@ stdin.addListener("data", function(d) {
     // with toString() and then trim() 
     console.log("you entered: [" + 
         d.toString().trim() + "]");
-    let c = ui_inst.devices.getDeviceByID(0);
-    if(c){
-        ui_inst.sendMessage(c);
+    let dev = ui_inst.devices.getDeviceByID(0);
+    if(dev){
+        ui_inst.sendMessage(dev.socket);
     }
     
     
