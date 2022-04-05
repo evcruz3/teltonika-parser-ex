@@ -15,7 +15,7 @@ class Devices{
        let d = new Device(this.id, socket);
        this.devices[this.id] = d;
        console.log("Success id assignment for connected device; id: " + this.id)
-       console.log("addDevice: Remote Address: " + this.devices[this.id].remoteAddress)
+       console.log("addDevice: Remote Address: " + this.devices[this.id].socket.remoteAddress)
        this.id = this.id + 1;
    }
 
@@ -41,7 +41,7 @@ class Devices{
 
    removeDeviceBySocket(socket){
        let id = this.devices.findIndex( (o) => {
-           return (o.remoteAddress===socket.remoteAddress) && (o.remotePort === socket.remotePort);
+           return (o.socket.remoteAddress===socket.remoteAddress) && (o.socket.remotePort === socket.remotePort);
         });
        this.devices.splice(id, 1)
    }
