@@ -40,7 +40,7 @@ class UI{
                     let header = parser.getHeader();
                     console.log("CODEC: " + header.codec_id);
         
-                    if(header.codec_id == 255){
+                    /*if(header.codec_id == 255){
                         let writer = new binutils.BinaryWriter();
                         let command = Buffer.from("000000000000000F0C010500000007676574696E666F0100004312", "hex");
                         //console.log("Current buffer length: " + writer.Length);
@@ -49,7 +49,7 @@ class UI{
                         //let response = ByteBuffer.fromHex("000000000000000F0C010500000007676574696E666F0100004312")
                         console.log("Writing test command " + command_message.toString("hex"));
                         c.write(command_message);
-                    }
+                    }*/
                     if(header.codec_id == 12){
                         console.log("Received GPRS response")
                         let gprs = parser.getGprs()
