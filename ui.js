@@ -32,7 +32,7 @@ class UI{
                 //console.log("Received data from Address: " + c.remoteAddress + ":" + c.remotePort);
                 let device = this.devices.getDeviceBySocket(c)
                 let id = device.id
-                console.log("From Device " + id);
+                //console.log("From Device " + id);
                 //console.log(c)
 
                 
@@ -66,7 +66,7 @@ class UI{
 
                         if(!device.isReady){
                             this.devices.setDeviceReady(id)
-                            console.log("Device " + id + "is now ready for communication")
+                            console.log("Device " + id + " is now ready for communication")
                         }
                         
                         //console.log("Writing response to AVL: " + response.toString("hex"));
@@ -86,21 +86,6 @@ class UI{
         
     }
 
-    sendMessage(c){
-        //var user_input = prompt("Input a command: ")
-
-        let writer = new binutils.BinaryWriter();
-        let command = Buffer.from("000000000000000F0C010500000007676574696E666F0100004312", "hex");
-        //console.log("Current buffer length: " + writer.Length);
-        writer.WriteBytes(command);
-        let command_message = writer.ByteBuffer;
-        //let response = ByteBuffer.fromHex("000000000000000F0C010500000007676574696E666F0100004312")
-        console.log("Writing test command " + command_message.toString("hex"));
-        c.write(command_message);
-
-        //this.dev0 = this.devices.getDeviceByID(0);
-        //this.dev0.socket.write(command_message)
-    }
 }
 
 ui_inst = new UI()
@@ -113,14 +98,14 @@ stdin.addListener("data", function(d) {
     let user_input = d.toString().trim()
     console.log("you entered: [" + 
         user_input + "]");
-    let [comm, id, ...others] = user_input.split(" ");
+    let [ui_command, id, ...others] = user_input.split(" ");
     let message = others.join(" ");
 
     //console.log("Command: " + comm);
     //console.log("ID: " + id);
     //console.log("Message: " + message);
 
-    if (comm == "sendCommand"){
+    if (ui_command == "sendCommand"){
         let command = Buffer.from(message);
         let prefix = Buffer.from('00000000', "hex"); // JavaScript allows hex numbers.
         let dataSize = Buffer.from((Buffer.byteLength(command) + 8).toString(16).padStart(8, '0'), "hex");
