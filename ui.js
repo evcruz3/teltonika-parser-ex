@@ -56,7 +56,7 @@ class UI{
                         let gprs = parser.getGprs()
                         console.log(gprs.response)
                     }
-                    else{
+                    else if(header.codec_id == 142){
                         let avl = parser.getAvl()
 
                         console.log("Received data is AVL");
@@ -70,6 +70,9 @@ class UI{
                         let response = writer.ByteBuffer;
                         c.write(response);
                         console.log("Writing response to AVL: " + response.toString("hex"));
+                    }
+                    else{
+                        console.log("Received an unknown codec")
                     }
                         
                 }
