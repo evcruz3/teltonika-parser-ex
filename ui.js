@@ -12,9 +12,12 @@ class UI{
     constructor (){
         this.devices = new Devices()
         let server = net.createServer((c) => {
-            console.log("client connected");
+            //console.log("client connected");
             //console.log(c)
             this.devices.addDevice(c);
+            console.log("New device connected")
+            console.log("ID: " + this.devices.id)
+            console.log("IP: " + c.remoteAddress + ":" + c.remotePort)
 
             //c.id = id++; 
             c.on('end', () => {
@@ -36,7 +39,7 @@ class UI{
                 let buffer = data;
                 let parser = new Parser(buffer);
                 if(parser.isImei){
-                    console.log("Received IMEI for device " + id);
+                    console.log("Received IMEI from device " + id);
                     c.write(Buffer.alloc(1,1));
                 }else {
                     let header = parser.getHeader();
@@ -45,23 +48,27 @@ class UI{
                     if(header.codec_id == 12){
                         console.log("Received GPRS message from device  " + id)
                         let gprs = parser.getGprs()
-                        console.log("Type: " + gprs.type + "; Size: " + gprs.size + "; Message: " + gprs.response)
+                        console.log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
                     }
                     else if(header.codec_id == 142){
                         let avl = parser.getAvl()
 
                         console.log("Received AVL data from device " + id);
-                        console.log("AVL Zero: " + avl.zero);
+                        //console.log("AVL Zero: " + avl.zero);
                         console.log("AVL Data Length: " + avl.data_length);
-                        console.log("AVL Codec ID: " + avl.codec_id);
+                        //console.log("AVL Codec ID: " + avl.codec_id);
                         console.log("AVL Number of Data: " + avl.number_of_data);
                         let writer = new binutils.BinaryWriter();
                         writer.WriteInt32(avl.number_of_data);
         
                         let response = writer.ByteBuffer;
                         c.write(response);
-                        this.devices.setDeviceReady(id)
-                        console.log("Device " + id + "is now ready for communication")
+
+                        if(!device.isReady){
+                            this.devices.setDeviceReady(id)
+                            console.log("Device " + id + "is now ready for communication")
+                        }
+                        
                         //console.log("Writing response to AVL: " + response.toString("hex"));
                     }
                         
@@ -109,41 +116,44 @@ stdin.addListener("data", function(d) {
     let [comm, id, ...others] = user_input.split(" ");
     let message = others.join(" ");
 
-    console.log("Command: " + comm);
-    console.log("ID: " + id);
-    console.log("Message: " + message);
+    //console.log("Command: " + comm);
+    //console.log("ID: " + id);
+    //console.log("Message: " + message);
 
-    let command = Buffer.from(message);
-    let prefix = Buffer.from('00000000', "hex"); // JavaScript allows hex numbers.
-    let dataSize = Buffer.from((Buffer.byteLength(command) + 8).toString(16).padStart(8, '0'), "hex");
-    var codecID = Buffer.from('0C', "hex");
-    var cq1 = Buffer.from('01', "hex");
-    var commandType = Buffer.from('05', "hex");
-    var commandSize = Buffer.from((Buffer.byteLength(command)).toString(16).padStart(8, '0'), "hex");
-    var cq2 = Buffer.from('01', "hex");
-    // compute the required buffer length
-    //var bufferSize = 4 + dataSize;
-    //var buffer = Buffer.from()
-    // prefix, dataSize, codecID, cq1, commandType, commandSize, command, cq2, crc
-    var encoded_message = Buffer.concat([codecID, cq1, commandType, commandSize, command, cq2])
-    //console.log(encoded_message.toString("hex"))
+    if (comm == "sendCommand"){
+        let command = Buffer.from(message);
+        let prefix = Buffer.from('00000000', "hex"); // JavaScript allows hex numbers.
+        let dataSize = Buffer.from((Buffer.byteLength(command) + 8).toString(16).padStart(8, '0'), "hex");
+        var codecID = Buffer.from('0C', "hex");
+        var cq1 = Buffer.from('01', "hex");
+        var commandType = Buffer.from('05', "hex");
+        var commandSize = Buffer.from((Buffer.byteLength(command)).toString(16).padStart(8, '0'), "hex");
+        var cq2 = Buffer.from('01', "hex");
+        // compute the required buffer length
+        //var bufferSize = 4 + dataSize;
+        //var buffer = Buffer.from()
+        // prefix, dataSize, codecID, cq1, commandType, commandSize, command, cq2, crc
+        var encoded_message = Buffer.concat([codecID, cq1, commandType, commandSize, command, cq2])
+        //console.log(encoded_message.toString("hex"))
 
-    var crc = Buffer.from(crc16ibm(encoded_message).toString(16).padStart(8, '0'), "hex");
-    //console.log(crc.toString("hex"))
+        var crc = Buffer.from(crc16ibm(encoded_message).toString(16).padStart(8, '0'), "hex");
+        //console.log(crc.toString("hex"))
 
-    var outBuffer = Buffer.concat([prefix, dataSize, encoded_message, crc])
+        var outBuffer = Buffer.concat([prefix, dataSize, encoded_message, crc])
 
-    if (ui_inst.devices.getDeviceByID(id) !== undefined){
-        ui_inst.devices.sendMessageToDevice(id, outBuffer);
-    }
-    else{
-        console.log("Device " + id + " not found")
+        if (ui_inst.devices.getDeviceByID(id) !== undefined){
+            ui_inst.devices.sendMessageToDevice(id, outBuffer);
+        }
+        else{
+            console.log("Device " + id + " not found")
+        }
+        
+        // let device = ui_inst.devices.getDeviceByID(id);
+        // if(dev){
+        //     ui_inst.sendMessage(device.socket);
+        // }
     }
     
-    // let device = ui_inst.devices.getDeviceByID(id);
-    // if(dev){
-    //     ui_inst.sendMessage(device.socket);
-    // }
     
     
 });
