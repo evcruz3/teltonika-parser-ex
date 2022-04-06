@@ -5,7 +5,7 @@ const { parse } = require('path');
 const ByteBuffer = require("bytebuffer");
 const Devices = require('./device/devices')
 const prompt = require('prompt-sync')
-var id = 0;
+const crc16ibm = require('./utilities/crc16ibm')
 
 
 class UI{
