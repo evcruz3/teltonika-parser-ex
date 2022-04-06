@@ -54,7 +54,7 @@ class UI{
                     if(header.codec_id == 12){
                         console.log("Received GPRS response")
                         let gprs = parser.getGprs()
-                        console.log(gprs.response)
+                        console.log("Type: " + gprs.type + "; Size: " + gprs.size + "; Message: " + gprs.response)
                     }
                     else if(header.codec_id == 142){
                         let avl = parser.getAvl()
