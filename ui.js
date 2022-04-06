@@ -133,7 +133,7 @@ stdin.addListener("data", function(d) {
 
     var outBuffer = Buffer.concat([prefix, dataSize, encoded_message, crc])
 
-    if (ui_inst.devices.getDeviceByID(id).socket !== undefined){
+    if (ui_inst.devices.getDeviceByID(id) !== undefined){
         ui_inst.devices.sendMessageToDevice(id, outBuffer);
     }
     else{
