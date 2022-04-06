@@ -45,7 +45,7 @@ class Codec12 extends Codec {
     let response = '';
     
     for (var i = 0; i < size; i++) {
-      response.concat(String.fromCharCode(this.reader.ReadInt16()));
+      response.concat(String.fromCharCode(this.reader.ReadInt8()));
     }
 
     this.gprsObj.response = response;
