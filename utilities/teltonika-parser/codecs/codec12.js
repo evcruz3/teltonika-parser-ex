@@ -30,8 +30,8 @@ class Codec12 extends Codec {
     this.gprsObj.type = this.reader.ReadInt8();
     this.gprsObj.size = this.reader.ReadInt32();
 
-    console.log("GPRS Type: " + this.gprsObj.type);
-    console.log("GPRS Size: " + this.gprsObj.size);
+    //console.log("GPRS Type: " + this.gprsObj.type);
+    //console.log("GPRS Size: " + this.gprsObj.size);
     if(this.gprsObj.type == 6){
         this.parseGprsResponse(this.gprsObj.size);
     }
