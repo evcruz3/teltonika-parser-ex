@@ -42,18 +42,18 @@ class Codec12 extends Codec {
    * Parse GPRS Response
    */
   parseGprsResponse(size) {
-    this.gprsObj.response = '';
+    let response = '';
     
     for (var i = 0; i < size; i++) {
       let a = this.reader.ReadInt8();
       let ch = String.fromCharCode(a);
       //console.log("Int: " + a + "; Char: " + ch)
-      this.gprsObj.response.concat(ch)
+      response = response.concat(ch)
     }
 
-    //this.gprsObj.response = response;
+    this.gprsObj.response = response;
     //console.log("parsed response: " + response)
-    console.log("parsed gprsObj.response: " + this.gprsObj.response)
+    //console.log("parsed gprsObj.response: " + this.gprsObj.response)
   }
 }
 
