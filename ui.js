@@ -14,9 +14,9 @@ class UI{
         let server = net.createServer((c) => {
             //console.log("client connected");
             //console.log(c)
-            this.devices.addDevice(c);
+            let id = this.devices.addDevice(c);
             console.log("New device connected")
-            console.log("ID: " + this.devices.id)
+            console.log("ID: " + id)
             console.log("IP: " + c.remoteAddress + ":" + c.remotePort)
 
             //c.id = id++; 
