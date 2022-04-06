@@ -52,7 +52,7 @@ class Codec12 extends Codec {
     }
 
     this.gprsObj.response = response;
-    console.log("parsed response: " + gprsObj.response)
+    console.log("parsed response: " + .response)
     console.log("parsed gprsObj.response: " + this.gprsObj.response)
   }
 }
