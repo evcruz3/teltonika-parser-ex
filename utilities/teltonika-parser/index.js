@@ -89,7 +89,6 @@ class TeltonikaParser {
     if (this._codec) {
       this._codec.process();
 
-      console.log("isGPRS: " + this.isGprs)
       if(!this.isGprs){
         let intAvl = this._codec.getAvl();
         if(intAvl){

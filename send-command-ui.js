@@ -1,9 +1,12 @@
 //const { assert } = require('chai');
 
 //const prompt = require('prompt-sync')({sigint: true});
-crc16ibm = require('./crc16ibm')
+crc16ibm = require('./utilities/crc16ibm')
 
-const user_prompt = "getinfo"
+const user_prompt = "sendcommand 1 getinfo param 1 2 3"
+const [comm, id, ...others] = user_prompt.split(" ")
+const message = others.join(" ")
+console.log(message)
 console.log("message");
 
 //var data = "ABC";
