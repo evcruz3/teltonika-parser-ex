@@ -96,8 +96,7 @@ stdin.addListener("data", function(d) {
     // end with a linefeed.  so we (rather crudely) account for that  
     // with toString() and then trim() 
     let user_input = d.toString().trim()
-    console.log("you entered: [" + 
-        user_input + "]");
+    //console.log("you entered: [" +    user_input + "]");
     let [ui_command, id, ...others] = user_input.split(" ");
     let message = others.join(" ");
 
