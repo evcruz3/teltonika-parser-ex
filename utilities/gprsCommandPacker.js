@@ -37,17 +37,17 @@ class GprsCommandPacker {
   }
 
   _writeToGprsObj(){
-    this._gprsObj.preamble = parseInt(this._preamble.toString("hex"), 16);
-    this._gprsObj.data_size = parseInt(this._dataSize.toString("hex"), 16);
-    this._gprsObj.codec_id = parseInt(this._codecID.toString("hex"), 16);
-    this._gprsObj.command_quantity_1 =  parseInt(this._cq1.toString("hex"), 16);
-    this._gprsObj.message_type = this._getMessageType(codec_id);
-    this._gprsObj.message_size = parseInt(this._commandSize.toString("hex"), 16);
-    this._gprsObj.imei = null; // for codec 14
-    this._gprsObj.message = this._messageString;
-    this._gprsObj.timestamp = null // for codec 13
-    this._gprsObj.command_quantity_2 = parseInt(this._cq2.toString("hex"), 16);
-    this._gprsObj.crc = this._crc.toString("hex");
+    this._gprsObject.preamble = parseInt(this._preamble.toString("hex"), 16);
+    this._gprsObject.data_size = parseInt(this._dataSize.toString("hex"), 16);
+    this._gprsObject.codec_id = parseInt(this._codecID.toString("hex"), 16);
+    this._gprsObject.command_quantity_1 =  parseInt(this._cq1.toString("hex"), 16);
+    this._gprsObject.message_type = this._getMessageType(codec_id);
+    this._gprsObject.message_size = parseInt(this._commandSize.toString("hex"), 16);
+    this._gprsObject.imei = null; // for codec 14
+    this._gprsObject.message = this._messageString;
+    this._gprsObject.timestamp = null // for codec 13
+    this._gprsObject.command_quantity_2 = parseInt(this._cq2.toString("hex"), 16);
+    this._gprsObject.crc = this._crc.toString("hex");
 
   }
 
