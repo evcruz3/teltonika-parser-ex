@@ -115,10 +115,6 @@ stdin.addListener("data", function(d) {
             console.log("Device " + id + " not found")
         }
         
-        // let device = ui_inst.devices.getDeviceByID(id);
-        // if(dev){
-        //     ui_inst.sendMessage(device.socket);
-        // }
     }
     
     
