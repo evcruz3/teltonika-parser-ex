@@ -2,6 +2,7 @@
 
 const binutils = require('binutils64');
 const assert = require('assert');
+const crc16ibm = require('./crc16ibm');
 
 class GprsPacker {
   constructor(message) {
