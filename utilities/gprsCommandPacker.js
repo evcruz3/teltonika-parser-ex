@@ -41,7 +41,7 @@ class GprsCommandPacker {
     this._gprsObject.data_size = parseInt(this._dataSize.toString("hex"), 16);
     this._gprsObject.codec_id = parseInt(this._codecID.toString("hex"), 16);
     this._gprsObject.command_quantity_1 =  parseInt(this._cq1.toString("hex"), 16);
-    this._gprsObject.message_type = this._getMessageType(codec_id);
+    this._gprsObject.message_type = this._getMessageType(this._codecID);
     this._gprsObject.message_size = parseInt(this._commandSize.toString("hex"), 16);
     this._gprsObject.imei = null; // for codec 14
     this._gprsObject.message = this._messageString;
