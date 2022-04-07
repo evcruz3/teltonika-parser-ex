@@ -6,7 +6,7 @@ const ByteBuffer = require("bytebuffer");
 const Devices = require('./device/devices')
 const prompt = require('prompt-sync')
 const crc16ibm = require('./utilities/crc16ibm')
-const GprsPacker = require("./utilities/gprsPacker")
+const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 
 
 class UI{
@@ -106,7 +106,8 @@ stdin.addListener("data", function(d) {
     //console.log("Message: " + message);
 
     if (ui_command == "sendCommand"){
-        let outBuffer = new GprsPacker(message).getGprsMessageBuffer()
+        gprsCommandPacker = new GprsCommandPacker(message)
+        let outBuffer = gprsCommandPacker.getGprsMessageBuffer()
 
         if (ui_inst.devices.getDeviceByID(id) !== undefined){
             ui_inst.devices.sendMessageToDevice(id, outBuffer);
@@ -114,7 +115,6 @@ stdin.addListener("data", function(d) {
         else{
             console.log("Device " + id + " not found")
         }
-        
     }
     
     
