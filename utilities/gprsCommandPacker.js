@@ -59,7 +59,7 @@ class GprsCommandPacker {
         messageType = "COMMAND" ? val == 5 : "RESPONSE" ? val == 6 : "UNKNOWN";
     }
     else{ // TODO: Support codec 13 and 14 for GPRS packer
-        messageTpye = "UNKNOWN"
+        messageType = "UNKNOWN"
     }
 
     return messageType;
