@@ -7,7 +7,6 @@ const codec16 = require('./codecs/codec8');
 const codec8ex = require('./codecs/codec8ex');
 const codec12 = require('./codecs/codec12');
 const assert = require('assert');
-const { Console } = require('console');
 
 class TeltonikaParser {
   constructor(buffer) {

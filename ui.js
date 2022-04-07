@@ -6,6 +6,7 @@ const ByteBuffer = require("bytebuffer");
 const Devices = require('./device/devices')
 const prompt = require('prompt-sync')
 const crc16ibm = require('./utilities/crc16ibm')
+const GprsPacker = require("./utilities/gprsPacker")
 
 
 class UI{
@@ -105,25 +106,7 @@ stdin.addListener("data", function(d) {
     //console.log("Message: " + message);
 
     if (ui_command == "sendCommand"){
-        let command = Buffer.from(message);
-        let prefix = Buffer.from('00000000', "hex"); // JavaScript allows hex numbers.
-        let dataSize = Buffer.from((Buffer.byteLength(command) + 8).toString(16).padStart(8, '0'), "hex");
-        var codecID = Buffer.from('0C', "hex");
-        var cq1 = Buffer.from('01', "hex");
-        var commandType = Buffer.from('05', "hex");
-        var commandSize = Buffer.from((Buffer.byteLength(command)).toString(16).padStart(8, '0'), "hex");
-        var cq2 = Buffer.from('01', "hex");
-        // compute the required buffer length
-        //var bufferSize = 4 + dataSize;
-        //var buffer = Buffer.from()
-        // prefix, dataSize, codecID, cq1, commandType, commandSize, command, cq2, crc
-        var encoded_message = Buffer.concat([codecID, cq1, commandType, commandSize, command, cq2])
-        //console.log(encoded_message.toString("hex"))
-
-        var crc = Buffer.from(crc16ibm(encoded_message).toString(16).padStart(8, '0'), "hex");
-        //console.log(crc.toString("hex"))
-
-        var outBuffer = Buffer.concat([prefix, dataSize, encoded_message, crc])
+        let outBuffer = new GprsPacker(message).getGprsMessageBuffer()
 
         if (ui_inst.devices.getDeviceByID(id) !== undefined){
             ui_inst.devices.sendMessageToDevice(id, outBuffer);
