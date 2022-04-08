@@ -47,9 +47,8 @@ class UI{
                         console.log("Device " + dev.id + " reconnected")
                     }
                     else{
-                        id = this.devices.addDevice(parser.imei, c)
-                        console.log("New device " + id + " added")
-                        console.log("IMEI of new device: " + parser.imei)
+                        let id = this.devices.addDevice(parser.imei, c)
+                        console.log("New device added; ID: " + id + "; IMEI: " + parser.imei)
                     }
                     //console.log("Received IMEI from device " + id);
                     c.write(Buffer.alloc(1,1));
