@@ -120,6 +120,7 @@ stdin.addListener("data", function(d) {
         let outBuffer = gprsCommandPacker.getGprsMessageBuffer()
 
         if (ui_inst.devices.getDeviceByID(id) !== undefined){
+            console.log("Sending '" + message + "' to device " + id + "...");
             ui_inst.devices.sendMessageToDevice(id, outBuffer);
         }
         else{
@@ -127,7 +128,8 @@ stdin.addListener("data", function(d) {
         }
     }
     else if (ui_command == "listDevices"){
-        console.log("TODO: list all devices here and their status")
+        //console.log("TODO: list all devices here and their status")
+        this.devices.printDevices()
     }
     
     

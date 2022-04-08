@@ -71,11 +71,11 @@ class Devices{
         }
     }
 
-   sendMessageToDevice(id, message){
-       this.devices[id].sendCommand(message)
-   }
+    sendMessageToDevice(id, message){
+        this.devices[id].sendCommand(message)
+    }
 
-   removeDeviceBySocket(socket){
+    removeDeviceBySocket(socket){
         let id = this.devices.findIndex( (o) => { 
             if (o !== undefined){
                 return (o.socket.remoteAddress===socket.remoteAddress) && (o.socket.remotePort === socket.remotePort);
@@ -89,10 +89,19 @@ class Devices{
         if(id > -1){
             this.devices.splice(id, 1)
         }
-   }
+    }
 
-   setDeviceReady(id, status=true){
-       this.devices[id].isReady = status;
+    setDeviceReady(id, status=true){
+        this.devices[id].isReady = status;
+    }
+
+    printDevices(){
+        for (let [key, value] of Object.entries(p)) {
+            let id = key;
+            let dev = value;
+            console.log('Dev ID\tIMEI\tStatus')
+            console.log(`${id}\t${dev.imei}\t${dev.isReady}`);
+        }
    }
 
    
