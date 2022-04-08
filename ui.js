@@ -93,10 +93,7 @@ class UI{
         server.listen(49366, () => {
             console.log("Server started");
         });
-
-        
-        
-        
+               
     }
 
 }

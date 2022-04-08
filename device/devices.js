@@ -41,7 +41,7 @@ class Devices{
        });
        //console.log("getDeviceBySocket return value: " + id)
        
-       if(id > 0){
+       if(id > -1){
             return this.devices[id]
         }
         else{
@@ -63,7 +63,7 @@ class Devices{
         //console.log("getDeviceBySocket return value: " + id)
         
 
-        if(id > 0){
+        if(id > -1){
             return this.devices[id]
         }
         else{
@@ -86,7 +86,7 @@ class Devices{
             
         });
 
-        if(id > 0){
+        if(id > -1){
             this.devices.splice(id, 1)
         }
    }
