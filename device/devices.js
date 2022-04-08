@@ -96,12 +96,19 @@ class Devices{
     }
 
     printDevices(){
+        var table = []
         for (let [key, value] of Object.entries(this.devices)) {
             let id = key;
             let dev = value;
-            console.log('Dev ID\tIMEI\tStatus')
-            console.log(`${id}\t${dev.imei}\t${dev.isReady}`);
+            //console.log('Dev ID\tIMEI\t\t\tStatus')
+            table.push({
+                'ID' : id,
+                'IMEI' : dev.imei,
+                'STATUS' : dev.isReady
+            })
+            //console.log(`${id}\t${dev.imei}\t${dev.isReady}`);
         }
+        console.table(table);
    }
 
    
