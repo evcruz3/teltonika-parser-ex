@@ -129,7 +129,7 @@ stdin.addListener("data", function(d) {
     }
     else if (ui_command == "listDevices"){
         //console.log("TODO: list all devices here and their status")
-        this.devices.printDevices()
+        ui_inst.devices.printDevices()
     }
     
     
