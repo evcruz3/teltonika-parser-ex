@@ -32,8 +32,7 @@ class UI{
             c.on('data', (data) => {
                 //console.log("Received: " + data.toString("hex"));
                 //console.log("Received data from Address: " + c.remoteAddress + ":" + c.remotePort);
-                let device = this.devices.getDeviceBySocket(c)
-                let id = device.id
+                
                 //console.log("From Device " + id);
                 //console.log(c)
 
@@ -45,7 +44,7 @@ class UI{
                     if (dev){
                         dev.updateSocket(c)
                         this.devices[dev.id] = dev
-                        console.log("Updated socket info for device " + dev.id)
+                        console.log("Device " + dev.id + " reconnected")
                     }
                     else{
                         id = this.devices.addDevice(parser.imei, c)
@@ -55,6 +54,8 @@ class UI{
                     //console.log("Received IMEI from device " + id);
                     c.write(Buffer.alloc(1,1));
                 }else {
+                    let device = this.devices.getDeviceBySocket(c)
+                    let id = device.id
                     let header = parser.getHeader();
                     //console.log("CODEC: " + header.codec_id);
         
