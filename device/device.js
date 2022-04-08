@@ -5,8 +5,9 @@ class Device{
     * Device constructor
     *
     */ 
-   constructor(id, socket){
+   constructor(id, imei, socket){
       this.id = id;
+      this.imei = imei;
       this.socket = socket;
       this.isReady = false;
    }
@@ -24,6 +25,14 @@ class Device{
 
    getID(){
     return this.id;
+   }
+
+   getImei(){
+      return this.imei;
+   }
+
+   updateSocket(socket){
+      this.socket = socket
    }
 
 }

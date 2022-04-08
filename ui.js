@@ -15,16 +15,17 @@ class UI{
         let server = net.createServer((c) => {
             //console.log("client connected");
             //console.log(c)
-            let id = this.devices.addDevice(c);
-            console.log("New device connected")
-            console.log("ID: " + id)
-            console.log("IP: " + c.remoteAddress + ":" + c.remotePort)
+            //let id = this.devices.addDevice(c);
+            //console.log("New device connected")
+            //console.log("ID: " + id)
+            //console.log("IP: " + c.remoteAddress + ":" + c.remotePort)
 
             //c.id = id++; 
             c.on('end', () => {
                 let id = this.devices.getDeviceBySocket(c).id
                 console.log("Device " + id + " disconnected");
-                this.devices.removeDeviceBySocket(c);
+                this.devices.setDeviceReady(id, false);
+                //this.devices.removeDeviceBySocket(c);
                 //clients
             });
         
@@ -40,7 +41,18 @@ class UI{
                 let buffer = data;
                 let parser = new Parser(buffer);
                 if(parser.isImei){
-                    console.log("Received IMEI from device " + id);
+                    let dev = this.devices.getDeviceByImei(parser.imei)
+                    if (dev){
+                        dev.updateSocket(c)
+                        this.devices[dev.id] = dev
+                        console.log("Updated socket info for device " + dev.id)
+                    }
+                    else{
+                        id = this.devices.addDevice(parser.imei, c)
+                        console.log("New device " + id + " added")
+                        console.log("IMEI of new device: " + parser.imei)
+                    }
+                    //console.log("Received IMEI from device " + id);
                     c.write(Buffer.alloc(1,1));
                 }else {
                     let header = parser.getHeader();
@@ -67,7 +79,7 @@ class UI{
 
                         if(!device.isReady){
                             this.devices.setDeviceReady(id)
-                            console.log("Device " + id + " is now ready for communication")
+                            console.log("Device " + id + " is ready for communication")
                         }
                         
                         //console.log("Writing response to AVL: " + response.toString("hex"));
