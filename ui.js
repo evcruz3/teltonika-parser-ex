@@ -40,6 +40,7 @@ class UI{
                 let buffer = data;
                 let parser = new Parser(buffer);
                 if(parser.isImei){
+                    
                     let dev = this.devices.getDeviceByImei(parser.imei)
                     if (dev){
                         dev.updateSocket(c)
@@ -49,9 +50,16 @@ class UI{
                     else{
                         let id = this.devices.addDevice(parser.imei, c)
                         console.log("New device added; ID: " + id + "; IMEI: " + parser.imei)
+                        
                     }
+                    
                     //console.log("Received IMEI from device " + id);
                     c.write(Buffer.alloc(1,1));
+                    
+                    if(!device.isReady){
+                        this.devices.setDeviceReady(id)
+                        console.log("Device " + id + " is ready for communication")
+                    }
                 }else {
                     let device = this.devices.getDeviceBySocket(c)
                     let id = device.id
@@ -77,13 +85,6 @@ class UI{
         
                         let response = writer.ByteBuffer;
                         c.write(response);
-
-                        if(!device.isReady){
-                            this.devices.setDeviceReady(id)
-                            console.log("Device " + id + " is ready for communication")
-                        }
-                        
-                        //console.log("Writing response to AVL: " + response.toString("hex"));
                     }
                         
                 }
@@ -119,9 +120,17 @@ stdin.addListener("data", function(d) {
         gprsCommandPacker = new GprsCommandPacker(message)
         let outBuffer = gprsCommandPacker.getGprsMessageBuffer()
 
-        if (ui_inst.devices.getDeviceByID(id) !== undefined){
-            console.log("Sending '" + message + "' to device " + id + "...");
-            ui_inst.devices.sendMessageToDevice(id, outBuffer);
+        let dev = ui_inst.devices.getDeviceByID(id)
+
+        if (dev !== undefined){
+            if(dev.isReady){
+                console.log("Sending '" + message + "' to device " + id + "...");
+                ui_inst.devices.sendMessageToDevice(id, outBuffer);
+            }
+            else{
+                console.log("Device " + id + " is currently disconnected")
+            }
+            
         }
         else{
             console.log("Device " + id + " not found")
