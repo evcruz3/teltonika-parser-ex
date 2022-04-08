@@ -10,8 +10,8 @@ class Device{
       this.imei = imei;
       this.socket = socket;
       this.isReady = false;
-      this.avlRecords = {};
-      this.gprsRecords = {};
+      this.avlRecords = [];
+      this.gprsRecords = [];
    }
 
    sendCommand(message){
@@ -46,7 +46,7 @@ class Device{
    }
 
    printLatestGprs(){
-      console.log(this.gprsRecords[0].message)
+      console.log(this.gprsRecords[-1].message)
    }
 
 }
