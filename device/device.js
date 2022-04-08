@@ -10,6 +10,8 @@ class Device{
       this.imei = imei;
       this.socket = socket;
       this.isReady = false;
+      this.avlRecords = {};
+      this.gprsRecords = {};
    }
 
    sendCommand(message){
@@ -33,6 +35,18 @@ class Device{
 
    updateSocket(socket){
       this.socket = socket
+   }
+
+   pushAvlRecord(avlObj){
+      this.avlRecords.push(avlObj)
+   }
+
+   pushGprsRecord(gprsObj){
+      this.gprsRecords.push(gprsObj)
+   }
+
+   printLatestGprs(){
+      console.log(this.gprsRecords[0].message)
    }
 
 }

@@ -67,18 +67,22 @@ class UI{
         
                     if(header.codec_id == 12){
                         console.log("Received GPRS message from device  " + id)
-                        let gprs = parser.getGprs()
+                        //let gprs = parser.getGprs()
+                        
+
                         console.log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
+                        this.devices.pushGprsRecord(id, gprs);
                     }
                     else if(header.codec_id == 142){
                         let avl = parser.getAvl()
 
                         console.log("Received AVL data from device " + id);
                         //console.log("AVL Zero: " + avl.zero);
-                        console.log("AVL Data Length: " + avl.data_length);
+                        //console.log("AVL Data Length: " + avl.data_length);
                         //console.log("AVL Codec ID: " + avl.codec_id);
-                        console.log("AVL Number of Data: " + avl.number_of_data);
-                        console.log("AVL Data[0] timestamp: " + avl.records[0].timestamp)
+                        //console.log("AVL Number of Data: " + avl.number_of_data);
+                        //console.log("AVL Data[0] timestamp: " + avl.records[0].timestamp)
+                        this.devices.pushAvlRecord(id, avl);
                         let writer = new binutils.BinaryWriter();
                         writer.WriteInt32(avl.number_of_data);
         
@@ -138,6 +142,14 @@ stdin.addListener("data", function(d) {
     else if (ui_command == "listDevices"){
         //console.log("TODO: list all devices here and their status")
         ui_inst.devices.printDevices()
+    }
+    else if (ui_command == "printLatestGPRS"){
+        if(id){
+            ui_inst.devices.printLatestGPRS(id)
+        }
+        else{
+            console.log("Please specify a device id")
+        }
     }
     
     

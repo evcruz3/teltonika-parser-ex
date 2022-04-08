@@ -100,18 +100,29 @@ class Devices{
         for (let [key, value] of Object.entries(this.devices)) {
             let id = key;
             let dev = value;
+            let isConnected = "CONNECTED" ? dev.isReady : "DISCONNECTED";
             //console.log('Dev ID\tIMEI\t\t\tStatus')
             table.push({
                 'ID' : id,
                 'IMEI' : dev.imei,
-                'STATUS' : "CONNECTED" ? dev.isReady : "DISCONNECTED"
+                'STATUS' : isConnected
             })
             //console.log(`${id}\t${dev.imei}\t${dev.isReady}`);
         }
         console.table(table);
    }
 
+    pushAvlRecord(id, avlObj){
+        this.devices[id].pushAvlRecord(avlObj)
+    }
+
+    pushGprsRecord(id, gprsObj){
+        this.devices[id].pushGprsRecord(gprsObj)
+    }
    
+    printLatestGprs(id){
+        this.devices[id].printLatestGprs()
+    }
 }
 
 module.exports = Devices;
