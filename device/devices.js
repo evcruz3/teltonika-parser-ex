@@ -104,7 +104,7 @@ class Devices{
             table.push({
                 'ID' : id,
                 'IMEI' : dev.imei,
-                'STATUS' : dev.isReady
+                'STATUS' : "CONNECTED" ? dev.isReady : "DISCONNECTED"
             })
             //console.log(`${id}\t${dev.imei}\t${dev.isReady}`);
         }
