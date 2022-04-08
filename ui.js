@@ -145,7 +145,7 @@ stdin.addListener("data", function(d) {
     }
     else if (ui_command == "printLatestGPRS"){
         if(id){
-            ui_inst.devices.printLatestGPRS(id)
+            ui_inst.devices.printLatestGprs(id)
         }
         else{
             console.log("Please specify a device id")
