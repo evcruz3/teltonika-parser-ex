@@ -96,7 +96,7 @@ class Devices{
     }
 
     printDevices(){
-        for (let [key, value] of Object.entries(p)) {
+        for (let [key, value] of Object.entries(this.devices)) {
             let id = key;
             let dev = value;
             console.log('Dev ID\tIMEI\tStatus')
