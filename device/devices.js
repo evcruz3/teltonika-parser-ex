@@ -11,8 +11,8 @@ class Devices{
        this.devices = []
    }
    
-   addDevice(socket){
-       let d = new Device(this.id, socket);
+   addDevice(imei, socket){
+       let d = new Device(this.id, imei, socket);
        let id = this.id
        this.devices[id] = d;
        //console.log("Success id assignment for connected device; id: " + this.id)
@@ -35,13 +35,40 @@ class Devices{
                 return (o.socket.remoteAddress===socket.remoteAddress) && (o.socket.remotePort === socket.remotePort);
            }
            else{
-               return false
+               return -1
            }
             
        });
        //console.log("getDeviceBySocket return value: " + id)
        
-       return this.devices[id]
+       if(id > -1){
+            return this.devices[id]
+        }
+        else{
+            return null
+        }
+       
+    }
+
+    getDeviceByImei(imei){
+        let id = this.devices.findIndex( (o) => { 
+            if (o !== undefined){
+                 return (o.imei===imei) && (o.imei === imei);
+            }
+            else{
+                return -1
+            }
+             
+        });
+        //console.log("getDeviceBySocket return value: " + id)
+        
+
+        if(id > -1){
+            return this.devices[id]
+        }
+        else{
+            return null
+        }
     }
 
    sendMessageToDevice(id, message){
@@ -54,15 +81,18 @@ class Devices{
                 return (o.socket.remoteAddress===socket.remoteAddress) && (o.socket.remotePort === socket.remotePort);
             }
             else{
-                return false
+                return -1
             }
             
         });
-        this.devices.splice(id, 1)
+
+        if(id > -1){
+            this.devices.splice(id, 1)
+        }
    }
 
-   setDeviceReady(id){
-       this.devices[id].isReady = true;
+   setDeviceReady(id, status=true){
+       this.devices[id].isReady = status;
    }
 
    
