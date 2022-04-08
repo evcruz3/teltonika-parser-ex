@@ -67,7 +67,7 @@ class UI{
         
                     if(header.codec_id == 12){
                         console.log("Received GPRS message from device  " + id)
-                        //let gprs = parser.getGprs()
+                        let gprs = parser.getGprs()
                         
 
                         console.log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
