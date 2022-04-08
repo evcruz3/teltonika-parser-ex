@@ -71,7 +71,7 @@ class UI{
                         console.log("AVL Data Length: " + avl.data_length);
                         //console.log("AVL Codec ID: " + avl.codec_id);
                         console.log("AVL Number of Data: " + avl.number_of_data);
-                        console.log("AVL Data: " + avl.records[0])
+                        console.log("AVL Data[0] timestamp: " + avl.records[0].timestamp)
                         let writer = new binutils.BinaryWriter();
                         writer.WriteInt32(avl.number_of_data);
         
