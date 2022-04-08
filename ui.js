@@ -40,27 +40,26 @@ class UI{
                 let buffer = data;
                 let parser = new Parser(buffer);
                 if(parser.isImei){
-                    
+                    let id = -1
                     let dev = this.devices.getDeviceByImei(parser.imei)
                     if (dev){
                         dev.updateSocket(c)
-                        this.devices[dev.id] = dev
-                        console.log("Device " + dev.id + " reconnected")
+                        id = dev.id
+                        this.devices[id] = dev
+                        console.log("Device " + id + " reconnected")
                     }
                     else{
-                        let id = this.devices.addDevice(parser.imei, c)
-                        console.log("New device added; ID: " + id + "; IMEI: " + parser.imei)
-                        
+                        id = this.devices.addDevice(parser.imei, c)
+                        console.log("New device added; ID: " + id + "; IMEI: " + parser.imei)   
                     }
                     
                     //console.log("Received IMEI from device " + id);
                     c.write(Buffer.alloc(1,1));
-                    
-                    if(!device.isReady){
-                        this.devices.setDeviceReady(id)
-                        console.log("Device " + id + " is ready for communication")
-                    }
-                }else {
+                   
+                    this.devices.setDeviceReady(id)
+                    console.log("Device " + id + " is ready for communication") 
+                }
+                else {
                     let device = this.devices.getDeviceBySocket(c)
                     let id = device.id
                     let header = parser.getHeader();
