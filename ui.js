@@ -114,7 +114,7 @@ console.log(Array(process.stdout.rows + 1).join('\n'));
 myRL.init()
 myRL.getRL().question("> ", function(d) {
     let user_input = d.toString().trim()
-    //console.log("you entered: [" +    user_input + "]");
+    console.log("you entered: [" +    user_input + "]");
     let [ui_command, id, ...others] = user_input.split(" ");
     let message = others.join(" ");
 
