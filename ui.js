@@ -8,7 +8,7 @@ const prompt = require('prompt-sync')
 const crc16ibm = require('./utilities/crc16ibm')
 const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
-
+const myRL = require("serverline")
 
 class UI{
     constructor (){
@@ -107,12 +107,12 @@ class UI{
 }
 
 ui_inst = new UI()
-var stdin = process.openStdin();
+//var stdin = process.openStdin();
+process.stdout.write("\x1Bc")
+console.log(Array(process.stdout.rows + 1).join('\n'));
 
-stdin.addListener("data", function(d) {
-    // note:  d is an object, and when converted to a string it will
-    // end with a linefeed.  so we (rather crudely) account for that  
-    // with toString() and then trim() 
+myRL.init()
+myRL.getRL().question("> ", function(d) {
     let user_input = d.toString().trim()
     //console.log("you entered: [" +    user_input + "]");
     let [ui_command, id, ...others] = user_input.split(" ");
@@ -158,5 +158,11 @@ stdin.addListener("data", function(d) {
     
     
 });
+// stdin.addListener("data", function(d) {
+//     // note:  d is an object, and when converted to a string it will
+//     // end with a linefeed.  so we (rather crudely) account for that  
+//     // with toString() and then trim() 
+    
+// });
 
 
