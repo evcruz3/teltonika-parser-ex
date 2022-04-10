@@ -108,12 +108,12 @@ class UI{
 
 ui_inst = new UI()
 //var stdin = process.openStdin();
-process.stdout.write("\x1Bc")
-console.log(Array(process.stdout.rows + 1).join('\n'));
+//process.stdout.write("\x1Bc")
+//console.log(Array(process.stdout.rows + 1).join('\n'));
 
-myRL.init()
-myRL.setCompletion(['sendCommand', 'listDevices', 'printLatestGPRS']);
-myRL.on('line', function(d) {
+//myRL.init()
+//myRL.setCompletion(['sendCommand', 'listDevices', 'printLatestGPRS']);
+//myRL.on('line', function(d) {
     let user_input = d.toString().trim()
     //console.log("you entered: [" +    user_input + "]");
     let [ui_command, id, ...others] = user_input.split(" ");
