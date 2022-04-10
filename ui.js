@@ -7,6 +7,7 @@ const Devices = require('./device/devices')
 const prompt = require('prompt-sync')
 const crc16ibm = require('./utilities/crc16ibm')
 const GprsCommandPacker = require("./utilities/gprsCommandPacker")
+const fs = require('fs')
 
 
 class UI{
@@ -77,6 +78,8 @@ class UI{
                         let avl = parser.getAvl()
 
                         console.log("Received AVL data from device " + id);
+                        let stream = fs.createWriteStream("dev"+id+"-log.txt", {flags:'a'});
+                        stream.write(data.toString("hex"));
                         //console.log("AVL Zero: " + avl.zero);
                         //console.log("AVL Data Length: " + avl.data_length);
                         //console.log("AVL Codec ID: " + avl.codec_id);
