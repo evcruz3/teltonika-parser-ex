@@ -79,7 +79,7 @@ class UI{
 
                         console.log("Received AVL data from device " + id);
                         let stream = fs.createWriteStream("dev"+id+"-log.txt", {flags:'a'});
-                        stream.write(data.toString("hex"));
+                        stream.write(data.toString("hex")+"\n");
                         //console.log("AVL Zero: " + avl.zero);
                         //console.log("AVL Data Length: " + avl.data_length);
                         //console.log("AVL Codec ID: " + avl.codec_id);
