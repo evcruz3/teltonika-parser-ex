@@ -65,57 +65,64 @@ class logParser{
 
 ui_inst = new logParser('dev1-log.txt')
 //var stdin = process.openStdin();
-//process.stdout.write("\x1Bc")
-//console.log(Array(process.stdout.rows + 1).join('\n'));
+process.stdout.write("\x1Bc")
+console.log(Array(process.stdout.rows + 1).join('\n'));
 
-//myRL.init()
-//myRL.setCompletion(['sendCommand', 'listDevices', 'printLatestGPRS']);
-//myRL.on('line', function(d) {
-//     let user_input = d.toString().trim()
-//     //console.log("you entered: [" +    user_input + "]");
-//     let [ui_command, id, ...others] = user_input.split(" ");
-//     let message = others.join(" ");
+myRL.init()
+myRL.setCompletion(['sendCommand', 'listDevices', 'printLatestGPRS']);
+myRL.on('line', function(d) {
+     let user_input = d.toString().trim()
+    //console.log("you entered: [" +    user_input + "]");
+    let [ui_command, id, ...others] = user_input.split(" ");
+    let message = others.join(" ");
 
-//     //console.log("Command: " + comm);
-//     //console.log("ID: " + id);
-//     //console.log("Message: " + message);
+    //console.log("Command: " + comm);
+    //console.log("ID: " + id);
+    //console.log("Message: " + message);
 
-//     if (ui_command == "sendCommand"){
-//         gprsCommandPacker = new GprsCommandPacker(message)
-//         let outBuffer = gprsCommandPacker.getGprsMessageBuffer()
+    if (ui_command == "sendCommand"){
+        gprsCommandPacker = new GprsCommandPacker(message)
+        let outBuffer = gprsCommandPacker.getGprsMessageBuffer()
 
-//         let dev = ui_inst.devices.getDeviceByID(id)
+        let dev = ui_inst.devices.getDeviceByID(id)
 
-//         if (dev !== undefined){
-//             if(dev.isReady){
-//                 console.log("Sending '" + message + "' to device " + id + "...");
-//                 ui_inst.devices.sendMessageToDevice(id, outBuffer);
-//             }
-//             else{
-//                 console.log("Device " + id + " is currently disconnected")
-//             }
+        if (dev !== undefined){
+            if(dev.isReady){
+                console.log("Sending '" + message + "' to device " + id + "...");
+                ui_inst.devices.sendMessageToDevice(id, outBuffer);
+            }
+            else{
+                console.log("Device " + id + " is currently disconnected")
+            }
             
-//         }
-//         else{
-//             console.log("Device " + id + " not found")
-//         }
-//     }
-//     else if (ui_command == "listDevices"){
-//         //console.log("TODO: list all devices here and their status")
-//         ui_inst.devices.printDevices()
-//     }
-//     else if (ui_command == "printLatestGPRS"){
-//         if(id){
-//             ui_inst.devices.printLatestGprs(id)
-//         }
-//         else{
-//             console.log("Please specify a device id")
-//         }
-//     }
+        }
+        else{
+            console.log("Device " + id + " not found")
+        }
+    }
+    else if (ui_command == "listDevices"){
+        //console.log("TODO: list all devices here and their status")
+        ui_inst.devices.printDevices()
+    }
+    else if (ui_command == "printLatestGPRS"){
+        if(id){
+            ui_inst.devices.printLatestGprs(id)
+        }
+        else{
+            console.log("Please specify a device id")
+        }
+    }
+    else if (ui_command == "printLatestAVL"){
+        if(id){
+            ui_inst.devices.printLatestAvl(id)
+        }
+        else{
+            console.log("Please specify a device id")
+        }
+    }
     
     
-    
-// });
+});
 // stdin.addListener("data", function(d) {
 //     // note:  d is an object, and when converted to a string it will
 //     // end with a linefeed.  so we (rather crudely) account for that  

@@ -1,5 +1,7 @@
 'use strict';
 
+const { Console } = require("console");
+
 class Device{
    /** 
     * Device constructor
@@ -47,6 +49,29 @@ class Device{
 
    printLatestGprs(){
       console.log(this.gprsRecords[-1].message)
+   }
+
+   printLatestAvl(){
+      let latest_id = this.avlRecords.length - 1
+      let latest_record = this.avlRecords[latest_id]
+      console.log("Length: " + latest_record.data_length)
+      console.log("Number of Data: " + latest_record.number_of_data)
+      for (var i = 0; i < latest_record.number_of_data; i++) {
+         this._printAvlRecord(latest_record, i);
+       }
+   }
+
+   _printAvlRecord(avlObj, index){
+      let avlRecord = avlObj[index]
+
+      console.log("Timestamp: " + avlRecord.timestamp)
+      console.log("Priority: " + avlRecord.priority)
+      console.log("GPS: " + avlRecord.gps)
+      console.log("Event ID: " + avlRecord.event_id)
+      console.log("Properties Count" + avlRecord.properties_count)
+      console.log("IO Elements: " + avlRecord.ioElements)
+
+
    }
 
 }

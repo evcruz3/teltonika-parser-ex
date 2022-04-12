@@ -123,6 +123,10 @@ class Devices{
     printLatestGprs(id){
         this.devices[id].printLatestGprs()
     }
+
+    printLatestAvl(id){
+        this.devices[id].printLatestAvl()
+    }
 }
 
 module.exports = Devices;
