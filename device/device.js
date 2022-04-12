@@ -68,10 +68,15 @@ class Device{
       console.log("KEYS: " + Object.keys(avlRecord))
       console.log("Timestamp: " + avlRecord.timestamp)
       console.log("Priority: " + avlRecord.priority)
-      console.log("GPS: " + avlRecord.gps)
+      for (const [key, value] of Object.entries(avlRecord.gps)) {
+         console.log(`GPS ${key}: ${value}`);
+      }
+      //console.log("GPS: " + avlRecord.gps)
       console.log("Event ID: " + avlRecord.event_id)
-      console.log("Properties Count" + avlRecord.properties_count)
-      console.log("IO Elements: " + avlRecord.ioElements)
+      console.log("Properties Count " + avlRecord.properties_count)
+      for (const [key, value] of Object.entries(avlRecord.ioElements)) {
+         console.log(`GPS ${key}: ${value}`);
+      }
 
 
    }
