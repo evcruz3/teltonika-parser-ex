@@ -61,6 +61,7 @@ class Device{
          for (var i = 0; i < record.number_of_data; i++) {
             this._printAvlRecord(record.records, i);
          }
+         console.log("")
       }
    }
 

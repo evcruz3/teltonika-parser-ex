@@ -13,7 +13,7 @@ const myRL = require("serverline")
 class logParser{
     constructor (filename){
         this.devices = new Devices()
-        var id = this.devices.addDevice("dev1", null)
+        var id = this.devices.addDevice("dev0", null)
         var _self = this
         var lineReader = require('readline').createInterface({
             input: require('fs').createReadStream(filename)
