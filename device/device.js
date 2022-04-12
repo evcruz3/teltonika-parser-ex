@@ -64,6 +64,7 @@ class Device{
    _printAvlRecord(avlObj, index){
       let avlRecord = avlObj[index]
 
+      console.log("KEYS: " + Object.keys(avlRecord))
       console.log("Timestamp: " + avlRecord.timestamp)
       console.log("Priority: " + avlRecord.priority)
       console.log("GPS: " + avlRecord.gps)
