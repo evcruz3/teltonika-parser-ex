@@ -127,6 +127,10 @@ class Devices{
     printLatestAvl(id){
         this.devices[id].printLatestAvl()
     }
+
+    printAllAvl(id){
+        this.devices[id].printAllAvl()
+    }
 }
 
 module.exports = Devices;

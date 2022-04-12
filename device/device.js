@@ -51,7 +51,7 @@ class Device{
       console.log(this.gprsRecords[this.gprsRecords.length-1].message)
    }
 
-   printAllAVL(){
+   printAllAvl(){
       for (const [avl_id, record] of Object.entries(this.avlRecords)) {
          //let latest_record = this.avlRecords[latest_id]
          //console.log("KEYS: " + Object.keys(latest_record))
