@@ -75,7 +75,7 @@ class Device{
       console.log("Event ID: " + avlRecord.event_id)
       console.log("Properties Count " + avlRecord.properties_count)
       for (const [key, value] of Object.entries(avlRecord.ioElements)) {
-         for (const [property, val] of Object.entries(avlRecord.value)) {
+         for (const [property, val] of Object.entries(value)) {
             console.log(`IO Element ${key} ${property}: ${val}`);
          }
          //console.log(`IO Element ${key}: ${value}`);
