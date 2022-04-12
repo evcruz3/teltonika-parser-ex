@@ -63,7 +63,7 @@ class Device{
    }
 
    _printAvlRecord(avlRecords, index){
-      let avlRecord = avlObj[index]
+      let avlRecord = avlRecords[index]
 
       console.log("KEYS: " + Object.keys(avlRecord))
       console.log("Timestamp: " + avlRecord.timestamp)
