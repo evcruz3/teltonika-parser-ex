@@ -87,18 +87,21 @@ class Device{
       }
       //console.log("GPS: " + avlRecord.gps)
       console.log("Event ID: " + avlRecord.event_id)
-      console.log("Properties Count " + avlRecord.properties_count)
-      for (const [key, element] of Object.entries(avlRecord.ioElements)) {
-         for (const [property, val] of Object.entries(element)) {
-            console.log(`IO Element ${key} ${property}: ${val}`);
-            if (property == "value"){
-               for (const [prop, v] of Object.entries(val)) {
-                  console.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
+      if(avlRecord.event_id != 385){
+         console.log("Properties Count " + avlRecord.properties_count)
+         for (const [key, element] of Object.entries(avlRecord.ioElements)) {
+            for (const [property, val] of Object.entries(element)) {
+               console.log(`IO Element ${key} ${property}: ${val}`);
+               if (property == "value"){
+                  for (const [prop, v] of Object.entries(val)) {
+                     console.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
+                  }
                }
             }
+            //console.log(`IO Element ${key}: ${value}`);
          }
-         //console.log(`IO Element ${key}: ${value}`);
       }
+      
 
 
    }
