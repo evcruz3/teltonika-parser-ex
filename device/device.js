@@ -62,7 +62,7 @@ class Device{
        }
    }
 
-   _printAvlRecord(avlRecord, index){
+   _printAvlRecord(avlRecords, index){
       let avlRecord = avlObj[index]
 
       console.log("KEYS: " + Object.keys(avlRecord))
