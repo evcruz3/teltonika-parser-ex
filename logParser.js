@@ -120,6 +120,14 @@ myRL.on('line', function(d) {
             console.log("Please specify a device id")
         }
     }
+    else if (ui_command == "printAllAVL"){
+        if(id){
+            ui_inst.devices.printAllAvl(id)
+        }
+        else{
+            console.log("Please specify a device id")
+        }
+    }
     
     
 });

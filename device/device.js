@@ -48,13 +48,26 @@ class Device{
    }
 
    printLatestGprs(){
-      console.log(this.gprsRecords[-1].message)
+      console.log(this.gprsRecords[this.gprsRecords.length-1].message)
+   }
+
+   printAllAVL(){
+      for (const [avl_id, record] of Object.entries(this.avlRecords)) {
+         //let latest_record = this.avlRecords[latest_id]
+         //console.log("KEYS: " + Object.keys(latest_record))
+         //console.log("Length: " + latest_record.data_length)
+         console.log("AVL ID: " + avl_id)
+         console.log("Number of Data: " + record.number_of_data)
+         for (var i = 0; i < record.number_of_data; i++) {
+            this._printAvlRecord(record.records, i);
+         }
+      }
    }
 
    printLatestAvl(){
       let latest_id = this.avlRecords.length - 1
       let latest_record = this.avlRecords[latest_id]
-      console.log("KEYS: " + Object.keys(latest_record))
+      //console.log("KEYS: " + Object.keys(latest_record))
       //console.log("Length: " + latest_record.data_length)
       console.log("Number of Data: " + latest_record.number_of_data)
       for (var i = 0; i < latest_record.number_of_data; i++) {
@@ -65,7 +78,7 @@ class Device{
    _printAvlRecord(avlRecords, index){
       let avlRecord = avlRecords[index]
 
-      console.log("KEYS: " + Object.keys(avlRecord))
+      //console.log("KEYS: " + Object.keys(avlRecord))
       console.log("Timestamp: " + avlRecord.timestamp)
       console.log("Priority: " + avlRecord.priority)
       for (const [key, value] of Object.entries(avlRecord.gps)) {
@@ -74,8 +87,8 @@ class Device{
       //console.log("GPS: " + avlRecord.gps)
       console.log("Event ID: " + avlRecord.event_id)
       console.log("Properties Count " + avlRecord.properties_count)
-      for (const [key, value] of Object.entries(avlRecord.ioElements)) {
-         for (const [property, val] of Object.entries(value)) {
+      for (const [key, element] of Object.entries(avlRecord.ioElements)) {
+         for (const [property, val] of Object.entries(element)) {
             console.log(`IO Element ${key} ${property}: ${val}`);
          }
          //console.log(`IO Element ${key}: ${value}`);
