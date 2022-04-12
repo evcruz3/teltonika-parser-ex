@@ -14,6 +14,7 @@ class logParser{
     constructor (filename){
         this.devices = new Devices()
         var id = this.devices.addDevice("dev1", null)
+        var _self = this
         var lineReader = require('readline').createInterface({
             input: require('fs').createReadStream(filename)
           });
@@ -46,7 +47,7 @@ class logParser{
                 //console.log("AVL Codec ID: " + avl.codec_id);
                 console.log("AVL Number of Data: " + avl.number_of_data);
                 console.log("AVL Data timestamp: " + avl.records[0].timestamp)
-                this.devices.pushAvlRecord(id, avl);
+                _self.devices.pushAvlRecord(id, avl);
                 //let writer = new binutils.BinaryWriter();
                 //writer.WriteInt32(avl.number_of_data);
 
@@ -55,6 +56,8 @@ class logParser{
             }
                     //console.log('Line from file:', line);
         });
+
+        
 
     }
 
