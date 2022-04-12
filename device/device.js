@@ -55,17 +55,17 @@ class Device{
       let latest_id = this.avlRecords.length - 1
       let latest_record = this.avlRecords[latest_id]
       console.log("KEYS: " + Object.keys(latest_record))
-      console.log("Length: " + latest_record.data_length)
-      // console.log("Number of Data: " + latest_record.number_of_data)
-      // for (var i = 0; i < latest_record.number_of_data; i++) {
-      //    this._printAvlRecord(latest_record, i);
-      //  }
+      //console.log("Length: " + latest_record.data_length)
+      console.log("Number of Data: " + latest_record.number_of_data)
+      for (var i = 0; i < latest_record.number_of_data; i++) {
+         this._printAvlRecord(latest_record.records, i);
+       }
    }
 
-   _printAvlRecord(avlObj, index){
+   _printAvlRecord(avlRecord, index){
       let avlRecord = avlObj[index]
 
-      
+      console.log("KEYS: " + Object.keys(avlRecord))
       console.log("Timestamp: " + avlRecord.timestamp)
       console.log("Priority: " + avlRecord.priority)
       console.log("GPS: " + avlRecord.gps)
