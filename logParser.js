@@ -19,8 +19,8 @@ class logParser{
           });
           
           lineReader.on('line', function (data) {
-            let buffer = data;
-            let parser = new Parser(buffer);
+            let buffer = Buffer.from(data, "hex");
+            let parser = new Parser(data);
             //let device = this.devices.getDeviceBySocket(c)
             //let id = device.id
             //let id = 1
