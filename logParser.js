@@ -90,7 +90,7 @@ myRL.init()
 myRL.setCompletion(['sendCommand', 'listDevices', 'printLatestGPRS']);
 myRL.on('line', function(d) {
 
-    ui_inst.client.write(line)
+    ui_inst.client.write(d)
      let user_input = d.toString().trim()
     //console.log("you entered: [" +    user_input + "]");
     let [ui_command, id, ...others] = user_input.split(" ");
