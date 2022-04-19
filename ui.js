@@ -121,7 +121,7 @@ class UI{
             c.on('data', (ui_message) => {
                 console.log("ui message: " + ui_message)
                 //c.write("SAMPLE RESPONSE FROM LOGGER")
-                _process_message(ui_message, c, ui_inst)
+                ui_inst._process_message(ui_message, c, ui_inst)
             });
         })
 
