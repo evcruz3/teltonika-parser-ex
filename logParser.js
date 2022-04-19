@@ -57,7 +57,23 @@ class logParser{
                     //console.log('Line from file:', line);
         });
 
-        
+        this.client = new net.Socket();
+
+        this.client.connect(49365, 'localhost', () => {
+            client.on('data', (data) => {     
+                console.log(`Client received: ${data}`); 
+                if (data.toString().endsWith('exit')) { 
+                    client.destroy(); 
+                } 
+            });  
+            // Add a 'close' event handler for the client socket 
+            client.on('close', () => { 
+                console.log('Client closed'); 
+            });  
+            client.on('error', (err) => { 
+                console.error(err); 
+            }); 
+        })
 
     }
 
@@ -71,6 +87,8 @@ console.log(Array(process.stdout.rows + 1).join('\n'));
 myRL.init()
 myRL.setCompletion(['sendCommand', 'listDevices', 'printLatestGPRS']);
 myRL.on('line', function(d) {
+
+    ui_inst.client.socket.write(line)
      let user_input = d.toString().trim()
     //console.log("you entered: [" +    user_input + "]");
     let [ui_command, id, ...others] = user_input.split(" ");

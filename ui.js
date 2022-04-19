@@ -112,6 +112,20 @@ class UI{
             console.log("Server started");
         });
 
+        let commandReceiver = net.createServer((c) => {
+            c.on("end", () => {
+                console.log("ui: Disconnected")
+            });
+
+            c.on('data', (ui_message) => {
+                console.log("ui message: " + ui_message)
+                c.write("SAMPLE RESPONSE FROM LOGGER")
+            });
+        })
+
+        commandReceiver.listen(49365, () => {
+            console.log("Waiting for command from ui...")
+        })
     }
 
 }
