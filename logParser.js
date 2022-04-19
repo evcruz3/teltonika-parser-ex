@@ -90,7 +90,6 @@ myRL.init()
 myRL.setCompletion(['sendCommand', 'listDevices', 'printLatestGPRS']);
 myRL.on('line', function(d) {
 
-    ui_inst.client.write(d)
      let user_input = d.toString().trim()
     //console.log("you entered: [" +    user_input + "]");
     let [ui_command, id, ...others] = user_input.split(" ");
@@ -101,44 +100,17 @@ myRL.on('line', function(d) {
     //console.log("Message: " + message);
 
     if (ui_command == "sendCommand"){
-        gprsCommandPacker = new GprsCommandPacker(message)
-        let outBuffer = gprsCommandPacker.getGprsMessageBuffer()
-
-        let dev = ui_inst.devices.getDeviceByID(id)
-
-        if (dev !== undefined){
-            if(dev.isReady){
-                console.log("Sending '" + message + "' to device " + id + "...");
-                ui_inst.devices.sendMessageToDevice(id, outBuffer);
-            }
-            else{
-                console.log("Device " + id + " is currently disconnected")
-            }
-            
-        }
-        else{
-            console.log("Device " + id + " not found")
-        }
+        ui_inst.client.write(d)
     }
     else if (ui_command == "listDevices"){
         //console.log("TODO: list all devices here and their status")
-        ui_inst.devices.printDevices()
+        ui_inst.client.write(d)
     }
     else if (ui_command == "printLatestGPRS"){
-        if(id){
-            ui_inst.devices.printLatestGprs(id)
-        }
-        else{
-            console.log("Please specify a device id")
-        }
+        ui_inst.client.write(d)
     }
     else if (ui_command == "printLatestAVL"){
-        if(id){
-            ui_inst.devices.printLatestAvl(id)
-        }
-        else{
-            console.log("Please specify a device id")
-        }
+        ui_inst.client.write(d)
     }
     else if (ui_command == "printAllAVL"){
         if(id){

@@ -15,6 +15,7 @@ class UI{
         this.devices = new Devices()
         var devlist_path = ('./device/devlist.json')
         var devlist_json = require(devlist_path)
+        var ui_inst = this
         
         for (const [key, device] of Object.entries(devlist_json['devices'])) {
             this.devices.addDevice(device.imei, null, device.id)
@@ -120,7 +121,7 @@ class UI{
             c.on('data', (ui_message) => {
                 console.log("ui message: " + ui_message)
                 //c.write("SAMPLE RESPONSE FROM LOGGER")
-                inst._process_message(ui_message, c)
+                inst._process_message(ui_message, c, ui_inst)
             });
         })
 
@@ -129,8 +130,8 @@ class UI{
         })
     }
 
-    _process_message(ui_message, c){
-        let ui_inst = this
+    _process_message(ui_message, c, ui_inst){
+        //let ui_inst = this
         let user_input = ui_message.toString().trim()
         let [ui_command, id, ...others] = user_input.split(" ");
         let message = others.join(" ");
