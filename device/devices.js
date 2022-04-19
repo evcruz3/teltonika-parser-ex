@@ -122,7 +122,7 @@ class Devices{
             })
             //console.log(`${id}\t${dev.imei}\t${dev.isReady}`);
         }
-        if(!socket){
+        if(socket){
             socket.write(JSON.stringify(table));
         }else{
             console.table(table);
@@ -138,7 +138,7 @@ class Devices{
     }
    
     printLatestGprs(id, socket=null){
-        if(!socket){
+        if(socket){
             this.devices[id].printLatestGprs(c)
         }
         else{

@@ -48,7 +48,7 @@ class Device{
    }
 
    printLatestGprs(socket=null){
-      if(!socket){
+      if(socket){
          socket.write(this.gprsRecords[this.gprsRecords.length-1].message)
       }
       else{
