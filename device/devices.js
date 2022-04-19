@@ -71,11 +71,11 @@ class Devices{
         }
     }
 
-   sendMessageToDevice(id, message){
-       this.devices[id].sendCommand(message)
-   }
+    sendMessageToDevice(id, message){
+        this.devices[id].sendCommand(message)
+    }
 
-   removeDeviceBySocket(socket){
+    removeDeviceBySocket(socket){
         let id = this.devices.findIndex( (o) => { 
             if (o !== undefined){
                 return (o.socket.remoteAddress===socket.remoteAddress) && (o.socket.remotePort === socket.remotePort);
@@ -89,13 +89,48 @@ class Devices{
         if(id > -1){
             this.devices.splice(id, 1)
         }
+    }
+
+    setDeviceReady(id, status=true){
+        this.devices[id].isReady = status;
+    }
+
+    printDevices(){
+        var table = []
+        for (let [key, value] of Object.entries(this.devices)) {
+            let id = key;
+            let dev = value;
+            let isConnected = "CONNECTED" ? dev.isReady : "DISCONNECTED";
+            //console.log('Dev ID\tIMEI\t\t\tStatus')
+            table.push({
+                'ID' : id,
+                'IMEI' : dev.imei,
+                'STATUS' : isConnected
+            })
+            //console.log(`${id}\t${dev.imei}\t${dev.isReady}`);
+        }
+        console.table(table);
    }
 
-   setDeviceReady(id, status=true){
-       this.devices[id].isReady = status;
-   }
+    pushAvlRecord(id, avlObj){
+        this.devices[id].pushAvlRecord(avlObj)
+    }
 
+    pushGprsRecord(id, gprsObj){
+        this.devices[id].pushGprsRecord(gprsObj)
+    }
    
+    printLatestGprs(id){
+        this.devices[id].printLatestGprs()
+    }
+
+    printLatestAvl(id){
+        this.devices[id].printLatestAvl()
+    }
+
+    printAllAvl(id){
+        this.devices[id].printAllAvl()
+    }
 }
 
 module.exports = Devices;
