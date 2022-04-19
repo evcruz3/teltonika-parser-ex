@@ -141,7 +141,7 @@ class UI{
         //console.log("Message: " + message);
 
         if (ui_command == "sendCommand"){
-            gprsCommandPacker = new GprsCommandPacker(message)
+            let gprsCommandPacker = new GprsCommandPacker(message)
             let outBuffer = gprsCommandPacker.getGprsMessageBuffer()
 
             let dev = ui_inst.devices.getDeviceByID(id)
