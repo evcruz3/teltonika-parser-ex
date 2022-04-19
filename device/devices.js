@@ -16,18 +16,22 @@ class Devices{
         let d = new Device(ID, imei, socket);
         this.devices[ID] = d;
         this.id = ID + 1;
+        return ID
        }
        else{
         let d = new Device(this.id, imei, socket);
-        this.devices[this.id] = d;
+        let id = this.id
+        this.devices[id] = d;
         this.id = this.id + 1;
+
+        return id
        }
        
        
        //console.log("Success id assignment for connected device; id: " + this.id)
        //console.log("addDevice: Remote Address: " + this.devices[this.id].socket.remoteAddress + ":" + this.devices[this.id].socket.remotePort)
        
-       return id
+       
    }
 
    getDevices(){
