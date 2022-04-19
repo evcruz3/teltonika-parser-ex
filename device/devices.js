@@ -139,7 +139,7 @@ class Devices{
    
     printLatestGprs(id, socket=null){
         if(socket){
-            this.devices[id].printLatestGprs(c)
+            this.devices[id].printLatestGprs(socket)
         }
         else{
             this.devices[id].printLatestGprs()
