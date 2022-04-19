@@ -47,8 +47,14 @@ class Device{
       this.gprsRecords.push(gprsObj)
    }
 
-   printLatestGprs(){
-      console.log(this.gprsRecords[this.gprsRecords.length-1].message)
+   printLatestGprs(socket=null){
+      if(!socket){
+         socket.write(this.gprsRecords[this.gprsRecords.length-1].message)
+      }
+      else{
+         console.log(this.gprsRecords[this.gprsRecords.length-1].message)
+      }
+      
    }
 
    printAllAvl(){

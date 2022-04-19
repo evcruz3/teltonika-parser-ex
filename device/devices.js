@@ -108,7 +108,7 @@ class Devices{
         this.devices[id].isReady = status;
     }
 
-    printDevices(){
+    printDevices(socket = null){
         var table = []
         for (let [key, value] of Object.entries(this.devices)) {
             let id = key;
@@ -122,7 +122,11 @@ class Devices{
             })
             //console.log(`${id}\t${dev.imei}\t${dev.isReady}`);
         }
-        console.table(table);
+        if(!socket){
+            socket.write(table);
+        }else{
+            console.table(table);
+        }
    }
 
     pushAvlRecord(id, avlObj){
@@ -133,8 +137,14 @@ class Devices{
         this.devices[id].pushGprsRecord(gprsObj)
     }
    
-    printLatestGprs(id){
-        this.devices[id].printLatestGprs()
+    printLatestGprs(id, socket=null){
+        if(!socket){
+            this.devices[id].printLatestGprs(c)
+        }
+        else{
+            this.devices[id].printLatestGprs()
+        }
+        
     }
 
     printLatestAvl(id){
