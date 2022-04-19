@@ -11,13 +11,22 @@ class Devices{
        this.devices = []
    }
    
-   addDevice(imei, socket){
-       let d = new Device(this.id, imei, socket);
-       let id = this.id
-       this.devices[id] = d;
+   addDevice(imei, socket, ID = null){
+       if(ID != null){
+        let d = new Device(ID, imei, socket);
+        this.devices[ID] = d;
+        this.id = ID + 1;
+       }
+       else{
+        let d = new Device(this.id, imei, socket);
+        this.devices[this.id] = d;
+        this.id = this.id + 1;
+       }
+       
+       
        //console.log("Success id assignment for connected device; id: " + this.id)
        //console.log("addDevice: Remote Address: " + this.devices[this.id].socket.remoteAddress + ":" + this.devices[this.id].socket.remotePort)
-       this.id = this.id + 1;
+       
        return id
    }
 

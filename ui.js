@@ -13,6 +13,13 @@ const myRL = require("serverline")
 class UI{
     constructor (){
         this.devices = new Devices()
+        var devlist_path = ('./device/devlist.json')
+        var devlist_json = require(devlist_path)
+        
+        for (const [key, device] of Object.entries(devlist_json['devices'])) {
+            this.devices.addDevice(device.imei, null, device.id)
+            console.log("Device " + device.id + " loaded")
+        }
         let server = net.createServer((c) => {
             //console.log("client connected");
             //console.log(c)
@@ -52,6 +59,9 @@ class UI{
                     else{
                         id = this.devices.addDevice(parser.imei, c)
                         console.log("New device added; ID: " + id + "; IMEI: " + parser.imei)   
+                        devlist_json['devices'].push({"id":id,"imei":parser.imei});
+                        let stream = fs.createWriteStream(devlist_path, {flags:'w'});
+                        stream.write(JSON.stringify(devlist_json))
                     }
                     
                     //console.log("Received IMEI from device " + id);
