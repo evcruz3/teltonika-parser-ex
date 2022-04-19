@@ -119,7 +119,8 @@ class UI{
 
             c.on('data', (ui_message) => {
                 console.log("ui message: " + ui_message)
-                c.write("SAMPLE RESPONSE FROM LOGGER")
+                //c.write("SAMPLE RESPONSE FROM LOGGER")
+                _process_message(ui_message, c)
             });
         })
 
@@ -128,9 +129,54 @@ class UI{
         })
     }
 
+    _process_message(ui_message, c){
+        let user_input = ui_message.toString().trim()
+        let [ui_command, id, ...others] = user_input.split(" ");
+        let message = others.join(" ");
+
+        //console.log("Command: " + comm);
+        //console.log("ID: " + id);
+        //console.log("Message: " + message);
+
+        if (ui_command == "sendCommand"){
+            gprsCommandPacker = new GprsCommandPacker(message)
+            let outBuffer = gprsCommandPacker.getGprsMessageBuffer()
+
+            let dev = ui_inst.devices.getDeviceByID(id)
+
+            if (dev !== undefined){
+                if(dev.isReady){
+                    c.write("Sending '" + message + "' to device " + id + "...");
+                    ui_inst.devices.sendMessageToDevice(id, outBuffer);
+                }
+                else{
+                    c.write("Device " + id + " is currently disconnected")
+                }
+                
+            }
+            else{
+                c.write("Device " + id + " not found")
+            }
+        }
+        else if (ui_command == "listDevices"){
+            //console.log("TODO: list all devices here and their status")
+            ui_inst.devices.printDevices(c)
+        }
+        else if (ui_command == "printLatestGPRS"){
+            if(id){
+                ui_inst.devices.printLatestGprs(id, c)
+            }
+            else{
+                c.write("Please specify a device id")
+            }
+        }
+    }
+
 }
 
 ui_inst = new UI()
+
+
 
 //process.stdout.write("\x1Bc")
 //console.log(Array(process.stdout.rows + 1).join('\n'));
