@@ -120,7 +120,7 @@ class UI{
             c.on('data', (ui_message) => {
                 console.log("ui message: " + ui_message)
                 //c.write("SAMPLE RESPONSE FROM LOGGER")
-                _process_message(ui_message, c)
+                inst._process_message(ui_message, c)
             });
         })
 
@@ -130,6 +130,7 @@ class UI{
     }
 
     _process_message(ui_message, c){
+        let ui_inst = this
         let user_input = ui_message.toString().trim()
         let [ui_command, id, ...others] = user_input.split(" ");
         let message = others.join(" ");
