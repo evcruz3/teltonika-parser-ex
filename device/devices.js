@@ -123,7 +123,7 @@ class Devices{
             //console.log(`${id}\t${dev.imei}\t${dev.isReady}`);
         }
         if(!socket){
-            socket.write(table);
+            socket.write(JSON.stringify(table));
         }else{
             console.table(table);
         }
