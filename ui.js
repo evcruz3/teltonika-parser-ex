@@ -128,7 +128,7 @@ class UI{
                 //console.log("AVL Number of Data: " + avl.number_of_data);
                 //console.log("AVL Data timestamp: " + avl.records[0].timestamp)
                 for (var i = 0; i < avl.number_of_data; i++) {
-                    _printAvlRecord(avl.records, i);
+                    this._printAvlRecord(avl.records, i);
                 }
                 
                 //devices.pushAvlRecord(id, avl);
