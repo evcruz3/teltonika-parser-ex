@@ -54,7 +54,7 @@ class UI{
             }
             else if (ui_command == "displayLog"){
                 if(id in _inst.devices){
-                    _inst._displayLog(id)
+                    _inst._displayLog(id, _inst)
                 }
                 else{
                     console.log("Device not found / specified")
@@ -91,7 +91,7 @@ class UI{
 
     }
 
-    _displayLog(id){
+    _displayLog(id, _inst){
         //let devices = new Devices()
         //devices.addDevice(null, null, id)
         let filename = "dev"+id+"-log.txt"
@@ -128,7 +128,7 @@ class UI{
                 //console.log("AVL Number of Data: " + avl.number_of_data);
                 //console.log("AVL Data timestamp: " + avl.records[0].timestamp)
                 for (var i = 0; i < avl.number_of_data; i++) {
-                    _printAvlRecord(avl.records, i);
+                    _inst._printAvlRecord(avl.records, i);
                 }
                 
                 //devices.pushAvlRecord(id, avl);
