@@ -8,6 +8,7 @@ const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
 const myRL = require("serverline")
 require('log-timestamp')
+process.env.TZ = "Asia/Manila"
 
 class Logger{
     constructor (){
