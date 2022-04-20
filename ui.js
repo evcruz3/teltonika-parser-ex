@@ -114,6 +114,7 @@ class UI{
                 
 
                 console.log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
+                console.log()
                 //devices.pushGprsRecord(id, gprs);
             }
             else if(header.codec_id == 142){
@@ -130,7 +131,7 @@ class UI{
                 for (var i = 0; i < avl.number_of_data; i++) {
                     _inst._printAvlRecord(avl.records, i);
                 }
-                
+                console.log()
                 //devices.pushAvlRecord(id, avl);
                 //let writer = new binutils.BinaryWriter();
                 //writer.WriteInt32(avl.number_of_data);
@@ -153,19 +154,17 @@ class UI{
         }
         //console.log("GPS: " + avlRecord.gps)
         console.log("Event ID: " + avlRecord.event_id)
-        if(avlRecord.event_id != 385){
-            console.log("Properties Count " + avlRecord.properties_count)
-            for (const [key, element] of Object.entries(avlRecord.ioElements)) {
-                for (const [property, val] of Object.entries(element)) {
-                console.log(`IO Element ${key} ${property}: ${val}`);
-                if (property == "value"){
-                    for (const [prop, v] of Object.entries(val)) {
-                        console.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
-                    }
+        console.log("Properties Count " + avlRecord.properties_count)
+        for (const [key, element] of Object.entries(avlRecord.ioElements)) {
+            for (const [property, val] of Object.entries(element)) {
+            console.log(`IO Element ${key} ${property}: ${val}`);
+            if (property == "value"){
+                for (const [prop, v] of Object.entries(val)) {
+                    console.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
                 }
-                }
-                //console.log(`IO Element ${key}: ${value}`);
             }
+            }
+            //console.log(`IO Element ${key}: ${value}`);
         }
     }
 
