@@ -174,6 +174,14 @@ class Logger{
         else if (ui_command == "listDevices"){
             inst.devices.printDevices(c)
         }
+        else if(ui_command == 'printLatestAVL'){
+            if(id){
+                inst.devices.printLatestAVL(id, c)
+            }
+            else{
+                c.write("Please specify a device id")
+            }
+        }
         else if (ui_command == "printLatestGPRS"){
             if(id){
                 inst.devices.printLatestGprs(id, c)
