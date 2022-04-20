@@ -13,15 +13,7 @@ const myRL = require("serverline")
 class UI{
     constructor (){
         //this.devices = new Devices()
-
-        var devlist_path = ('./device/devlist.json')
-        var devlist_json = require(devlist_path)
-        this.devices = {}
         var _inst = this
-
-        for (const [key, device] of Object.entries(devlist_json['devices'])) {
-            this.devices[device.id] = device.imei
-        }
 
         process.stdout.write("\x1Bc")
         console.log(Array(process.stdout.rows + 1).join('\n'));
@@ -29,6 +21,14 @@ class UI{
         myRL.init()
         myRL.setCompletion(['sendCommand', 'listDevices', 'printLatestGPRS', 'printLatestAVL']);
         myRL.on('line', function(d) {
+            let devlist_path = ('./device/devlist.json')
+            let devlist_json = require(devlist_path)
+            let devices = {}
+            
+
+            for (const [key, device] of Object.entries(devlist_json['devices'])) {
+                devices[device.id] = device.imei
+            }
 
             let user_input = d.toString().trim()
             //console.log("you entered: [" +    user_input + "]");
@@ -53,7 +53,7 @@ class UI{
                 _inst.client.write(d)
             }
             else if (ui_command == "displayLog"){
-                if(id in _inst.devices){
+                if(id in devices){
                     _inst._displayLog(id, _inst)
                 }
                 else{
@@ -63,11 +63,6 @@ class UI{
             
             
         });
-
-
-        //var id = this.devices.addDevice("dev0", null)
-        //var _self = this
-        
 
         this.client = new net.Socket();
 
@@ -109,10 +104,10 @@ class UI{
             //console.log("CODEC: " + header.codec_id);
 
             if(header.codec_id == 12){
-                console.log("Received GPRS message from device  " + id)
+                //console.log("Received GPRS message from device  " + id)
                 let gprs = parser.getGprs()
                 
-
+                console.log("GPRS DATA")
                 console.log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
                 console.log()
                 //devices.pushGprsRecord(id, gprs);
@@ -120,26 +115,12 @@ class UI{
             else if(header.codec_id == 142){
                 let avl = parser.getAvl()
 
-                console.log("Received AVL data from device " + id);
-                //let stream = fs.createWriteStream("dev"+id+"-log.txt", {flags:'a'});
-                //stream.write(data.toString("hex")+"\n");
-                //console.log("AVL Zero: " + avl.zero);
-                console.log("AVL Data Length: " + avl.data_length);
-                //console.log("AVL Codec ID: " + avl.codec_id);
-                //console.log("AVL Number of Data: " + avl.number_of_data);
-                //console.log("AVL Data timestamp: " + avl.records[0].timestamp)
+                console.log("AVL DATA")
                 for (var i = 0; i < avl.number_of_data; i++) {
                     _inst._printAvlRecord(avl.records, i);
                 }
                 console.log()
-                //devices.pushAvlRecord(id, avl);
-                //let writer = new binutils.BinaryWriter();
-                //writer.WriteInt32(avl.number_of_data);
-
-                // response = writer.ByteBuffer;
-                //c.write(response);
             }
-                    //console.log('Line from file:', line);
         });
     }
 

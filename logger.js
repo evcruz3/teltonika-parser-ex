@@ -33,14 +33,6 @@ class Logger{
             console.log("Device " + device.id + " loaded")
         }
         let server = net.createServer((c) => {
-            //console.log("client connected");
-            //console.log(c)
-            //let id = this.devices.addDevice(c);
-            //console.log("New device connected")
-            //console.log("ID: " + id)
-            //console.log("IP: " + c.remoteAddress + ":" + c.remotePort)
-
-            //c.id = id++; 
             c.on('end', () => {
                 let id = this.devices.getDeviceBySocket(c).id
                 console.log("Device " + id + " disconnected");
@@ -50,12 +42,6 @@ class Logger{
             });
         
             c.on('data', (data) => {
-                //console.log("Received: " + data.toString("hex"));
-                //console.log("Received data from Address: " + c.remoteAddress + ":" + c.remotePort);
-                
-                //console.log("From Device " + id);
-                //console.log(c)
-
                 
                 let buffer = data;
                 let parser = new Parser(buffer);
@@ -102,12 +88,6 @@ class Logger{
                         console.log("Received AVL data from device " + id);
                         let stream = fs.createWriteStream("dev"+id+"-log.txt", {flags:'a'});
                         stream.write(data.toString("hex")+"\n");
-                        //console.log("AVL Zero: " + avl.zero);
-                        //console.log("AVL Data Length: " + avl.data_length);
-                        //console.log("AVL Codec ID: " + avl.codec_id);
-                        //console.log("AVL Number of Data: " + avl.number_of_data);
-                        //console.log("AVL Data[0] timestamp: " + avl.records[0].timestamp)
-                        //this.devices.pushAvlRecord(id, avl);
                         let writer = new binutils.BinaryWriter();
                         writer.WriteInt32(avl.number_of_data);
         
@@ -146,6 +126,8 @@ class Logger{
         let user_input = ui_message.toString().trim()
         let [ui_command, id, ...others] = user_input.split(" ");
         let message = others.join(" ");
+
+        
 
         //console.log("Command: " + comm);
         //console.log("ID: " + id);
