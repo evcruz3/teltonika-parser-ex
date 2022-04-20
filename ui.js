@@ -64,6 +64,7 @@ class UI{
             
         });
 
+        // Port 49365 for sending ui commands to logger module
         this.client = new net.Socket();
 
         this.client.connect(49365, 'localhost', () => {
@@ -78,11 +79,30 @@ class UI{
         });  
         // Add a 'close' event handler for the client socket 
         this.client.on('close', () => { 
-            console.log('Client closed'); 
+            console.log('logger closed'); 
         });  
         this.client.on('error', (err) => { 
             console.error(err); 
         }); 
+
+        // Port 49364 for receiving forwarded GPRS response by the logger module
+        let commandReceiver = net.createServer((c) => {
+            c.on("end", () => {
+                console.log("logger disconnected")
+            });
+
+            c.on('data', (logger_message) => {
+                console.log("GPRS Response: " + logger_message)
+                //c.write("SAMPLE RESPONSE FROM LOGGER")
+                inst._process_message(ui_message, c, inst)
+            });
+        })
+
+        commandReceiver.listen(49364, () => {
+            console.log("GPRS listening port is up")
+        })
+
+
 
     }
 

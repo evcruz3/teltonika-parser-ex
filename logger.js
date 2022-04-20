@@ -78,8 +78,9 @@ class Logger{
                         console.log("Received GPRS message from device  " + id)
                         let gprs = parser.getGprs()
                         
-
+                        
                         console.log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
+                        send_to_ui(inst, id, gprs)
                         //this.devices.pushGprsRecord(id, gprs);
                     }
                     else if(header.codec_id == 142){
@@ -119,8 +120,32 @@ class Logger{
         commandReceiver.listen(49365, () => {
             console.log("Waiting for command from ui...")
         })
+
+        // For sending GPRS responses to ui
+        this.client = new net.Socket();
+
+        this.client.connect(49364, 'localhost', () => {
+            console.log("Created a connection to ui node")
+        })
+
+        this.client.on('data', (data) => {     
+            console.log(`Client received: ${data}`); 
+            if (data.toString().endsWith('exit')) { 
+                client.destroy(); 
+            } 
+        });  
+        // Add a 'close' event handler for the client socket 
+        this.client.on('close', () => { 
+            console.log('logger closed'); 
+        });  
+        this.client.on('error', (err) => { 
+            console.error(err); 
+        }); 
     }
 
+    send_to_ui(inst, id, gprs){
+        inst.client.write("From dev " + id + "\nType: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
+    }
     _process_message(ui_message, c, inst){
         //let inst = this
         let user_input = ui_message.toString().trim()
