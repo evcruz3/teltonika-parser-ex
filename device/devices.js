@@ -11,14 +11,27 @@ class Devices{
        this.devices = []
    }
    
-   addDevice(imei, socket){
-       let d = new Device(this.id, imei, socket);
-       let id = this.id
-       this.devices[id] = d;
+   addDevice(imei, socket, ID = null){
+       if(ID != null){
+        let d = new Device(ID, imei, socket);
+        this.devices[ID] = d;
+        this.id = ID + 1;
+        return ID
+       }
+       else{
+        let d = new Device(this.id, imei, socket);
+        let id = this.id
+        this.devices[id] = d;
+        this.id = this.id + 1;
+
+        return id
+       }
+       
+       
        //console.log("Success id assignment for connected device; id: " + this.id)
        //console.log("addDevice: Remote Address: " + this.devices[this.id].socket.remoteAddress + ":" + this.devices[this.id].socket.remotePort)
-       this.id = this.id + 1;
-       return id
+       
+       
    }
 
    getDevices(){
@@ -31,7 +44,7 @@ class Devices{
 
    getDeviceBySocket(socket){
        let id = this.devices.findIndex( (o) => { 
-           if (o !== undefined){
+           if (o !== undefined && socket !== undefined){
                 return (o.socket.remoteAddress===socket.remoteAddress) && (o.socket.remotePort === socket.remotePort);
            }
            else{
@@ -95,7 +108,7 @@ class Devices{
         this.devices[id].isReady = status;
     }
 
-    printDevices(){
+    printDevices(socket = null){
         var table = []
         for (let [key, value] of Object.entries(this.devices)) {
             let id = key;
@@ -109,7 +122,11 @@ class Devices{
             })
             //console.log(`${id}\t${dev.imei}\t${dev.isReady}`);
         }
-        console.table(table);
+        if(socket){
+            socket.write(JSON.stringify(table));
+        }else{
+            console.table(table);
+        }
    }
 
     pushAvlRecord(id, avlObj){
@@ -120,12 +137,18 @@ class Devices{
         this.devices[id].pushGprsRecord(gprsObj)
     }
    
-    printLatestGprs(id){
-        this.devices[id].printLatestGprs()
+    printLatestGprs(id, socket=null){
+        if(socket){
+            this.devices[id].printLatestGprs(socket)
+        }
+        else{
+            this.devices[id].printLatestGprs()
+        }
+        
     }
 
-    printLatestAvl(id){
-        this.devices[id].printLatestAvl()
+    printLatestAvl(id, socket = null){
+        this.devices[id].printLatestAvl(socket)
     }
 
     printAllAvl(id){

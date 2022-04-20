@@ -12,158 +12,170 @@ const myRL = require("serverline")
 
 class UI{
     constructor (){
-        this.devices = new Devices()
-        let server = net.createServer((c) => {
-            //console.log("client connected");
-            //console.log(c)
-            //let id = this.devices.addDevice(c);
-            //console.log("New device connected")
-            //console.log("ID: " + id)
-            //console.log("IP: " + c.remoteAddress + ":" + c.remotePort)
+        //this.devices = new Devices()
+        var _inst = this
 
-            //c.id = id++; 
-            c.on('end', () => {
-                let id = this.devices.getDeviceBySocket(c).id
-                console.log("Device " + id + " disconnected");
-                this.devices.setDeviceReady(id, false);
-                //this.devices.removeDeviceBySocket(c);
-                //clients
-            });
-        
-            c.on('data', (data) => {
-                //console.log("Received: " + data.toString("hex"));
-                //console.log("Received data from Address: " + c.remoteAddress + ":" + c.remotePort);
-                
-                //console.log("From Device " + id);
-                //console.log(c)
+        process.stdout.write("\x1Bc")
+        console.log(Array(process.stdout.rows + 1).join('\n'));
 
-                
-                let buffer = data;
-                let parser = new Parser(buffer);
-                if(parser.isImei){
-                    let id = -1
-                    let dev = this.devices.getDeviceByImei(parser.imei)
-                    if (dev){
-                        dev.updateSocket(c)
-                        id = dev.id
-                        this.devices[id] = dev
-                        console.log("Device " + id + " reconnected")
-                    }
-                    else{
-                        id = this.devices.addDevice(parser.imei, c)
-                        console.log("New device added; ID: " + id + "; IMEI: " + parser.imei)   
-                    }
-                    
-                    //console.log("Received IMEI from device " + id);
-                    c.write(Buffer.alloc(1,1));
-                   
-                    this.devices.setDeviceReady(id)
-                    console.log("Device " + id + " is ready for communication") 
+        myRL.init()
+        myRL.setCompletion(['sendCommand', 'listDevices', 'printLatestGPRS', 'printLatestAVL']);
+        myRL.on('line', function(d) {
+            let devlist_path = ('./device/devlist.json')
+            let devlist_json = require(devlist_path)
+            let devices = {}
+            
+
+            for (const [key, device] of Object.entries(devlist_json['devices'])) {
+                devices[device.id] = device.imei
+            }
+
+            let user_input = d.toString().trim()
+            //console.log("you entered: [" +    user_input + "]");
+            let [ui_command, id, ...others] = user_input.split(" ");
+            let message = others.join(" ");
+
+            //console.log("Command: " + comm);
+            //console.log("ID: " + id);
+            //console.log("Message: " + message);
+
+            if (ui_command == "sendCommand"){
+                _inst.client.write(d)
+            }
+            else if (ui_command == "listDevices"){
+                //console.log("TODO: list all devices here and their status")
+                _inst.client.write(d)
+            }
+            else if (ui_command == "printLatestGPRS"){
+                _inst.client.write(d)
+            }
+            else if (ui_command == "printLatestAVL"){
+                _inst.client.write(d)
+            }
+            else if (ui_command == "displayLog"){
+                if(id in devices){
+                    _inst._displayLog(id, _inst)
                 }
-                else {
-                    let device = this.devices.getDeviceBySocket(c)
-                    let id = device.id
-                    let header = parser.getHeader();
-                    //console.log("CODEC: " + header.codec_id);
-        
-                    if(header.codec_id == 12){
-                        console.log("Received GPRS message from device  " + id)
-                        let gprs = parser.getGprs()
-                        
-
-                        console.log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
-                        this.devices.pushGprsRecord(id, gprs);
-                    }
-                    else if(header.codec_id == 142){
-                        let avl = parser.getAvl()
-
-                        console.log("Received AVL data from device " + id);
-                        let stream = fs.createWriteStream("dev"+id+"-log.txt", {flags:'a'});
-                        stream.write(data.toString("hex")+"\n");
-                        //console.log("AVL Zero: " + avl.zero);
-                        //console.log("AVL Data Length: " + avl.data_length);
-                        //console.log("AVL Codec ID: " + avl.codec_id);
-                        //console.log("AVL Number of Data: " + avl.number_of_data);
-                        //console.log("AVL Data[0] timestamp: " + avl.records[0].timestamp)
-                        this.devices.pushAvlRecord(id, avl);
-                        let writer = new binutils.BinaryWriter();
-                        writer.WriteInt32(avl.number_of_data);
-        
-                        let response = writer.ByteBuffer;
-                        c.write(response);
-                    }
-                        
+                else{
+                    console.log("Device not found / specified")
                 }
-            });
-        });
-        
-        
-        server.listen(49366, () => {
-            console.log("Server started");
+            }
+            
+            
         });
 
+        // Port 49365 for sending ui commands to logger module
+        this.client = new net.Socket();
+
+        this.client.connect(49365, 'localhost', () => {
+            console.log("Created a connection to ui node")
+        })
+
+        this.client.on('data', (data) => {     
+            console.log(`Client received: ${data}`); 
+            if (data.toString().endsWith('exit')) { 
+                client.destroy(); 
+            } 
+        });  
+        // Add a 'close' event handler for the client socket 
+        this.client.on('close', () => { 
+            console.log('logger closed'); 
+        });  
+        this.client.on('error', (err) => { 
+            console.error(err); 
+        }); 
+
+        // Port 49364 for receiving forwarded GPRS response by the logger module
+        let commandReceiver = net.createServer((c) => {
+            c.on("end", () => {
+                console.log("Logger disconnected")
+            });
+
+            c.on('data', (logger_message) => {
+                console.log("GPRS Response: " + logger_message)
+                //c.write("SAMPLE RESPONSE FROM LOGGER")
+                //inst._process_message(ui_message, c, inst)
+            });
+        })
+
+        commandReceiver.listen(49364, () => {
+            console.log("GPRS listening port is up")
+        })
+
+
+
+    }
+
+    _displayLog(id, _inst){
+        //let devices = new Devices()
+        //devices.addDevice(null, null, id)
+        let filename = "dev"+id+"-log.txt"
+        var lineReader = require('readline').createInterface({
+            input: require('fs').createReadStream(filename)
+          });
+          
+          lineReader.on('line', function (data) {
+            let buffer = Buffer.from(data, "hex");
+            let parser = new Parser(buffer);
+            //let device = this.devices.getDeviceBySocket(c)
+            //let id = device.id
+            //let id = 1
+            let header = parser.getHeader();
+            //console.log("CODEC: " + header.codec_id);
+
+            if(header.codec_id == 12){
+                //console.log("Received GPRS message from device  " + id)
+                let gprs = parser.getGprs()
+                
+                console.log("GPRS DATA")
+                console.log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
+                console.log()
+                //devices.pushGprsRecord(id, gprs);
+            }
+            else if(header.codec_id == 142){
+                let avl = parser.getAvl()
+
+                console.log("AVL DATA")
+                for (var i = 0; i < avl.number_of_data; i++) {
+                    _inst._printAvlRecord(avl.records, i);
+                }
+                console.log()
+            }
+        });
+    }
+
+    _printAvlRecord(avlRecords, index){
+        let avlRecord = avlRecords[index]
+  
+        //console.log("KEYS: " + Object.keys(avlRecord))
+        console.log("Timestamp: " + avlRecord.timestamp)
+        console.log("Priority: " + avlRecord.priority)
+        for (const [key, value] of Object.entries(avlRecord.gps)) {
+            console.log(`GPS ${key}: ${value}`);
+        }
+        //console.log("GPS: " + avlRecord.gps)
+        console.log("Event ID: " + avlRecord.event_id)
+        console.log("Properties Count " + avlRecord.properties_count)
+        for (const [key, element] of Object.entries(avlRecord.ioElements)) {
+            for (const [property, val] of Object.entries(element)) {
+            if (val){
+                console.log(`IO Element ${key} ${property}: ${val}`);
+            }
+            if (property == "value"){
+                for (const [prop, v] of Object.entries(val)) {
+                    console.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
+                }
+            }
+            }
+            //console.log(`IO Element ${key}: ${value}`);
+        }
     }
 
 }
 
 ui_inst = new UI()
+
 //var stdin = process.openStdin();
-//process.stdout.write("\x1Bc")
-//console.log(Array(process.stdout.rows + 1).join('\n'));
 
-//myRL.init()
-//myRL.setCompletion(['sendCommand', 'listDevices', 'printLatestGPRS']);
-//myRL.on('line', function(d) {
-//     let user_input = d.toString().trim()
-//     //console.log("you entered: [" +    user_input + "]");
-//     let [ui_command, id, ...others] = user_input.split(" ");
-//     let message = others.join(" ");
-
-//     //console.log("Command: " + comm);
-//     //console.log("ID: " + id);
-//     //console.log("Message: " + message);
-
-//     if (ui_command == "sendCommand"){
-//         gprsCommandPacker = new GprsCommandPacker(message)
-//         let outBuffer = gprsCommandPacker.getGprsMessageBuffer()
-
-//         let dev = ui_inst.devices.getDeviceByID(id)
-
-//         if (dev !== undefined){
-//             if(dev.isReady){
-//                 console.log("Sending '" + message + "' to device " + id + "...");
-//                 ui_inst.devices.sendMessageToDevice(id, outBuffer);
-//             }
-//             else{
-//                 console.log("Device " + id + " is currently disconnected")
-//             }
-            
-//         }
-//         else{
-//             console.log("Device " + id + " not found")
-//         }
-//     }
-//     else if (ui_command == "listDevices"){
-//         //console.log("TODO: list all devices here and their status")
-//         ui_inst.devices.printDevices()
-//     }
-//     else if (ui_command == "printLatestGPRS"){
-//         if(id){
-//             ui_inst.devices.printLatestGprs(id)
-//         }
-//         else{
-//             console.log("Please specify a device id")
-//         }
-//     }
-    
-    
-    
-// });
-// stdin.addListener("data", function(d) {
-//     // note:  d is an object, and when converted to a string it will
-//     // end with a linefeed.  so we (rather crudely) account for that  
-//     // with toString() and then trim() 
-    
-// });
 
 

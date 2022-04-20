@@ -47,8 +47,15 @@ class Device{
       this.gprsRecords.push(gprsObj)
    }
 
-   printLatestGprs(){
-      console.log(this.gprsRecords[this.gprsRecords.length-1].message)
+   printLatestGprs(socket=null){
+      if(this.gprsRecords.length > 0){
+         if(socket){
+            socket.write(this.gprsRecords[this.gprsRecords.length-1].message)
+         }
+         else{
+            console.log(this.gprsRecords[this.gprsRecords.length-1].message)
+         }
+      } 
    }
 
    printAllAvl(){
@@ -65,42 +72,77 @@ class Device{
       }
    }
 
-   printLatestAvl(){
+   printLatestAvl(socket = null){
       let latest_id = this.avlRecords.length - 1
       let latest_record = this.avlRecords[latest_id]
       //console.log("KEYS: " + Object.keys(latest_record))
       //console.log("Length: " + latest_record.data_length)
-      console.log("Number of Data: " + latest_record.number_of_data)
-      for (var i = 0; i < latest_record.number_of_data; i++) {
-         this._printAvlRecord(latest_record.records, i);
-       }
+      if(socket){
+         socket.write("Number of Data: " + latest_record.number_of_data)
+         for (var i = 0; i < latest_record.number_of_data; i++) {
+            this._printAvlRecord(latest_record.records, i, socket);
+         }
+      }
+      else{
+         console.log("Number of Data: " + latest_record.number_of_data)
+         for (var i = 0; i < latest_record.number_of_data; i++) {
+            this._printAvlRecord(latest_record.records, i);
+         }
+      }
+      
    }
 
-   _printAvlRecord(avlRecords, index){
+   _printAvlRecord(avlRecords, index, socket=null){
       let avlRecord = avlRecords[index]
 
       //console.log("KEYS: " + Object.keys(avlRecord))
-      console.log("Timestamp: " + avlRecord.timestamp)
-      console.log("Priority: " + avlRecord.priority)
-      for (const [key, value] of Object.entries(avlRecord.gps)) {
-         console.log(`GPS ${key}: ${value}`);
-      }
-      //console.log("GPS: " + avlRecord.gps)
-      console.log("Event ID: " + avlRecord.event_id)
-      if(avlRecord.event_id != 385){
-         console.log("Properties Count " + avlRecord.properties_count)
-         for (const [key, element] of Object.entries(avlRecord.ioElements)) {
-            for (const [property, val] of Object.entries(element)) {
-               console.log(`IO Element ${key} ${property}: ${val}`);
-               if (property == "value"){
-                  for (const [prop, v] of Object.entries(val)) {
-                     console.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
+      if(socket){
+         socket.write("Timestamp: " + avlRecord.timestamp)
+         socket.write("Priority: " + avlRecord.priority)
+         for (const [key, value] of Object.entries(avlRecord.gps)) {
+            socket.write(`GPS ${key}: ${value}`);
+         }
+         //console.log("GPS: " + avlRecord.gps)
+         socket.write("Event ID: " + avlRecord.event_id)
+         if(avlRecord.event_id != 385){
+            socket.write("Properties Count " + avlRecord.properties_count)
+            for (const [key, element] of Object.entries(avlRecord.ioElements)) {
+               for (const [property, val] of Object.entries(element)) {
+                  socket.write(`IO Element ${key} ${property}: ${val}`);
+                  if (property == "value"){
+                     for (const [prop, v] of Object.entries(val)) {
+                        socket.write(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
+                     }
                   }
                }
+               //console.log(`IO Element ${key}: ${value}`);
             }
-            //console.log(`IO Element ${key}: ${value}`);
          }
       }
+      else{
+         console.log("Timestamp: " + avlRecord.timestamp)
+         console.log("Priority: " + avlRecord.priority)
+         for (const [key, value] of Object.entries(avlRecord.gps)) {
+            console.log(`GPS ${key}: ${value}`);
+         }
+         //console.log("GPS: " + avlRecord.gps)
+         console.log("Event ID: " + avlRecord.event_id)
+         if(avlRecord.event_id != 385){
+            console.log("Properties Count " + avlRecord.properties_count)
+            for (const [key, element] of Object.entries(avlRecord.ioElements)) {
+               for (const [property, val] of Object.entries(element)) {
+                  console.log(`IO Element ${key} ${property}: ${val}`);
+                  if (property == "value"){
+                     for (const [prop, v] of Object.entries(val)) {
+                        console.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
+                     }
+                  }
+               }
+               //console.log(`IO Element ${key}: ${value}`);
+            }
+         }
+      }
+      
       
 
 
