@@ -147,8 +147,8 @@ class Devices{
         
     }
 
-    printLatestAvl(id){
-        this.devices[id].printLatestAvl()
+    printLatestAvl(id, socket = null){
+        this.devices[id].printLatestAvl(socket)
     }
 
     printAllAvl(id){

@@ -88,7 +88,7 @@ process.stdout.write("\x1Bc")
 console.log(Array(process.stdout.rows + 1).join('\n'));
 
 myRL.init()
-myRL.setCompletion(['sendCommand', 'listDevices', 'printLatestGPRS']);
+myRL.setCompletion(['sendCommand', 'listDevices', 'printLatestGPRS', 'printLatestAVL']);
 myRL.on('line', function(d) {
 
      let user_input = d.toString().trim()
