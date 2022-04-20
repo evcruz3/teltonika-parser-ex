@@ -176,7 +176,7 @@ class Logger{
         }
         else if(ui_command == 'printLatestAVL'){
             if(id){
-                inst.devices.printLatestAVL(id, c)
+                inst.devices.printLatestAvl(id, c)
             }
             else{
                 c.write("Please specify a device id")
