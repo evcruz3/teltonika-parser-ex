@@ -8,12 +8,12 @@ const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
 const myRL = require("serverline")
 //require('log-timestamp')
-process.env.TZ = "Asia/Manila"
+//process.env.TZ = "Asia/Manila"
 
 const originalConsoleLog = console.log;
 console.log = function() {
     args = [];
-    args.push( '[' + (new Date().toISOString()) + '] ' );
+    args.push( '[' + (new Date().toUTCString()) + '] ' );
     // Note: arguments is part of the prototype
     for( var i = 0; i < arguments.length; i++ ) {
         args.push( arguments[i] );
