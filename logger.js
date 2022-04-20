@@ -80,7 +80,7 @@ class Logger{
                         
                         
                         console.log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
-                        send_to_ui(inst, id, gprs)
+                        inst.send_to_ui(inst, id, gprs)
                         //this.devices.pushGprsRecord(id, gprs);
                     }
                     else if(header.codec_id == 142){
