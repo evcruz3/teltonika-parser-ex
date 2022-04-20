@@ -124,19 +124,19 @@ class Logger{
         // For sending GPRS responses to ui
         this.client = new net.Socket();
 
-        this.client.connect(49364, 'localhost', () => {
+        this.client.connect(49363, 'localhost', () => {
             console.log("Created a connection to ui node")
         })
 
         this.client.on('data', (data) => {     
-            console.log(`Client received: ${data}`); 
+            console.log(`Logger received: ${data}`); 
             if (data.toString().endsWith('exit')) { 
                 client.destroy(); 
             } 
         });  
         // Add a 'close' event handler for the client socket 
         this.client.on('close', () => { 
-            console.log('logger closed'); 
+            console.log('UI closed'); 
         });  
         this.client.on('error', (err) => { 
             console.error(err); 
