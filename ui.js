@@ -138,7 +138,9 @@ class UI{
         console.log("Properties Count " + avlRecord.properties_count)
         for (const [key, element] of Object.entries(avlRecord.ioElements)) {
             for (const [property, val] of Object.entries(element)) {
-            console.log(`IO Element ${key} ${property}: ${val}`);
+            if (val){
+                console.log(`IO Element ${key} ${property}: ${val}`);
+            }
             if (property == "value"){
                 for (const [prop, v] of Object.entries(val)) {
                     console.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
