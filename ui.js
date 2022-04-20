@@ -53,7 +53,7 @@ class UI{
                 _inst.client.write(d)
             }
             else if (ui_command == "displayLog"){
-                if(_inst.devices.indexOf(id) > -1){
+                if(id in _inst.devices){
                     _displayLog(id)
                 }
                 else{
