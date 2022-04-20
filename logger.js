@@ -146,7 +146,7 @@ class Logger{
             console.error(err); 
         }); 
         client.write("From dev " + id + "\nType: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
-        
+        client.destroy()
     }
     _process_message(ui_message, c, inst){
         //let inst = this
