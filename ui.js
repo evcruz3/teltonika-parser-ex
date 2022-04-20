@@ -88,7 +88,7 @@ class UI{
         // Port 49364 for receiving forwarded GPRS response by the logger module
         let commandReceiver = net.createServer((c) => {
             c.on("end", () => {
-                console.log("logger disconnected")
+                console.log("Logger disconnected")
             });
 
             c.on('data', (logger_message) => {

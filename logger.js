@@ -122,29 +122,31 @@ class Logger{
         })
 
         // For sending GPRS responses to ui
-        this.client = new net.Socket();
+        
+    }
 
-        this.client.connect(49363, 'localhost', () => {
+    send_to_ui(inst, id, gprs){
+        let client = new net.Socket();
+
+        client.connect(49364, 'localhost', () => {
             console.log("Created a connection to ui node")
         })
 
-        this.client.on('data', (data) => {     
+        client.on('data', (data) => {     
             console.log(`Logger received: ${data}`); 
             if (data.toString().endsWith('exit')) { 
                 client.destroy(); 
             } 
         });  
         // Add a 'close' event handler for the client socket 
-        this.client.on('close', () => { 
+        client.on('close', () => { 
             console.log('UI closed'); 
         });  
-        this.client.on('error', (err) => { 
+        client.on('error', (err) => { 
             console.error(err); 
         }); 
-    }
-
-    send_to_ui(inst, id, gprs){
-        inst.client.write("From dev " + id + "\nType: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
+        client.write("From dev " + id + "\nType: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
+        client.destroy()
     }
     _process_message(ui_message, c, inst){
         //let inst = this
