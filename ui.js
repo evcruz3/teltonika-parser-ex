@@ -94,7 +94,7 @@ class UI{
             c.on('data', (logger_message) => {
                 console.log("GPRS Response: " + logger_message)
                 //c.write("SAMPLE RESPONSE FROM LOGGER")
-                inst._process_message(ui_message, c, inst)
+                //inst._process_message(ui_message, c, inst)
             });
         })
 
