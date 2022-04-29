@@ -109,24 +109,25 @@ class Codec8e extends Codec {
     this.avlObj.records.push(avlRecord);
   }
 
-  async reverseGeocode(gps){
+  reverseGeocode(gps){
     const options = {
-      provider: 'openstreetmap',
+      provider: 'google',
     
       // Optional depending on the providers
       //fetch: customFetchImplementation,
       //apiKey: 'YOUR_API_KEY', // for Mapquest, OpenCage, Google Premier
-      formatter: null // 'gpx', 'string', ...
+      //formatter: null // 'gpx', 'string', ...
     };
 
     const geocoder = NodeGeocoder(options);
 
-    try{
-      const res = await geocoder.reverse({ lat: gps.latitude, lon: gps.longitude });
-      return res
-    } catch (err){
+    geoCoder.reverse({lat:gps.latitude, lon:gps.longitude})
+    .then((res)=> {
+      return res;
+    })
+    .catch((err)=> {
       console.log(err);
-    }
+    });
     
   }
 
