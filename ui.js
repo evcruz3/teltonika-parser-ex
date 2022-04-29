@@ -112,18 +112,18 @@ class UI{
         let filename = "dev"+id+"-log.txt"
 
         if(n && n>0){
-            let lineReader = require('readline').createInterface({
-                input: require('fs').createReadStream(filename)
-              });
-              
-              lineReader.on('line', parseline);
-        }
-        else{
             let lineReader = require('read-last-lines')
             // lineReader.read(filename, n).then((lines) => lines.forEach(element => {
             //     this._parseLine(element);
             // }))
             lineReader.read(filename, n).then((lines) => console.log(lines))
+        }
+        else{
+            let lineReader = require('readline').createInterface({
+                input: require('fs').createReadStream(filename)
+              });
+              
+              lineReader.on('line', this._parseline);
         }
     }
 
