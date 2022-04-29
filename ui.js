@@ -152,6 +152,7 @@ class UI{
         console.log("Priority: " + avlRecord.priority)
         for (const [key, value] of Object.entries(avlRecord.gps)) {
             if (key == "valueHuman"){
+                console.log(`GPS ${key}: ${value}`);
                 for (const [property, val] of Object.entries(value)) {
                     console.log(`GPS ${key} ${value} ${property} : ${val}`);
                 }
@@ -165,14 +166,14 @@ class UI{
         console.log("Properties Count " + avlRecord.properties_count)
         for (const [key, element] of Object.entries(avlRecord.ioElements)) {
             for (const [property, val] of Object.entries(element)) {
-            if (val){
-                console.log(`IO Element ${key} ${property}: ${val}`);
-            }
-            if (property == "value"){
-                for (const [prop, v] of Object.entries(val)) {
-                    console.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
+                if (val){
+                    console.log(`IO Element ${key} ${property}: ${val}`);
                 }
-            }
+                if (property == "value"){
+                    for (const [prop, v] of Object.entries(val)) {
+                        console.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
+                    }
+                }
             }
             //console.log(`IO Element ${key}: ${value}`);
         }
