@@ -123,7 +123,7 @@ class UI{
                 input: require('fs').createReadStream(filename)
               });
               
-              lineReader.on('line', this._parseline);
+              lineReader.on('line', this._parseline(data));
         }
     }
 
