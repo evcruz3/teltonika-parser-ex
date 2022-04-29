@@ -19,7 +19,7 @@ class UI{
         console.log(Array(process.stdout.rows + 1).join('\n'));
 
         myRL.init()
-        myRL.setCompletion(['sendCommand', 'listDevices', 'printLatestGPRS', 'printLatestAVL']);
+        myRL.setCompletion(['sendCommand', 'listDevices']);
         myRL.on('line', function(d) {
             let devlist_path = ('./device/devlist.json')
             let devlist_json = require(devlist_path)
@@ -46,15 +46,9 @@ class UI{
                 //console.log("TODO: list all devices here and their status")
                 _inst.client.write(d)
             }
-            else if (ui_command == "printLatestGPRS"){
-                _inst.client.write(d)
-            }
-            else if (ui_command == "printLatestAVL"){
-                _inst.client.write(d)
-            }
             else if (ui_command == "displayLog"){
                 if(id in devices){
-                    _inst._displayLog(id, _inst)
+                    _inst._displayLog(id, _inst, others[0])
                 }
                 else{
                     console.log("Device not found / specified")
@@ -106,42 +100,41 @@ class UI{
 
     }
 
-    _displayLog(id, _inst){
+    _displayLog(id, _inst, n=-1){
         //let devices = new Devices()
         //devices.addDevice(null, null, id)
         let filename = "dev"+id+"-log.txt"
-        var lineReader = require('readline').createInterface({
-            input: require('fs').createReadStream(filename)
-          });
-          
-          lineReader.on('line', function (data) {
-            let buffer = Buffer.from(data, "hex");
-            let parser = new Parser(buffer);
-            //let device = this.devices.getDeviceBySocket(c)
-            //let id = device.id
-            //let id = 1
-            let header = parser.getHeader();
-            //console.log("CODEC: " + header.codec_id);
 
-            if(header.codec_id == 12){
-                //console.log("Received GPRS message from device  " + id)
-                let gprs = parser.getGprs()
-                
-                console.log("GPRS DATA")
-                console.log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
-                console.log()
-                //devices.pushGprsRecord(id, gprs);
-            }
-            else if(header.codec_id == 142){
-                let avl = parser.getAvl()
+        if(n>0){
+            let lineReader = require('readline').createInterface({
+                input: require('fs').createReadStream(filename)
+              });
+              
+              lineReader.on('line', parseline);
+        }
+        else{
+            let lineReader = require('read-last-lines')
+            lineReader.read(filename, n).then((lines) => lines.array.forEach(element => {
+                this._parseLine(element);
+            }))
+        }
+    }
 
-                console.log("AVL DATA")
-                for (var i = 0; i < avl.number_of_data; i++) {
-                    _inst._printAvlRecord(avl.records, i);
-                }
-                console.log()
+    _parseLine (data) {
+        let buffer = Buffer.from(data, "hex");
+        let parser = new Parser(buffer);
+        
+        let header = parser.getHeader();
+        
+        if(header.codec_id == 142){
+            let avl = parser.getAvl()
+
+            console.log("AVL DATA")
+            for (var i = 0; i < avl.number_of_data; i++) {
+                this._printAvlRecord(avl.records, i);
             }
-        });
+            console.log()
+        }
     }
 
     _printAvlRecord(avlRecords, index){
