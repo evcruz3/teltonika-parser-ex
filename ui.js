@@ -151,14 +151,12 @@ class UI{
         console.log("Timestamp: " + avlRecord.timestamp)
         console.log("Priority: " + avlRecord.priority)
         for (const [key, value] of Object.entries(avlRecord.gps)) {
-            if (key == "valueHuman"){
-                console.log(`GPS ${key}: ${value}`);
+            console.log(`GPS ${key}: ${value}`);
+            if (key == "valueHuman" && value){
+                
                 for (const [property, val] of Object.entries(value)) {
                     console.log(`GPS ${key} ${value} ${property} : ${val}`);
                 }
-            }
-            else{
-                console.log(`GPS ${key}: ${value}`);
             }
         }
         //console.log("GPS: " + avlRecord.gps)
