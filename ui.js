@@ -9,7 +9,6 @@ const crc16ibm = require('./utilities/crc16ibm')
 const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
 const myRL = require("serverline");
-const { isNumberObject } = require('util/types');
 
 class UI{
     constructor (){
