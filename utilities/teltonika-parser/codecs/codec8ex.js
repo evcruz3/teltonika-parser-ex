@@ -114,8 +114,8 @@ class Codec8e extends Codec {
       provider: 'google',
     
       // Optional depending on the providers
-      fetch: customFetchImplementation,
-      apiKey: 'YOUR_API_KEY', // for Mapquest, OpenCage, Google Premier
+      //fetch: customFetchImplementation,
+      //apiKey: 'YOUR_API_KEY', // for Mapquest, OpenCage, Google Premier
       formatter: null // 'gpx', 'string', ...
     };
 
