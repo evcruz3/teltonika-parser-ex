@@ -116,14 +116,14 @@ class UI{
             // lineReader.read(filename, n).then((lines) => lines.forEach(element => {
             //     this._parseLine(element);
             // }))
-            lineReader.read(filename, n).then((lines) => console.log(lines))
+            lineReader.read(filename, n).then((lines) => lines.forEach(function(value){console.log(value)})
         }
         else{
             let lineReader = require('readline').createInterface({
                 input: require('fs').createReadStream(filename)
               });
               
-              lineReader.on('line', this._parseline(data));
+              lineReader.on('line', function(data){this._parseline(data)});
         }
     }
 
