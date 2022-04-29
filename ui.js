@@ -8,7 +8,8 @@ const prompt = require('prompt-sync')
 const crc16ibm = require('./utilities/crc16ibm')
 const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
-const myRL = require("serverline")
+const myRL = require("serverline");
+const { isNumberObject } = require('util/types');
 
 class UI{
     constructor (){
@@ -48,7 +49,13 @@ class UI{
             }
             else if (ui_command == "displayLog"){
                 if(id in devices){
-                    _inst._displayLog(id, _inst, others[0])
+                    if(others[0] !== null){
+                        _inst._displayLog(id, _inst, others[0])
+                    }
+                    else{
+                        _inst._displayLog(id, _inst)
+                    }
+                    
                 }
                 else{
                     console.log("Device not found / specified")
