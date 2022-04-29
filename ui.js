@@ -123,11 +123,13 @@ class UI{
                 input: require('fs').createReadStream(filename)
               });
               
-              lineReader.on('line', this._parseLine);
+              lineReader.on('line', function(data) {
+                _inst._parseLine(data, _inst);
+              } );
         }
     }
 
-    _parseLine (data) {
+    _parseLine (data, _inst) {
         let buffer = Buffer.from(data, "hex");
         let parser = new Parser(buffer);
         
@@ -138,7 +140,7 @@ class UI{
 
             console.log("AVL DATA")
             for (var i = 0; i < avl.number_of_data; i++) {
-                this._printAvlRecord(avl.records, i);
+                _inst._printAvlRecord(avl.records, i);
             }
             console.log()
         }
