@@ -116,7 +116,12 @@ class UI{
             // lineReader.read(filename, n).then((lines) => lines.forEach(element => {
             //     this._parseLine(element);
             // }))
-            let lines = lineReader.read(filename, n).then((lines) => console.log(typeof(lines)))
+            let lines = lineReader.read(filename, n).then((lines) => {
+                data = lines.split(/\r?\n/)
+                data.array.forEach(element => {
+                    _inst._parseLine(element, _inst)
+                });
+            })
         }
         else{
             let lineReader = require('readline').createInterface({
