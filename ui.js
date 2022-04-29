@@ -116,7 +116,7 @@ class UI{
             // lineReader.read(filename, n).then((lines) => lines.forEach(element => {
             //     this._parseLine(element);
             // }))
-            lines = lineReader.read(filename, n)
+            let lines = lineReader.read(filename, n)
             for (const [_, line] of Object.entries(lines)){
                 _inst._parseLine(line, _inst)
             }
