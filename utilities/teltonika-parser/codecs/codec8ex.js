@@ -116,7 +116,7 @@ class Codec8e extends Codec {
       // Optional depending on the providers
       //fetch: customFetchImplementation,
       headers:{
-        'user-agent':'erickson.cruz@eee.upd.edu.ph'
+        'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36'
       },
       //apiKey: 'AIzaSyBVb0BiX6tvTNPxuzNIV-nsKVzD0qJ5Ue8', // for Mapquest, OpenCage, Google Premier
       //formatter: null // 'gpx', 'string', ...
