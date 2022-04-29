@@ -120,9 +120,10 @@ class UI{
         }
         else{
             let lineReader = require('read-last-lines')
-            lineReader.read(filename, n).then((lines) => lines.array.forEach(element => {
-                this._parseLine(element);
-            }))
+            // lineReader.read(filename, n).then((lines) => lines.forEach(element => {
+            //     this._parseLine(element);
+            // }))
+            lineReader.read(filename, n).then((lines) => console.log(lines))
         }
     }
 
