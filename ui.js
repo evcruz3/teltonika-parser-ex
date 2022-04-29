@@ -49,7 +49,7 @@ class UI{
             }
             else if (ui_command == "displayLog"){
                 if(id in devices){
-                    if(others[0] !== null){
+                    if(others[0] != null){
                         _inst._displayLog(id, _inst, others[0])
                     }
                     else{
