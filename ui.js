@@ -118,9 +118,11 @@ class UI{
             // }))
             let lines = lineReader.read(filename, n).then((lines) => {
                 data = lines.split(/\r?\n/)
-                data.array.forEach(element => {
-                    _inst._parseLine(element, _inst)
-                });
+                for (const [_, val] of Object.entries(data)) {
+                    _inst._parseLine(val, _inst);
+                }
+            }, reason => {
+                console.error(reason)
             })
         }
         else{
