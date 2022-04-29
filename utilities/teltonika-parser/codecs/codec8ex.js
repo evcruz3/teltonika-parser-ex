@@ -127,7 +127,7 @@ class Codec8e extends Codec {
     geocoder.reverse({lat:gps.latitude, lon:gps.longitude})
     .then((res)=> {
       return res;
-    })
+    }, (reason) => console.log(reason))
     .catch((err)=> {
       console.log(err);
     });
