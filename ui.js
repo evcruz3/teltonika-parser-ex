@@ -117,7 +117,7 @@ class UI{
             //     this._parseLine(element);
             // }))
             let lines = lineReader.read(filename, n).then((lines) => {
-                data = lines.split(/\r?\n/)
+                let data = lines.split(/\r?\n/)
                 for (const [_, val] of Object.entries(data)) {
                     _inst._parseLine(val, _inst);
                 }
