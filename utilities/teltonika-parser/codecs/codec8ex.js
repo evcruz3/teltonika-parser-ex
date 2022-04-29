@@ -121,7 +121,7 @@ class Codec8e extends Codec {
 
     const geocoder = NodeGeocoder(options);
 
-    geoCoder.reverse({lat:gps.latitude, lon:gps.longitude})
+    geocoder.reverse({lat:gps.latitude, lon:gps.longitude})
     .then((res)=> {
       return res;
     })
