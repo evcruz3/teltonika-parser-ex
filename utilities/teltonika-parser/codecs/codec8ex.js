@@ -111,7 +111,7 @@ class Codec8e extends Codec {
 
   async reverseGeocode(gps){
     const options = {
-      provider: 'google',
+      provider: 'openstreetmap',
     
       // Optional depending on the providers
       //fetch: customFetchImplementation,
