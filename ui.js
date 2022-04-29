@@ -105,7 +105,7 @@ class UI{
         //devices.addDevice(null, null, id)
         let filename = "dev"+id+"-log.txt"
 
-        if(n>0){
+        if(n && n>0){
             let lineReader = require('readline').createInterface({
                 input: require('fs').createReadStream(filename)
               });
