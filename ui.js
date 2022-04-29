@@ -152,6 +152,11 @@ class UI{
         console.log("Priority: " + avlRecord.priority)
         for (const [key, value] of Object.entries(avlRecord.gps)) {
             console.log(`GPS ${key}: ${value}`);
+            if (key == "valueHuman"){
+                for (const [property, val] of Object.entries(element)) {
+                    console.log(`GPS ${key} ${value} ${property} : ${val}`);
+                }
+            }
         }
         //console.log("GPS: " + avlRecord.gps)
         console.log("Event ID: " + avlRecord.event_id)

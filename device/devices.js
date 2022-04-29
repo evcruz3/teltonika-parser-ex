@@ -45,7 +45,9 @@ class Devices{
    getDeviceBySocket(socket){
        let id = this.devices.findIndex( (o) => { 
            if (o !== undefined && socket !== undefined){
+               if(o.socket && socket){
                 return (o.socket.remoteAddress===socket.remoteAddress) && (o.socket.remotePort === socket.remotePort);
+               }
            }
            else{
                return -1
@@ -90,8 +92,10 @@ class Devices{
 
     removeDeviceBySocket(socket){
         let id = this.devices.findIndex( (o) => { 
-            if (o !== undefined){
-                return (o.socket.remoteAddress===socket.remoteAddress) && (o.socket.remotePort === socket.remotePort);
+            if (o !== undefined && socket !== undefined){
+                if(o.socket && socket){
+                 return (o.socket.remoteAddress===socket.remoteAddress) && (o.socket.remotePort === socket.remotePort);
+                }
             }
             else{
                 return -1
