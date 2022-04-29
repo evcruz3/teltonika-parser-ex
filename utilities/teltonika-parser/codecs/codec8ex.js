@@ -111,11 +111,14 @@ class Codec8e extends Codec {
 
   reverseGeocode(gps){
     const options = {
-      provider: 'google',
+      provider: 'openstreetmap',
     
       // Optional depending on the providers
       //fetch: customFetchImplementation,
-      apiKey: 'AIzaSyBVb0BiX6tvTNPxuzNIV-nsKVzD0qJ5Ue8', // for Mapquest, OpenCage, Google Premier
+      headers:{
+        'user-agent':'erickson.cruz@eee.upd.edu.ph'
+      },
+      //apiKey: 'AIzaSyBVb0BiX6tvTNPxuzNIV-nsKVzD0qJ5Ue8', // for Mapquest, OpenCage, Google Premier
       //formatter: null // 'gpx', 'string', ...
     };
 
