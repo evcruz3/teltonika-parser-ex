@@ -109,7 +109,7 @@ class Codec8e extends Codec {
     this.avlObj.records.push(avlRecord);
   }
 
-  reverseGeocode(gps){
+  async reverseGeocode(gps){
     const options = {
       provider: 'google',
     
