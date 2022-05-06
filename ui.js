@@ -47,7 +47,7 @@ class UI{
             }
             else if (ui_command == "displayLog"){
                 if(isNaN(tmp)){
-                    var id = Object.keys(devices).find(key => object[key] === tmp);
+                    var id = Object.keys(devices).find(key => devices[key] === tmp);
                 } 
                 else{
                     var id = tmp
