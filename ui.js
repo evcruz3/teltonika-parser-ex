@@ -26,12 +26,12 @@ class UI{
             
 
             for (const [key, device] of Object.entries(devlist_json['devices'])) {
-                devices[device.id] = device.imei
+                devices[device.id] = device.name
             }
 
             let user_input = d.toString().trim()
             //console.log("you entered: [" +    user_input + "]");
-            let [ui_command, id, ...others] = user_input.split(" ");
+            let [ui_command, tmp, ...others] = user_input.split(" ");
             let message = others.join(" ");
 
             //console.log("Command: " + comm);
@@ -46,6 +46,13 @@ class UI{
                 _inst.client.write(d)
             }
             else if (ui_command == "displayLog"){
+                if(isNaN(tmp)){
+                    var id = Object.keys(devices).find(key => object[key] === tmp);
+                } 
+                else{
+                    var id = tmp
+                }
+
                 if(id in devices){
                     if(others[0]){
                         _inst._displayLog(id, _inst, others[0])
@@ -58,6 +65,9 @@ class UI{
                 else{
                     console.log("Device not found / specified")
                 }
+            }
+            else if (ui_command == "setDeviceName"){
+                _inst.client.write(d)
             }
             
             
