@@ -24,8 +24,8 @@ console.log = function() {
 class Logger{
     constructor (){
         this.devices = new Devices()
-        const devlist_path = ('./device/devlist.json')
-        this.devlist_json = require(devlist_path)
+        this.devlist_path = ('./device/devlist.json')
+        this.devlist_json = require(this.devlist_path)
         var inst = this
         this.dev_names = []
         
@@ -62,7 +62,7 @@ class Logger{
                         id = this.devices.addDevice(parser.imei, c)
                         console.log("New device added; ID: " + id + "; IMEI: " + parser.imei)   
                         this.devlist_json['devices'].push({"id":id,"imei":parser.imei,"name":""});
-                        let stream = fs.createWriteStream(devlist_path, {flags:'w'});
+                        let stream = fs.createWriteStream(this.devlist_path, {flags:'w'});
                         stream.write(JSON.stringify(this.devlist_json))
                     }
                     
