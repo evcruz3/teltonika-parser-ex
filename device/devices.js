@@ -146,6 +146,7 @@ class Devices{
             //console.log('Dev ID\tIMEI\t\t\tStatus')
             table.push({
                 'ID' : id,
+                'NAME' : dev.name,
                 'IMEI' : dev.imei,
                 'STATUS' : isConnected
             })

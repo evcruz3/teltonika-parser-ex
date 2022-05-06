@@ -18,7 +18,7 @@ class UI{
         console.log(Array(process.stdout.rows + 1).join('\n'));
 
         myRL.init()
-        myRL.setCompletion(['sendCommand', 'listDevices']);
+        myRL.setCompletion(['sendCommand', 'listDevices', 'setDeviceName']);
         myRL.on('line', function(d) {
             let devlist_path = ('./device/devlist.json')
             let devlist_json = require(devlist_path)
