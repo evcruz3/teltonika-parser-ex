@@ -214,7 +214,7 @@ class Logger{
 
                 let id = dev.id
 
-                inst.devlist_json['devices'].id.name = dev_name
+                inst.devlist_json['devices'][id].name = dev_name
                 let stream = fs.createWriteStream(devlist_path, {flags:'w'});
                 stream.write(JSON.stringify(inst.devlist_json))
                 dev.setName(dev_name)
