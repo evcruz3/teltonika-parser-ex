@@ -68,7 +68,32 @@ class Devices{
     getDeviceByImei(imei){
         let id = this.devices.findIndex( (o) => { 
             if (o !== undefined){
-                 return (o.imei===imei) && (o.imei === imei);
+                 return (o.imei===imei);
+            }
+            else{
+                return -1
+            }
+             
+        });
+        //console.log("getDeviceBySocket return value: " + id)
+        
+
+        if(id > -1){
+            return this.devices[id]
+        }
+        else{
+            return null
+        }
+    }
+
+    setDeviceName(id, dev_name){
+        this.devices[id].setName(dev_name)
+    }
+
+    getDeviceByName(dev_name){
+        let id = this.devices.findIndex( (o) => { 
+            if (o !== undefined){
+                 return (o.name===dev_name);
             }
             else{
                 return -1

@@ -14,6 +14,7 @@ class Device{
       this.isReady = false;
       this.avlRecords = [];
       this.gprsRecords = [];
+      this.name = "";
    }
 
    sendCommand(message){
@@ -25,6 +26,10 @@ class Device{
          console.log("Device " + this.id + " is not yet ready for communication")
       }
       
+   }
+
+   setName(dev_name){
+      this.name = dev_name
    }
 
    getID(){
