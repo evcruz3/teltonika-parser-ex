@@ -24,7 +24,7 @@ console.log = function() {
 class Logger{
     constructor (){
         this.devices = new Devices()
-        var devlist_path = ('./device/devlist.json')
+        const devlist_path = ('./device/devlist.json')
         this.devlist_json = require(devlist_path)
         var inst = this
         this.dev_names = []
@@ -215,7 +215,7 @@ class Logger{
                 let id = dev.id
 
                 inst.devlist_json['devices'][id].name = dev_name
-                let stream = fs.createWriteStream(devlist_path, {flags:'w'});
+                let stream = fs.createWriteStream(this.devlist_path, {flags:'w'});
                 stream.write(JSON.stringify(inst.devlist_json))
                 dev.setName(dev_name)
                 c.write("Device " + tmp + " set to '" + dev_name + "'")
