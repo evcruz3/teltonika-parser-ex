@@ -177,7 +177,7 @@ class Logger{
 
             //let id = dev.id
 
-            if (dev !== undefined){
+            if (dev !== undefined && dev !== null){
                 if(dev.isReady){
                     c.write("'" + message + "' sent to device " + tmp);
                     dev.sendCommand(outBuffer)
