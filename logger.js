@@ -24,12 +24,16 @@ console.log = function() {
 class Logger{
     constructor (){
         this.devices = new Devices()
-        var devlist_path = ('./device/devlist.json')
-        var devlist_json = require(devlist_path)
+        this.devlist_path = ('./device/devlist.json')
+        this.devlist_json = require(this.devlist_path)
         var inst = this
+        this.dev_names = []
         
-        for (const [key, device] of Object.entries(devlist_json['devices'])) {
+        for (const [key, device] of Object.entries(this.devlist_json['devices'])) {
             this.devices.addDevice(device.imei, null, device.id)
+            if("name" in device){
+                this.dev_names.push(device.name)
+            }
             console.log("Device " + device.id + " loaded")
         }
         let server = net.createServer((c) => {
@@ -57,9 +61,9 @@ class Logger{
                     else{
                         id = this.devices.addDevice(parser.imei, c)
                         console.log("New device added; ID: " + id + "; IMEI: " + parser.imei)   
-                        devlist_json['devices'].push({"id":id,"imei":parser.imei});
-                        let stream = fs.createWriteStream(devlist_path, {flags:'w'});
-                        stream.write(JSON.stringify(devlist_json))
+                        this.devlist_json['devices'].push({"id":id,"imei":parser.imei,"name":""});
+                        let stream = fs.createWriteStream(this.devlist_path, {flags:'w'});
+                        stream.write(JSON.stringify(this.devlist_json))
                     }
                     
                     //console.log("Received IMEI from device " + id);
@@ -151,7 +155,7 @@ class Logger{
     _process_message(ui_message, c, inst){
         //let inst = this
         let user_input = ui_message.toString().trim()
-        let [ui_command, id, ...others] = user_input.split(" ");
+        let [ui_command, tmp, ...others] = user_input.split(" ");
         let message = others.join(" ");
 
         
@@ -164,39 +168,58 @@ class Logger{
             let gprsCommandPacker = new GprsCommandPacker(message)
             let outBuffer = gprsCommandPacker.getGprsMessageBuffer()
 
-            let dev = inst.devices.getDeviceByID(id)
+            if(isNaN(tmp)){
+                var dev = inst.devices.getDeviceByName(tmp)
+            }
+            else{
+                var dev = inst.devices.getDeviceByID(tmp)
+            }
 
-            if (dev !== undefined){
+            //let id = dev.id
+
+            if (dev !== undefined && dev !== null){
                 if(dev.isReady){
-                    c.write("'" + message + "' sent to device " + id);
-                    inst.devices.sendMessageToDevice(id, outBuffer);
+                    c.write("'" + message + "' sent to device " + tmp);
+                    dev.sendCommand(outBuffer)
+                    //inst.devices.sendMessageToDevice(id, outBuffer);
                 }
                 else{
-                    c.write("Device " + id + " is currently disconnected")
+                    c.write("Device " + tmp + " is currently disconnected")
                 }
                 
             }
             else{
-                c.write("Device " + id + " not found")
+                c.write("Device " + tmp + " not found")
             }
         }
         else if (ui_command == "listDevices"){
             inst.devices.printDevices(c)
         }
-        else if(ui_command == 'printLatestAVL'){
-            if(id){
-                inst.devices.printLatestAvl(id, c)
+        else if(ui_command == "setDeviceName"){
+            let dev_name = others[0]
+
+            
+
+            if(dev_name in inst.dev_names){
+                c.write(dev_name + "already in use, please use another name")
             }
             else{
-                c.write("Please specify a device id")
-            }
-        }
-        else if (ui_command == "printLatestGPRS"){
-            if(id){
-                inst.devices.printLatestGprs(id, c)
-            }
-            else{
-                c.write("Please specify a device id")
+
+                if(isNaN(tmp)){
+                    var dev = inst.devices.getDeviceByName(tmp)
+                }
+                else{
+                    var dev = inst.devices.getDeviceByID(tmp)
+                }
+
+                let id = dev.id
+
+                inst.devlist_json['devices'][id].name = dev_name
+                let stream = fs.createWriteStream(inst.devlist_path, {flags:'w'});
+                stream.write(JSON.stringify(inst.devlist_json))
+                dev.setName(dev_name)
+                c.write("Device " + tmp + " set to '" + dev_name + "'")
+                
             }
         }
     }

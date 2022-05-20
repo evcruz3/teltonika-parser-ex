@@ -1,14 +1,13 @@
 const Parser = require('./utilities/teltonika-parser');
 const binutils = require('binutils64');
 const net = require('net');
-const { parse } = require('path');
 const ByteBuffer = require("bytebuffer");
 const Devices = require('./device/devices')
 const prompt = require('prompt-sync')
 const crc16ibm = require('./utilities/crc16ibm')
 const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
-const myRL = require("serverline")
+const myRL = require("serverline");
 
 class UI{
     constructor (){
@@ -19,7 +18,7 @@ class UI{
         console.log(Array(process.stdout.rows + 1).join('\n'));
 
         myRL.init()
-        myRL.setCompletion(['sendCommand', 'listDevices', 'printLatestGPRS', 'printLatestAVL']);
+        myRL.setCompletion(['sendCommand', 'listDevices', 'setDeviceName']);
         myRL.on('line', function(d) {
             let devlist_path = ('./device/devlist.json')
             let devlist_json = require(devlist_path)
@@ -27,12 +26,12 @@ class UI{
             
 
             for (const [key, device] of Object.entries(devlist_json['devices'])) {
-                devices[device.id] = device.imei
+                devices[device.id] = device.name
             }
 
             let user_input = d.toString().trim()
             //console.log("you entered: [" +    user_input + "]");
-            let [ui_command, id, ...others] = user_input.split(" ");
+            let [ui_command, tmp, ...others] = user_input.split(" ");
             let message = others.join(" ");
 
             //console.log("Command: " + comm);
@@ -46,19 +45,29 @@ class UI{
                 //console.log("TODO: list all devices here and their status")
                 _inst.client.write(d)
             }
-            else if (ui_command == "printLatestGPRS"){
-                _inst.client.write(d)
-            }
-            else if (ui_command == "printLatestAVL"){
-                _inst.client.write(d)
-            }
             else if (ui_command == "displayLog"){
+                if(isNaN(tmp)){
+                    var id = Object.keys(devices).find(key => devices[key] === tmp);
+                } 
+                else{
+                    var id = tmp
+                }
+
                 if(id in devices){
-                    _inst._displayLog(id, _inst)
+                    if(others[0]){
+                        _inst._displayLog(id, _inst, others[0])
+                    }
+                    else{
+                        _inst._displayLog(id, _inst)
+                    }
+                    
                 }
                 else{
                     console.log("Device not found / specified")
                 }
+            }
+            else if (ui_command == "setDeviceName"){
+                _inst.client.write(d)
             }
             
             
@@ -106,42 +115,51 @@ class UI{
 
     }
 
-    _displayLog(id, _inst){
+    _displayLog(id, _inst, n=-1){
         //let devices = new Devices()
         //devices.addDevice(null, null, id)
         let filename = "dev"+id+"-log.txt"
-        var lineReader = require('readline').createInterface({
-            input: require('fs').createReadStream(filename)
-          });
-          
-          lineReader.on('line', function (data) {
-            let buffer = Buffer.from(data, "hex");
-            let parser = new Parser(buffer);
-            //let device = this.devices.getDeviceBySocket(c)
-            //let id = device.id
-            //let id = 1
-            let header = parser.getHeader();
-            //console.log("CODEC: " + header.codec_id);
 
-            if(header.codec_id == 12){
-                //console.log("Received GPRS message from device  " + id)
-                let gprs = parser.getGprs()
-                
-                console.log("GPRS DATA")
-                console.log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
-                console.log()
-                //devices.pushGprsRecord(id, gprs);
-            }
-            else if(header.codec_id == 142){
-                let avl = parser.getAvl()
-
-                console.log("AVL DATA")
-                for (var i = 0; i < avl.number_of_data; i++) {
-                    _inst._printAvlRecord(avl.records, i);
+        if(n && n>0){
+            let lineReader = require('read-last-lines')
+            // lineReader.read(filename, n).then((lines) => lines.forEach(element => {
+            //     this._parseLine(element);
+            // }))
+            let lines = lineReader.read(filename, n).then((lines) => {
+                let data = lines.split(/\r?\n/)
+                for (const [_, val] of Object.entries(data)) {
+                    _inst._parseLine(val, _inst);
                 }
-                console.log()
+            }, reason => {
+                console.error(reason)
+            })
+        }
+        else{
+            let lineReader = require('readline').createInterface({
+                input: require('fs').createReadStream(filename)
+              });
+              
+              lineReader.on('line', function(data) {
+                _inst._parseLine(data, _inst);
+              } );
+        }
+    }
+
+    _parseLine (data, _inst) {
+        let buffer = Buffer.from(data, "hex");
+        let parser = new Parser(buffer);
+        
+        let header = parser.getHeader();
+        
+        if(header.codec_id == 142){
+            let avl = parser.getAvl()
+
+            console.log("AVL DATA")
+            for (var i = 0; i < avl.number_of_data; i++) {
+                _inst._printAvlRecord(avl.records, i);
             }
-        });
+            console.log()
+        }
     }
 
     _printAvlRecord(avlRecords, index){
@@ -152,20 +170,26 @@ class UI{
         console.log("Priority: " + avlRecord.priority)
         for (const [key, value] of Object.entries(avlRecord.gps)) {
             console.log(`GPS ${key}: ${value}`);
+            if (key == "valueHuman" && value){
+                
+                for (const [property, val] of Object.entries(value)) {
+                    console.log(`GPS ${key} ${value} ${property} : ${val}`);
+                }
+            }
         }
         //console.log("GPS: " + avlRecord.gps)
         console.log("Event ID: " + avlRecord.event_id)
         console.log("Properties Count " + avlRecord.properties_count)
         for (const [key, element] of Object.entries(avlRecord.ioElements)) {
             for (const [property, val] of Object.entries(element)) {
-            if (val){
-                console.log(`IO Element ${key} ${property}: ${val}`);
-            }
-            if (property == "value"){
-                for (const [prop, v] of Object.entries(val)) {
-                    console.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
+                if (val){
+                    console.log(`IO Element ${key} ${property}: ${val}`);
                 }
-            }
+                if (property == "value"){
+                    for (const [prop, v] of Object.entries(val)) {
+                        console.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
+                    }
+                }
             }
             //console.log(`IO Element ${key}: ${value}`);
         }

@@ -45,7 +45,9 @@ class Devices{
    getDeviceBySocket(socket){
        let id = this.devices.findIndex( (o) => { 
            if (o !== undefined && socket !== undefined){
+               if((o.socket !== null) && (socket !== null)){
                 return (o.socket.remoteAddress===socket.remoteAddress) && (o.socket.remotePort === socket.remotePort);
+               }
            }
            else{
                return -1
@@ -66,7 +68,32 @@ class Devices{
     getDeviceByImei(imei){
         let id = this.devices.findIndex( (o) => { 
             if (o !== undefined){
-                 return (o.imei===imei) && (o.imei === imei);
+                 return (o.imei===imei);
+            }
+            else{
+                return -1
+            }
+             
+        });
+        //console.log("getDeviceBySocket return value: " + id)
+        
+
+        if(id > -1){
+            return this.devices[id]
+        }
+        else{
+            return null
+        }
+    }
+
+    setDeviceName(id, dev_name){
+        this.devices[id].setName(dev_name)
+    }
+
+    getDeviceByName(dev_name){
+        let id = this.devices.findIndex( (o) => { 
+            if (o !== undefined){
+                 return (o.name===dev_name);
             }
             else{
                 return -1
@@ -90,8 +117,10 @@ class Devices{
 
     removeDeviceBySocket(socket){
         let id = this.devices.findIndex( (o) => { 
-            if (o !== undefined){
-                return (o.socket.remoteAddress===socket.remoteAddress) && (o.socket.remotePort === socket.remotePort);
+            if (o !== undefined && socket !== undefined){
+                if((o.socket !== null) && (socket !== null)){
+                 return (o.socket.remoteAddress===socket.remoteAddress) && (o.socket.remotePort === socket.remotePort);
+                }
             }
             else{
                 return -1
@@ -117,6 +146,7 @@ class Devices{
             //console.log('Dev ID\tIMEI\t\t\tStatus')
             table.push({
                 'ID' : id,
+                'NAME' : dev.name,
                 'IMEI' : dev.imei,
                 'STATUS' : isConnected
             })

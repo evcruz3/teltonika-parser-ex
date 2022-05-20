@@ -2,6 +2,7 @@
 
 const binutils = require('binutils64');
 const Codec = require('./codec');
+const NodeGeocoder = require('node-geocoder');
 
 /**
  * Codec 8 decoding
@@ -99,9 +100,38 @@ class Codec8e extends Codec {
     }
     avlRecord.gps.latitude /= this._gpsPrecision;
 
+    // Insert reverse geocoding here
+    //avlRecord.gps.valueHuman = this.reverseGeocode(avlRecord.gps)
+
+
     avlRecord.ioElements = this.parseIoElements();
 
     this.avlObj.records.push(avlRecord);
+  }
+
+  reverseGeocode(gps){
+    const options = {
+      provider: 'openstreetmap',
+    
+      // Optional depending on the providers
+      //fetch: customFetchImplementation,
+      headers:{
+        'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36'
+      },
+      //apiKey: 'AIzaSyBVb0BiX6tvTNPxuzNIV-nsKVzD0qJ5Ue8', // for Mapquest, OpenCage, Google Premier
+      //formatter: null // 'gpx', 'string', ...
+    };
+
+    const geocoder = NodeGeocoder(options);
+
+    geocoder.reverse({lat:gps.latitude, lon:gps.longitude})
+    .then((res)=> {
+      return res;
+    }, (reason) => console.log(reason))
+    .catch((err)=> {
+      console.log(err);
+    });
+    
   }
 
   /**
