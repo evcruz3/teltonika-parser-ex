@@ -101,7 +101,7 @@ class Codec8e extends Codec {
     avlRecord.gps.latitude /= this._gpsPrecision;
 
     // Insert reverse geocoding here
-    avlRecord.gps.valueHuman = this.reverseGeocode(avlRecord.gps)
+    //avlRecord.gps.valueHuman = this.reverseGeocode(avlRecord.gps)
 
 
     avlRecord.ioElements = this.parseIoElements();
