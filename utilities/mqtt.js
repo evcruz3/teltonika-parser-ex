@@ -15,7 +15,7 @@ const client = mqtt.connect(connectUrl, {
 })
 
 const topic = '/nodejs/mqtt/tft100-server'
-const topic_subscribe = '/nodejs/mqtt/#'
+const topic_subscribe = '/#'
 client.on('connect', () => {
   console.log('Connected')
   client.subscribe([topic_subscribe], () => {
