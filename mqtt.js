@@ -11,12 +11,6 @@ const myRL = require("serverline");
 
 class MqttToBroker{
     constructor (){
-        
-
-
-    }
-
-    constructor (){
         //this.devices = new Devices()
         var _inst = this
 
