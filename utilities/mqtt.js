@@ -26,6 +26,6 @@ client.on('connect', () => {
     }
   })
 })
-client.on('message', ('/nodejs/#', payload) => {
+client.on('message', ("/nodejs/#", payload) => {
   console.log('Received Message:', topic, payload.toString())
 })
