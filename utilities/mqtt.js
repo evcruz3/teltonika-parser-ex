@@ -18,8 +18,8 @@ const topic = '/nodejs/mqtt/tft100-server'
 const topic_subscribe = '/nodejs/mqtt/#'
 client.on('connect', () => {
   console.log('Connected')
-  client.subscribe([topic], () => {
-    console.log(`Subscribe to topic '${topic}'`)
+  client.subscribe([topic_subscribe], () => {
+    console.log(`Subscribe to topic '${topic_subscribe}'`)
   })
   client.publish(topic, 'nodejs mqtt test', { qos: 0, retain: false }, (error) => {
     if (error) {
@@ -27,6 +27,6 @@ client.on('connect', () => {
     }
   })
 })
-client.on('message', (topic_subscribe, payload) => {
+client.on('message', (topic, payload) => {
   console.log('Received Message:', topic, payload.toString())
 })
