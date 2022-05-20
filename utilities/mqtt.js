@@ -14,7 +14,7 @@ const client = mqtt.connect(connectUrl, {
   reconnectPeriod: 1000,
 })
 
-const topic = '/nodejs/mqtt'
+const topic = '/nodejs/mqtt/tft100-server'
 client.on('connect', () => {
   console.log('Connected')
   client.subscribe([topic], () => {
