@@ -36,7 +36,7 @@ class MqttToBroker{
         const topic = '/nodejs/mqtt/tft100-server/commands'
         //const topic_subscribe = '/nodejs/mqtt/tft100-server/commands'
         mqtt_client.on('connect', () => {
-            console.log('Connected')
+            console.log('Connected, client ID: ' + clientId)
             mqtt_client.subscribe([topic], () => {
                 console.log(`Subscribe to topic '${topic}'`)
         })
