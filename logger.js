@@ -184,7 +184,7 @@ class Logger{
                     //inst.devices.sendMessageToDevice(id, outBuffer);
                 }
                 else{
-                    c.write("${dev.id}:\nDevice " + tmp + " is currently disconnected")
+                    c.write(dev.id + ":\nDevice " + tmp + " is currently disconnected")
                 }
                 
             }
@@ -207,14 +207,14 @@ class Logger{
             let id = dev.id
 
             if(dev_name in inst.dev_names){
-                c.write("${id}:\n"+dev_name + "already in use, please use another name")
+                c.write(`${id}:\n`+dev_name + "already in use, please use another name")
             }
             else{
                 inst.devlist_json['devices'][id].name = dev_name
                 let stream = fs.createWriteStream(inst.devlist_path, {flags:'w'});
                 stream.write(JSON.stringify(inst.devlist_json))
                 dev.setName(dev_name)
-                c.write("${id}:\nDevice " + tmp + " set to '" + dev_name + "'")
+                c.write(`${id}:\nDevice ` + tmp + " set to '" + dev_name + "'")
                 
             }
         }

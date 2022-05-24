@@ -114,7 +114,7 @@ class MqttToBroker{
 
             let [id, ...dump] = data.toString().split(":\n")
             let response = dump.join("")
-            console.log(`Response from dev ${id}:` + response)
+            //console.log(`Response from dev ${id}:` + response)
             mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
                 if (error) {
                 console.error(error)
