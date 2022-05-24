@@ -179,17 +179,17 @@ class Logger{
 
             if (dev !== undefined && dev !== null){
                 if(dev.isReady){
-                    c.write("'" + message + "' sent to device " + tmp);
+                    c.write("-1:\n'" + message + "' sent to device " + tmp);
                     dev.sendCommand(outBuffer)
                     //inst.devices.sendMessageToDevice(id, outBuffer);
                 }
                 else{
-                    c.write("Device " + tmp + " is currently disconnected")
+                    c.write("${dev.id}:\nDevice " + tmp + " is currently disconnected")
                 }
                 
             }
             else{
-                c.write("Device " + tmp + " not found")
+                c.write("-1:\nDevice " + tmp + " not found")
             }
         }
         else if (ui_command == "listDevices"){
@@ -197,28 +197,24 @@ class Logger{
         }
         else if(ui_command == "setDeviceName"){
             let dev_name = others[0]
-
-            
-
-            if(dev_name in inst.dev_names){
-                c.write(dev_name + "already in use, please use another name")
+            if(isNaN(tmp)){
+                var dev = inst.devices.getDeviceByName(tmp)
             }
             else{
+                var dev = inst.devices.getDeviceByID(tmp)
+            }
 
-                if(isNaN(tmp)){
-                    var dev = inst.devices.getDeviceByName(tmp)
-                }
-                else{
-                    var dev = inst.devices.getDeviceByID(tmp)
-                }
+            let id = dev.id
 
-                let id = dev.id
-
+            if(dev_name in inst.dev_names){
+                c.write("${id}:\n"+dev_name + "already in use, please use another name")
+            }
+            else{
                 inst.devlist_json['devices'][id].name = dev_name
                 let stream = fs.createWriteStream(inst.devlist_path, {flags:'w'});
                 stream.write(JSON.stringify(inst.devlist_json))
                 dev.setName(dev_name)
-                c.write("Device " + tmp + " set to '" + dev_name + "'")
+                c.write("${id}:\nDevice " + tmp + " set to '" + dev_name + "'")
                 
             }
         }

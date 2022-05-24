@@ -76,30 +76,30 @@ class MqttToBroker{
             //     //console.log("TODO: list all devices here and their status")
             //     _inst.client.write(d)
             // }
-            else if (ui_command == "displayLog"){
-                if(isNaN(tmp)){
-                    var id = Object.keys(devices).find(key => devices[key] === tmp);
-                } 
-                else{
-                    var id = tmp
-                }
+            // else if (ui_command == "displayLog"){
+            //     if(isNaN(tmp)){
+            //         var id = Object.keys(devices).find(key => devices[key] === tmp);
+            //     } 
+            //     else{
+            //         var id = tmp
+            //     }
 
-                if(id in devices){
-                    if(others[0]){
-                        _inst._displayLog(id, _inst, others[0])
-                    }
-                    else{
-                        _inst._displayLog(id, _inst)
-                    }
+            //     if(id in devices){
+            //         if(others[0]){
+            //             _inst._displayLog(id, _inst, others[0])
+            //         }
+            //         else{
+            //             _inst._displayLog(id, _inst)
+            //         }
                     
-                }
-                else{
-                    console.log("Device not found / specified")
-                }
-            }
-            // else if (ui_command == "setDeviceName"){
-            //     _inst.client.write(d)
+            //     }
+            //     else{
+            //         console.log("Device not found / specified")
+            //     }
             // }
+            else if (ui_command == "setDeviceName"){
+                _inst.client.write(d)
+            }
         })
 
         // Port 49365 for sending ui commands to logger module
@@ -111,6 +111,16 @@ class MqttToBroker{
 
         this.client.on('data', (data) => {     
             console.log(`Client received: ${data}`); 
+
+            let [id, ...dump] = data.toString().split(":\n")
+            let response = dump.join("")
+            console.log("Response from dev ${id}:" + response)
+            mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
+                if (error) {
+                console.error(error)
+                }
+            })
+
             if (data.toString().endsWith('exit')) { 
                 client.destroy(); 
             } 

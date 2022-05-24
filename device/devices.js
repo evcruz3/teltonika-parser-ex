@@ -153,7 +153,7 @@ class Devices{
             //console.log(`${id}\t${dev.imei}\t${dev.isReady}`);
         }
         if(socket){
-            socket.write(JSON.stringify(table));
+            socket.write("-1:\n" + JSON.stringify(table));
         }else{
             console.table(table);
         }
