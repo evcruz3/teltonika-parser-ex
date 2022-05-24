@@ -19,7 +19,7 @@ class MqttToBroker{
 
         const mqtt = require('mqtt')
 
-        const host = 'broker.emqx.io'
+        const host = '167.71.159.65'
         const port = '1883'
         const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 
@@ -28,24 +28,24 @@ class MqttToBroker{
         clientId,
         clean: true,
         connectTimeout: 4000,
-        username: 'emqx',
-        password: 'public',
+        username: 'tft100',
+        password: 'S8Y5mvDdGGWjxj5h',
         reconnectPeriod: 1000,
         })
 
-        const topic = '/nodejs/mqtt/tft100-server/commands'
+        const topic = '/tft100-server/commands'
         //const topic_subscribe = '/nodejs/mqtt/tft100-server/commands'
         mqtt_client.on('connect', () => {
             console.log('Connected, client ID: ' + clientId)
             mqtt_client.subscribe([topic], () => {
                 console.log(`Subscribe to topic '${topic}'`)
         })
-        mqtt_client.publish(topic, 'sendCommand 1 getio', { qos: 0, retain: false }, (error) => {
+        /*mqtt_client.publish(topic, 'sendCommand 1 getio', { qos: 0, retain: false }, (error) => {
             if (error) {
             console.error(error)
             }
             })
-        })
+        })*/
         mqtt_client.on('message', (topic, payload) => {
             console.log('Received Message:', topic, payload.toString())
 
