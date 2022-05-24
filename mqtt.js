@@ -33,7 +33,7 @@ class MqttToBroker{
         reconnectPeriod: 1000,
         })
 
-        const topic = '/tft100-server/commands'
+        const topic = '/tft100-server/+/command'
         //const topic_subscribe = '/nodejs/mqtt/tft100-server/commands'
         mqtt_client.on('connect', () => {
             console.log('Connected, client ID: ' + clientId)
@@ -72,10 +72,10 @@ class MqttToBroker{
             if (ui_command == "sendCommand"){
                 _inst.client.write(d)
             }
-            else if (ui_command == "listDevices"){
-                //console.log("TODO: list all devices here and their status")
-                _inst.client.write(d)
-            }
+            // else if (ui_command == "listDevices"){
+            //     //console.log("TODO: list all devices here and their status")
+            //     _inst.client.write(d)
+            // }
             else if (ui_command == "displayLog"){
                 if(isNaN(tmp)){
                     var id = Object.keys(devices).find(key => devices[key] === tmp);
@@ -97,9 +97,9 @@ class MqttToBroker{
                     console.log("Device not found / specified")
                 }
             }
-            else if (ui_command == "setDeviceName"){
-                _inst.client.write(d)
-            }
+            // else if (ui_command == "setDeviceName"){
+            //     _inst.client.write(d)
+            // }
         })
 
         // Port 49365 for sending ui commands to logger module
@@ -131,6 +131,13 @@ class MqttToBroker{
 
             c.on('data', (logger_message) => {
                 console.log("GPRS Response: " + logger_message)
+                let [id, ...response] = logger_message.split(":\n")
+                mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
+                    if (error) {
+                    console.error(error)
+                    }
+                })
+
                 //c.write("SAMPLE RESPONSE FROM LOGGER")
                 //inst._process_message(ui_message, c, inst)
             });

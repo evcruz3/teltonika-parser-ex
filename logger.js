@@ -149,7 +149,7 @@ class Logger{
         client.on('error', (err) => { 
             console.error(err); 
         }); 
-        client.write("From dev " + id + "\nType: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
+        client.write(id + ":\nType: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
         client.end()
     }
     _process_message(ui_message, c, inst){
