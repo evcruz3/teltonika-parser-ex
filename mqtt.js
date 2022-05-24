@@ -44,8 +44,8 @@ class MqttToBroker{
             if (error) {
             console.error(error)
             }
-            })
-        })*/
+            })*/
+        })
         mqtt_client.on('message', (topic, payload) => {
             console.log('Received Message:', topic, payload.toString())
 
