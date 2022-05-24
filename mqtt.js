@@ -131,7 +131,7 @@ class MqttToBroker{
 
             c.on('data', (logger_message) => {
                 console.log("GPRS Response: " + logger_message)
-                let [id, ...response] = logger_message.split(":\n")
+                let [id, ...response] = logger_message.toString().split(":\n")
                 mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
                     if (error) {
                     console.error(error)
