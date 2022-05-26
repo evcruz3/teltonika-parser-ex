@@ -112,6 +112,7 @@ class UI{
     _displayLog(id, _inst, n=-1){
         //let devices = new Devices()
         //devices.addDevice(null, null, id)
+        let now = new Date();
         let dir_path = `devlogs/${id}/`
         let filestring = `dev${id}-${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.txt`
         let filename = dir_path + filestring
