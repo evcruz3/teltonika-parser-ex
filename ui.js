@@ -105,24 +105,6 @@ class UI{
             console.error(err); 
         }); 
 
-        // Port 49364 for receiving forwarded GPRS response by the logger module
-        // let commandReceiver = net.createServer((c) => {
-        //     c.on("end", () => {
-        //         console.log("Logger disconnected")
-        //     });
-
-        //     c.on('data', (logger_message) => {
-        //         console.log("GPRS Response: " + logger_message)
-        //         //c.write("SAMPLE RESPONSE FROM LOGGER")
-        //         //inst._process_message(ui_message, c, inst)
-        //     });
-        // })
-
-        // commandReceiver.listen(49364, () => {
-        //     console.log("GPRS listening port is up")
-        // })
-
-        // Open an MQTT subscription to broker
         
 
     }

@@ -24,8 +24,8 @@ console.log = function() {
 class Logger{
     /*
      * COMMUNICATION PORTS
-     * 49364 - logger -> ui
-     * 49365 - ui -> logger
+     * 
+     * 49365 - ui <-> logger / mqtt
      * 49366 - logger <-> tft-devices
      * 
      */
