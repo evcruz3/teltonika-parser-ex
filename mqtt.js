@@ -158,7 +158,7 @@ class MqttToBroker{
         });  
         this.client.on('error', (err) => { 
             console.error(err); 
-            this.client.destroy()
+            this.client.end()
         }); 
 
         // Port 49364 for receiving forwarded GPRS response by the logger module
