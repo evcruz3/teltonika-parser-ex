@@ -153,7 +153,7 @@ class MqttToBroker{
         this.client.on('close', () => { 
             console.log('logger closed'); 
 
-            this.client.setTimeout(10000, function() {
+            this.client.setTimeout(1000, function() {
                 this.client.connect(49365, 'localhost');
             })
             
