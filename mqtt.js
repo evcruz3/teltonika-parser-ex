@@ -119,7 +119,18 @@ class MqttToBroker{
         // Port 49365 for sending ui commands to logger module
         this.client = new net.Socket();
 
-        
+        var intervalConnect = false;
+
+        function launchIntervalConnect() {
+            if(false != intervalConnect) return
+            intervalConnect = setInterval(this.client.connect(49365, 'localhost'), 1000)
+        }
+
+        function clearIntervalConnect() {
+            if(false == intervalConnect) return
+            clearInterval(intervalConnect)
+            intervalConnect = false
+        }
 
         this.client.on('data', (data) => {     
             console.log(`Client received: ${data}`); 
@@ -150,19 +161,24 @@ class MqttToBroker{
         // Add a 'close' event handler for the client socket 
         this.client.on('close', () => { 
             console.log('logger closed'); 
-
-            this.client.setTimeout(1000, function() {
-                this.client.connect(49365, 'localhost');
-            })
+            launchIntervalConnect()
             
         });  
         this.client.on('error', (err) => { 
             console.error(err); 
+            launchIntervalConnect()
+        }); 
+        this.client.on('error', () => { 
+            launchIntervalConnect()
         }); 
 
-        this.client.connect(49365, 'localhost', () => {
+        this.client.on('connect', () => {
+            clearIntervalConnect()
             console.log("Created a connection to ui node")
+
         })
+
+        this.client.connect(49365, 'localhost')
         // Port 49364 for receiving forwarded GPRS response by the logger module
         // let commandReceiver = net.createServer((c) => {
         //     c.on("end", () => {
