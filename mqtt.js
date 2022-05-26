@@ -152,6 +152,7 @@ class MqttToBroker{
         // Add a 'close' event handler for the client socket 
         this.client.on('close', () => { 
             console.log('logger closed'); 
+            await new Promise(resolve => setTimeout(resolve, 1000));
             this.client.connect(49365, 'localhost', () => {
                 console.log("Created a connection to ui node")
             })
