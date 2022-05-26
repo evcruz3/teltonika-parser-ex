@@ -9,6 +9,17 @@ const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
 const myRL = require("serverline");
 
+const originalConsoleLog = console.log;
+console.log = function() {
+    args = [];
+    args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + '] ' );
+    // Note: arguments is part of the prototype
+    for( var i = 0; i < arguments.length; i++ ) {
+        args.push( arguments[i] );
+    }
+    originalConsoleLog.apply( console, args );
+};
+
 class MqttToBroker{
     constructor (){
         //this.devices = new Devices()
