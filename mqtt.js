@@ -92,11 +92,11 @@ class MqttToBroker{
         })
 
         // Port 49365 for sending ui commands to logger module
-        this.client = new net.Socket();
+        const client = new net.Socket();
 
         var intervalConnect = false;
         function connect() {
-            this.client.connect({
+            client.connect({
                 port: 49365,
                 host: 'localhost'
             })
@@ -113,7 +113,7 @@ class MqttToBroker{
             intervalConnect = false
         }
 
-        this.client.on('data', (data) => {     
+        client.on('data', (data) => {     
             console.log(`Client received: ${data}`); 
 
             let [id, ...dump] = data.toString().split(":\n")
@@ -140,20 +140,20 @@ class MqttToBroker{
             } 
         });  
         // Add a 'close' event handler for the client socket 
-        this.client.on('close', () => { 
+        client.on('close', () => { 
             console.log('logger closed'); 
             launchIntervalConnect()
             
         });  
-        this.client.on('error', (err) => { 
+        client.on('error', (err) => { 
             console.error(err); 
             launchIntervalConnect()
         }); 
-        this.client.on('error', () => { 
+        client.on('error', () => { 
             launchIntervalConnect()
         }); 
 
-        this.client.on('connect', () => {
+        client.on('connect', () => {
             clearIntervalConnect()
             console.log("Created a connection to ui node")
 
