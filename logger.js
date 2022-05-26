@@ -118,7 +118,8 @@ class Logger{
                         }
 
                         let recordlength = avl.records.length
-                        this.devices.gpsDevices[id] = {"timestamp":avl.timestamp, "gps" : {"latitude" : avl.records[recordlength-1].gps.latitude, "longitude" : avl.records[recordlength-1].gps.longitude}}
+                        let record = avl.records[recordlength-1]
+                        this.devices.gpsDevices[id] = {"timestamp" : record.timestamp, "gps" : {"latitude" : record.gps.latitude, "longitude" : record.gps.longitude}}
                         let stream = fs.createWriteStream(`${tmp_path}${tmp_filename}`, {flags:'a'});
                         stream.write(data.toString("hex")+"\n");
                     }
