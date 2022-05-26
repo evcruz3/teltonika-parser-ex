@@ -152,6 +152,9 @@ class MqttToBroker{
         // Add a 'close' event handler for the client socket 
         this.client.on('close', () => { 
             console.log('logger closed'); 
+            this.client.connect(49365, 'localhost', () => {
+                console.log("Created a connection to ui node")
+            })
         });  
         this.client.on('error', (err) => { 
             console.error(err); 
