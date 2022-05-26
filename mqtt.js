@@ -121,9 +121,17 @@ class MqttToBroker{
 
         var intervalConnect = false;
 
+
+        function connect() {
+            _inst.client.connect({
+                port: 49365,
+                host: 'localhost'
+            })
+        }
+
         function launchIntervalConnect() {
             if(false != intervalConnect) return
-            intervalConnect = setInterval(_inst.client.connect(49365, 'localhost'), 1000)
+            intervalConnect = setInterval(connect, 1000)
         }
 
         function clearIntervalConnect() {
@@ -178,7 +186,7 @@ class MqttToBroker{
 
         })
 
-        this.client.connect(49365, 'localhost')
+        connect()
         // Port 49364 for receiving forwarded GPRS response by the logger module
         // let commandReceiver = net.createServer((c) => {
         //     c.on("end", () => {
