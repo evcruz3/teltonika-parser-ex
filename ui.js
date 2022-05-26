@@ -112,8 +112,9 @@ class UI{
     _displayLog(id, _inst, n=-1){
         //let devices = new Devices()
         //devices.addDevice(null, null, id)
-        let path = `devlogs/${id}/`
-        let filename = path + "dev"+id+"-log.txt"
+        let dir_path = `devlogs/${id}/`
+        let filestring = `dev${id}-${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.txt`
+        let filename = dir_path + filestring
 
         if(n && n>0){
             let lineReader = require('read-last-lines')
