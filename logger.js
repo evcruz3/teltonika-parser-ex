@@ -147,7 +147,7 @@ class Logger{
         client.connect(49364, 'localhost', () => {
             console.log("Created a connection to ui node")
         })*/
-        let client = inst.pop()
+        let client = inst.clients.pop()
 
         if (client !== undefined){
             client.on('data', (data) => {     
