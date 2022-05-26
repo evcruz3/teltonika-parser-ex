@@ -22,6 +22,13 @@ console.log = function() {
 };
 
 class Logger{
+    /*
+     * COMMUNICATION PORTS
+     * 49364 - logger -> ui
+     * 49365 - ui -> logger
+     * 49366 - logger <-> tft-devices
+     * 
+     */
     constructor (){
         this.devices = new Devices()
         this.devlist_path = ('./device/devlist.json')
@@ -29,6 +36,7 @@ class Logger{
         var inst = this
         this.dev_names = []
         
+        // Load all devices to a runtime object 'Devices'
         for (const [key, device] of Object.entries(this.devlist_json['devices'])) {
             this.devices.addDevice(device.imei, null, device.id)
             if("name" in device){
@@ -36,6 +44,8 @@ class Logger{
             }
             console.log("Device " + device.id + " loaded")
         }
+
+        // Define methods for device connections
         let server = net.createServer((c) => {
             c.on('end', () => {
                 let id = this.devices.getDeviceBySocket(c).id
@@ -109,6 +119,9 @@ class Logger{
             console.log("Server started");
         });
 
+
+        // Create port to listen to system commands
+        this.clients = []
         let commandReceiver = net.createServer((c) => {
             c.on("end", () => {
                 console.log("ui disconnected")
@@ -116,11 +129,10 @@ class Logger{
 
             c.on('data', (ui_message) => {
                 console.log("ui message: " + ui_message)
-                //c.write("SAMPLE RESPONSE FROM LOGGER")
+                inst.clients.push(c)
                 inst._process_message(ui_message, c, inst)
             });
         })
-
         commandReceiver.listen(49365, () => {
             console.log("Waiting for command from ui...")
         })
@@ -130,28 +142,34 @@ class Logger{
     }
 
     send_to_ui(inst, id, gprs){
-        let client = new net.Socket();
+        /*let client = new net.Socket();
 
         client.connect(49364, 'localhost', () => {
             console.log("Created a connection to ui node")
-        })
+        })*/
+        let client = inst.pop()
 
-        client.on('data', (data) => {     
-            console.log(`Logger received: ${data}`); 
-            if (data.toString().endsWith('exit')) { 
-                client.destroy(); 
-            } 
-        });  
-        // Add a 'close' event handler for the client socket 
-        client.on('close', () => { 
-            console.log('UI closed'); 
-        });  
-        client.on('error', (err) => { 
-            console.error(err); 
-        }); 
-        client.write(id + ":\nType: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
-        client.end()
+        if (client !== undefined){
+            client.on('data', (data) => {     
+                console.log(`Logger received: ${data}`); 
+                if (data.toString().endsWith('exit')) { 
+                    client.destroy(); 
+                } 
+            });  
+            // Add a 'close' event handler for the client socket 
+            client.on('close', () => { 
+                console.log('UI closed'); 
+            });  
+            client.on('error', (err) => { 
+                console.error(err); 
+            }); 
+            client.write(id + ":\nType: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
+            client.end()
+        }
+
+        
     }
+
     _process_message(ui_message, c, inst){
         //let inst = this
         let user_input = ui_message.toString().trim()
@@ -185,15 +203,20 @@ class Logger{
                 }
                 else{
                     c.write(dev.id + ":\nDevice " + tmp + " is currently disconnected")
+                    inst.clients.pop()
                 }
                 
             }
             else{
                 c.write("-1:\nDevice " + tmp + " not found")
+                inst.clients.pop()
             }
+
+            
         }
         else if (ui_command == "listDevices"){
             inst.devices.printDevices(c)
+            inst.clients.pop()
         }
         else if(ui_command == "setDeviceName"){
             let dev_name = others[0]
@@ -217,6 +240,7 @@ class Logger{
                 c.write(`${id}:\nDevice ` + tmp + " set to '" + dev_name + "'")
                 
             }
+            inst.clients.pop()
         }
     }
 
