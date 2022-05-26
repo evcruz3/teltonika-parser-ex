@@ -102,7 +102,7 @@ class Logger{
 
                         console.log("Received AVL data from device " + id);
                         let now = new Date();
-                        let tmp_filename = `dev${id}-${now.getFullYear()}-${now.getMonth()}-${now.getDate()}.txt`
+                        let tmp_filename = `dev${id}-${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.txt`
 
                         let tmp_path = `devlogs/${id}/`
 
