@@ -101,7 +101,15 @@ class Logger{
                         let avl = parser.getAvl()
 
                         console.log("Received AVL data from device " + id);
-                        let stream = fs.createWriteStream("dev"+id+"-log.txt", {flags:'a'});
+                        let now = new Date();
+                        let tmp_filename = `dev${id}-${now.getFullYear()}-${now.getMonth()}-${now.getDate()}.txt`
+
+                        let tmp_path = `devlogs/${id}/`
+
+                        if (!fs.existsSync(tmp_path)){
+                            fs.mkdirSync(tmp_path, { recursive: true });
+                        }
+                        let stream = fs.createWriteStream(`${tmp_path}${tmp_filename}`, {flags:'a'});
                         stream.write(data.toString("hex")+"\n");
                         let writer = new binutils.BinaryWriter();
                         writer.WriteInt32(avl.number_of_data);
