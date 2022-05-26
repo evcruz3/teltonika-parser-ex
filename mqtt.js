@@ -128,12 +128,22 @@ class MqttToBroker{
 
             let [id, ...dump] = data.toString().split(":\n")
             let response = dump.join("")
+            if(id == -2){
+                mqtt_client.publish('/tft100-server/all-gps', response, { qos: 0, retain: true }, (error) => {
+                    if (error) {
+                    console.error(error)
+                    }
+                })
+            }
+            else{
+                mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
+                    if (error) {
+                    console.error(error)
+                    }
+                })
+            }
             //console.log(`Response from dev ${id}:` + response)
-            mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
-                if (error) {
-                console.error(error)
-                }
-            })
+            
 
             if (data.toString().endsWith('exit')) { 
                 client.destroy(); 

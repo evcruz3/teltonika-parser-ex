@@ -256,7 +256,7 @@ class Logger{
             inst.clients.pop()
         }
         else if(ui_command == "getGpsAll"){
-            c.write(`-1:\n` + JSON.stringify(inst.devices.gpsDevices))
+            c.write(`-2:\n` + JSON.stringify(inst.devices.gpsDevices))
         }
     }
 
