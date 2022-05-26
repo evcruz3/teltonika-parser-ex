@@ -123,7 +123,7 @@ class MqttToBroker{
 
         function launchIntervalConnect() {
             if(false != intervalConnect) return
-            intervalConnect = setInterval(this.client.connect(49365, 'localhost'), 1000)
+            intervalConnect = setInterval(_inst.client.connect(49365, 'localhost'), 1000)
         }
 
         function clearIntervalConnect() {
