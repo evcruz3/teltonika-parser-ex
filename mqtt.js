@@ -36,12 +36,12 @@ class MqttToBroker{
 
         const connectUrl = `mqtt://${host}:${port}`
         const mqtt_client = mqtt.connect(connectUrl, {
-        clientId,
-        clean: true,
-        connectTimeout: 4000,
-        username: 'tft100',
-        password: 'S8Y5mvDdGGWjxj5h',
-        reconnectPeriod: 1000,
+            clientId,
+            clean: true,
+            connectTimeout: 4000,
+            username: 'tft100',
+            password: 'S8Y5mvDdGGWjxj5h',
+            reconnectPeriod: 1000,
         })
 
         const topic = '/tft100-server/+/command'
@@ -83,31 +83,6 @@ class MqttToBroker{
             if (ui_command == "sendCommand"){
                 _inst.client.write(d)
             }
-            // else if (ui_command == "listDevices"){
-            //     //console.log("TODO: list all devices here and their status")
-            //     _inst.client.write(d)
-            // }
-            // else if (ui_command == "displayLog"){
-            //     if(isNaN(tmp)){
-            //         var id = Object.keys(devices).find(key => devices[key] === tmp);
-            //     } 
-            //     else{
-            //         var id = tmp
-            //     }
-
-            //     if(id in devices){
-            //         if(others[0]){
-            //             _inst._displayLog(id, _inst, others[0])
-            //         }
-            //         else{
-            //             _inst._displayLog(id, _inst)
-            //         }
-                    
-            //     }
-            //     else{
-            //         console.log("Device not found / specified")
-            //     }
-            // }
             else if (ui_command == "setDeviceName"){
                 _inst.client.write(d)
             }
@@ -120,10 +95,8 @@ class MqttToBroker{
         this.client = new net.Socket();
 
         var intervalConnect = false;
-
-
         function connect() {
-            _inst.client.connect({
+            this.client.connect({
                 port: 49365,
                 host: 'localhost'
             })
@@ -131,7 +104,7 @@ class MqttToBroker{
 
         function launchIntervalConnect() {
             if(false != intervalConnect) return
-            intervalConnect = setInterval(connect, 1000)
+            intervalConnect = setInterval(connect, 2000)
         }
 
         function clearIntervalConnect() {
@@ -187,115 +160,7 @@ class MqttToBroker{
         })
 
         connect()
-        // Port 49364 for receiving forwarded GPRS response by the logger module
-        // let commandReceiver = net.createServer((c) => {
-        //     c.on("end", () => {
-        //         console.log("Logger disconnected")
-        //     });
 
-        //     c.on('data', (logger_message) => {
-                
-        //         let [id, ...dump] = logger_message.toString().split(":\n")
-        //         let response = dump.join("")
-        //         console.log(`GPRS Response from dev ${id}:` + response)
-        //         mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
-        //             if (error) {
-        //             console.error(error)
-        //             }
-        //         })
-
-        //         //c.write("SAMPLE RESPONSE FROM LOGGER")
-        //         //inst._process_message(ui_message, c, inst)
-        //     });
-        // })
-
-        // commandReceiver.listen(49364, () => {
-        //     console.log("GPRS listening port is up")
-        // })
-
-        // Open an MQTT subscription to broker
-        
-
-    }
-
-    _displayLog(id, _inst, n=-1){
-        //let devices = new Devices()
-        //devices.addDevice(null, null, id)
-        let filename = "dev"+id+"-log.txt"
-
-        if(n && n>0){
-            let lineReader = require('read-last-lines')
-            // lineReader.read(filename, n).then((lines) => lines.forEach(element => {
-            //     this._parseLine(element);
-            // }))
-            let lines = lineReader.read(filename, n).then((lines) => {
-                let data = lines.split(/\r?\n/)
-                for (const [_, val] of Object.entries(data)) {
-                    _inst._parseLine(val, _inst);
-                }
-            }, reason => {
-                console.error(reason)
-            })
-        }
-        else{
-            let lineReader = require('readline').createInterface({
-                input: require('fs').createReadStream(filename)
-              });
-              
-              lineReader.on('line', function(data) {
-                _inst._parseLine(data, _inst);
-              } );
-        }
-    }
-
-    _parseLine (data, _inst) {
-        let buffer = Buffer.from(data, "hex");
-        let parser = new Parser(buffer);
-        
-        let header = parser.getHeader();
-        
-        if(header.codec_id == 142){
-            let avl = parser.getAvl()
-
-            console.log("AVL DATA")
-            for (var i = 0; i < avl.number_of_data; i++) {
-                _inst._printAvlRecord(avl.records, i);
-            }
-            console.log()
-        }
-    }
-
-    _printAvlRecord(avlRecords, index){
-        let avlRecord = avlRecords[index]
-  
-        //console.log("KEYS: " + Object.keys(avlRecord))
-        console.log("Timestamp: " + avlRecord.timestamp)
-        console.log("Priority: " + avlRecord.priority)
-        for (const [key, value] of Object.entries(avlRecord.gps)) {
-            console.log(`GPS ${key}: ${value}`);
-            if (key == "valueHuman" && value){
-                
-                for (const [property, val] of Object.entries(value)) {
-                    console.log(`GPS ${key} ${value} ${property} : ${val}`);
-                }
-            }
-        }
-        //console.log("GPS: " + avlRecord.gps)
-        console.log("Event ID: " + avlRecord.event_id)
-        console.log("Properties Count " + avlRecord.properties_count)
-        for (const [key, element] of Object.entries(avlRecord.ioElements)) {
-            for (const [property, val] of Object.entries(element)) {
-                if (val){
-                    console.log(`IO Element ${key} ${property}: ${val}`);
-                }
-                if (property == "value"){
-                    for (const [prop, v] of Object.entries(val)) {
-                        console.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
-                    }
-                }
-            }
-            //console.log(`IO Element ${key}: ${value}`);
-        }
     }
 
 }
