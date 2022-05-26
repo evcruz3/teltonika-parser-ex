@@ -81,13 +81,13 @@ class MqttToBroker{
             //console.log("Message: " + message);
 
             if (ui_command == "sendCommand"){
-                _inst.client.write(d)
+                client.write(d)
             }
             else if (ui_command == "setDeviceName"){
-                _inst.client.write(d)
+                client.write(d)
             }
             else if (ui_command == "getGpsAll"){
-                _inst.client.write(d)
+                client.write(d)
             }
         })
 
