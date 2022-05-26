@@ -45,6 +45,7 @@ class Logger{
             console.log("Device " + device.id + " loaded")
         }
 
+        
         // Define methods for device connections
         let server = net.createServer((c) => {
             c.on('end', () => {
@@ -98,7 +99,13 @@ class Logger{
                         //this.devices.pushGprsRecord(id, gprs);
                     }
                     else if(header.codec_id == 142){
-                        let avl = parser.getAvl()
+                        let avl = parser.getAvl()                   
+
+                        let writer = new binutils.BinaryWriter();
+                        writer.WriteInt32(avl.number_of_data);
+        
+                        let response = writer.ByteBuffer;
+                        c.write(response);
 
                         console.log("Received AVL data from device " + id);
                         let now = new Date();
@@ -109,13 +116,12 @@ class Logger{
                         if (!fs.existsSync(tmp_path)){
                             fs.mkdirSync(tmp_path, { recursive: true });
                         }
+
+                        this.devices.gpsDevices[id].timestamp = avl.timestamp
+                        this.devices.gpsDevices[id].gps.altitude = avl.gps.altitude
+                        this.devices.gpsDevices[id].gps.longitude = avl.gps.longitude
                         let stream = fs.createWriteStream(`${tmp_path}${tmp_filename}`, {flags:'a'});
                         stream.write(data.toString("hex")+"\n");
-                        let writer = new binutils.BinaryWriter();
-                        writer.WriteInt32(avl.number_of_data);
-        
-                        let response = writer.ByteBuffer;
-                        c.write(response);
                     }
                         
                 }
@@ -249,6 +255,9 @@ class Logger{
                 
             }
             inst.clients.pop()
+        }
+        else if(ui_command == "getGpsAll"){
+            c.write(`-1:\n` + JSON.stringify(inst.devices.gpsDevices))
         }
     }
 
