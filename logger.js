@@ -117,7 +117,7 @@ class Logger{
                             fs.mkdirSync(tmp_path, { recursive: true });
                         }
 
-                        this.devices.gpsDevices[id] = {"timestamp":avl.timestamp, "gps" : {"altitude" : avl.gps.altitude, "longitude" : avl.gps.longitude}}
+                        this.devices.gpsDevices[id] = {"timestamp":avl.timestamp, "gps" : {"latitude" : avl.gps.latitude, "longitude" : avl.gps.longitude}}
                         let stream = fs.createWriteStream(`${tmp_path}${tmp_filename}`, {flags:'a'});
                         stream.write(data.toString("hex")+"\n");
                     }

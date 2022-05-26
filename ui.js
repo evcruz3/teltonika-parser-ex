@@ -80,6 +80,9 @@ class UI{
             else if (ui_command == "setDeviceName"){
                 _inst.client.write(d)
             }
+            else if (ui_command == "getGpsAll"){
+                _inst.client.write(d)
+            }
             
             
         });

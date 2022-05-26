@@ -111,6 +111,9 @@ class MqttToBroker{
             else if (ui_command == "setDeviceName"){
                 _inst.client.write(d)
             }
+            else if (ui_command == "getGpsAll"){
+                _inst.client.write(d)
+            }
         })
 
         // Port 49365 for sending ui commands to logger module
