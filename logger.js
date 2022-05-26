@@ -146,7 +146,7 @@ class Logger{
                 console.log("ui message: " + ui_message)
                 inst.clients.push(c)
                 inst._process_message(ui_message, c, inst)
-                console.log("Clients: " + inst.clients)
+                //console.log("Clients: " + inst.clients)
             });
         })
         commandReceiver.listen(49365, () => {
@@ -262,7 +262,7 @@ class Logger{
             c.write(`-2:\n` + JSON.stringify(inst.devices.gpsDevices))
             inst.clients.pop()
         }
-        console.log("Clients: " + inst.clients)
+        //console.log("Clients: " + inst.clients)
     }
 
 }

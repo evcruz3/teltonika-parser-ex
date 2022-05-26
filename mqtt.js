@@ -119,9 +119,7 @@ class MqttToBroker{
         // Port 49365 for sending ui commands to logger module
         this.client = new net.Socket();
 
-        this.client.connect(49365, 'localhost', () => {
-            console.log("Created a connection to ui node")
-        })
+        
 
         this.client.on('data', (data) => {     
             console.log(`Client received: ${data}`); 
@@ -162,6 +160,9 @@ class MqttToBroker{
             console.error(err); 
         }); 
 
+        this.client.connect(49365, 'localhost', () => {
+            console.log("Created a connection to ui node")
+        })
         // Port 49364 for receiving forwarded GPRS response by the logger module
         // let commandReceiver = net.createServer((c) => {
         //     c.on("end", () => {
