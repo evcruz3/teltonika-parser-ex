@@ -259,7 +259,9 @@ class Logger{
         }
         else if(ui_command == "getGpsAll"){
             c.write(`-2:\n` + JSON.stringify(inst.devices.gpsDevices))
+            inst.clients.pop()
         }
+        console.log(inst.clients)
     }
 
 }
