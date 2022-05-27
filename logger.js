@@ -4,17 +4,9 @@ const net = require('net');
 const Devices = require('./device/devices')
 const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
+const consoleFormatter = require("./utilities/consoleFormatter")
 
-const originalConsoleLog = console.log;
-console.log = function() {
-    args = [];
-    args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + '] ' );
-    // Note: arguments is part of the prototype
-    for( var i = 0; i < arguments.length; i++ ) {
-        args.push( arguments[i] );
-    }
-    originalConsoleLog.apply( console, args );
-};
+console = consoleFormatter(console)
 
 class Logger{
     /*
