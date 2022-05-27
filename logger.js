@@ -158,18 +158,17 @@ class Logger{
            inst.log("Created a connection to ui node")
         })*/
         let client = inst.clients.pop()
-        let _inst = inst
 
         if (client !== undefined){
             client.on('data', (data) => {     
-                _inst.log(`Logger received: ${data}`); 
+                console.log(`[LOGGER]  Logger received: ${data}`); 
                 if (data.toString().endsWith('exit')) { 
                     client.destroy(); 
                 } 
             });  
             // Add a 'close' event handler for the client socket 
             client.on('close', () => { 
-                _inst.log('UI closed'); 
+                console.log('[LOGGER]  UI closed'); 
             });  
             client.on('error', (err) => { 
                 console.error(err); 
