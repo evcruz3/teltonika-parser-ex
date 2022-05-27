@@ -261,4 +261,4 @@ class Logger{
 
 }
 
-inst = new Logger()
+module.exports = Logger

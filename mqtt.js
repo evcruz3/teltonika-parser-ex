@@ -1,15 +1,7 @@
 const net = require('net');
+const consoleFormatter = require("./utilities/consoleFormatter")
 
-const originalConsoleLog = console.log;
-console.log = function() {
-    args = [];
-    args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + ']' );
-    // Note: arguments is part of the prototype
-    for( var i = 0; i < arguments.length; i++ ) {
-        args.push( arguments[i] );
-    }
-    originalConsoleLog.apply( console, args );
-};
+console = consoleFormatter(console)
 
 class MqttToBroker{
     constructor (){
@@ -160,7 +152,7 @@ class MqttToBroker{
 
 }
 
-ui_inst = new MqttToBroker()
+module.exports = MqttToBroker
 
 
 
