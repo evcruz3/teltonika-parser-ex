@@ -117,22 +117,15 @@ class MqttToBroker{
             }
             //log(`Response from dev ${id}:` + response)
             
-
-            if (data.toString().endsWith('exit')) { 
-                client.destroy(); 
-            } 
         });  
         // Add a 'close' event handler for the client socket 
         client.on('close', () => { 
             log('logger closed'); 
-            launchIntervalConnect()
+            connect()
             
         });  
         client.on('error', (err) => { 
             console.error(err); 
-            launchIntervalConnect()
-        }); 
-        client.on('error', () => { 
             launchIntervalConnect()
         }); 
 

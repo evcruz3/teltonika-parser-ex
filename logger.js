@@ -162,9 +162,6 @@ class Logger{
         if (client !== undefined){
             client.on('data', (data) => {     
                 console.log(`[LOGGER]  Logger received: ${data}`); 
-                if (data.toString().endsWith('exit')) { 
-                    client.destroy(); 
-                } 
             });  
             // Add a 'close' event handler for the client socket 
             client.on('close', () => { 
