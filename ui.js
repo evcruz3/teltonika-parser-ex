@@ -1,24 +1,9 @@
 const Parser = require('./utilities/teltonika-parser');
-const binutils = require('binutils64');
 const net = require('net');
-const ByteBuffer = require("bytebuffer");
-const Devices = require('./device/devices')
-const prompt = require('prompt-sync')
-const crc16ibm = require('./utilities/crc16ibm')
-const GprsCommandPacker = require("./utilities/gprsCommandPacker")
-const fs = require('fs')
 const myRL = require("serverline");
+const formatConsole = require("./utilities/formatConsole")
 
-const originalConsoleLog = console.log;
-console.log = function() {
-    args = [];
-    args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + '] ' );
-    // Note: arguments is part of the prototype
-    for( var i = 0; i < arguments.length; i++ ) {
-        args.push( arguments[i] );
-    }
-    originalConsoleLog.apply( console, args );
-};
+console.log = formatConsole()
 
 class UI{
     constructor (){

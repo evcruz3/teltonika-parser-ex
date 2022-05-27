@@ -1,13 +1,4 @@
-const Parser = require('./utilities/teltonika-parser');
-const binutils = require('binutils64');
 const net = require('net');
-const ByteBuffer = require("bytebuffer");
-const Devices = require('./device/devices')
-const prompt = require('prompt-sync')
-const crc16ibm = require('./utilities/crc16ibm')
-const GprsCommandPacker = require("./utilities/gprsCommandPacker")
-const fs = require('fs')
-const myRL = require("serverline");
 
 const originalConsoleLog = console.log;
 console.log = function() {
@@ -22,7 +13,6 @@ console.log = function() {
 
 class MqttToBroker{
     constructor (){
-        //this.devices = new Devices()
         var _inst = this
 
         process.stdout.write("\x1Bc")
@@ -167,7 +157,6 @@ class MqttToBroker{
 
 ui_inst = new MqttToBroker()
 
-//var stdin = process.openStdin();
 
 
 
