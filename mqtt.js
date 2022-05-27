@@ -3,7 +3,7 @@ const net = require('net');
 const originalConsoleLog = console.log;
 console.log = function() {
     args = [];
-    args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + '] ' );
+    args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + ']' );
     // Note: arguments is part of the prototype
     for( var i = 0; i < arguments.length; i++ ) {
         args.push( arguments[i] );
@@ -14,6 +14,7 @@ console.log = function() {
 class MqttToBroker{
     constructor (){
         var _inst = this
+        const PREFIX = "MQTT"
 
         process.stdout.write("\x1Bc")
         log(Array(process.stdout.rows + 1).join('\n'));
@@ -152,7 +153,7 @@ class MqttToBroker{
         connect()
 
         function log (message){
-            console.log("MQTT", message);
+            console.log(`[${PREFIX}] `, message);
         }
 
     }

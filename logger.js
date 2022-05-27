@@ -25,6 +25,13 @@ class Logger{
      * 
      */
     constructor (){
+        const PREFIX = "LOGGER""
+
+        function log (message){
+            console.log(`[${PREFIX}] `, message);
+        }
+
+
         this.devices = new Devices()
         this.devlist_path = ('./device/devlist.json')
         this.devlist_json = require(this.devlist_path)
@@ -37,7 +44,7 @@ class Logger{
             if("name" in device){
                 this.dev_names.push(device.name)
             }
-            console.log("Device " + device.id + " loaded")
+            log("Device " + device.id + " loaded")
         }
 
         
@@ -45,7 +52,7 @@ class Logger{
         let server = net.createServer((c) => {
             c.on('end', () => {
                 let id = this.devices.getDeviceBySocket(c).id
-                console.log("Device " + id + " disconnected");
+                log("Device " + id + " disconnected");
                 this.devices.setDeviceReady(id, false);
                 //this.devices.removeDeviceBySocket(c);
                 //clients
@@ -62,34 +69,34 @@ class Logger{
                         dev.updateSocket(c)
                         id = dev.id
                         this.devices[id] = dev
-                        console.log("Device " + id + " reconnected")
+                        log("Device " + id + " reconnected")
                     }
                     else{
                         id = this.devices.addDevice(parser.imei, c)
-                        console.log("New device added; ID: " + id + "; IMEI: " + parser.imei)   
+                        log("New device added; ID: " + id + "; IMEI: " + parser.imei)   
                         this.devlist_json['devices'].push({"id":id,"imei":parser.imei,"name":""});
                         let stream = fs.createWriteStream(this.devlist_path, {flags:'w'});
                         stream.write(JSON.stringify(this.devlist_json))
                     }
                     
-                    //console.log("Received IMEI from device " + id);
+                    //log("Received IMEI from device " + id);
                     c.write(Buffer.alloc(1,1));
                    
                     this.devices.setDeviceReady(id)
-                    console.log("Device " + id + " is ready for communication") 
+                    log("Device " + id + " is ready for communication") 
                 }
                 else {
                     let device = this.devices.getDeviceBySocket(c)
                     let id = device.id
                     let header = parser.getHeader();
-                    //console.log("CODEC: " + header.codec_id);
+                    //log("CODEC: " + header.codec_id);
         
                     if(header.codec_id == 12){
-                        console.log("Received GPRS message from device  " + id)
+                        log("Received GPRS message from device  " + id)
                         let gprs = parser.getGprs()
                         
                         
-                        console.log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
+                        log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
                         inst.send_to_ui(inst, id, gprs)
                         //this.devices.pushGprsRecord(id, gprs);
                     }
@@ -102,7 +109,7 @@ class Logger{
                         let response = writer.ByteBuffer;
                         c.write(response);
 
-                        console.log("Received AVL data from device " + id);
+                        log("Received AVL data from device " + id);
                         let now = new Date();
                         let tmp_filename = `dev${id}-${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.txt`
 
@@ -126,7 +133,7 @@ class Logger{
         
         
         server.listen(49366, () => {
-            console.log("Server started");
+            log("Server started");
         });
 
 
@@ -134,18 +141,18 @@ class Logger{
         this.clients = []
         let commandReceiver = net.createServer((c) => {
             c.on("end", () => {
-                console.log("ui disconnected")
+                log("ui disconnected")
             });
 
             c.on('data', (ui_message) => {
-                console.log("ui message: " + ui_message)
+                log("ui message: " + ui_message)
                 inst.clients.push(c)
                 inst._process_message(ui_message, c, inst)
-                //console.log("Clients: " + inst.clients)
+                //log("Clients: " + inst.clients)
             });
         })
         commandReceiver.listen(49365, () => {
-            console.log("Waiting for command from ui...")
+            log("Waiting for command from ui...")
         })
 
         // For sending GPRS responses to ui
@@ -156,20 +163,20 @@ class Logger{
         /*let client = new net.Socket();
 
         client.connect(49364, 'localhost', () => {
-            console.log("Created a connection to ui node")
+           _inst.log("Created a connection to ui node")
         })*/
         let client = inst.clients.pop()
 
         if (client !== undefined){
             client.on('data', (data) => {     
-                console.log(`Logger received: ${data}`); 
+                _inst.log(`Logger received: ${data}`); 
                 if (data.toString().endsWith('exit')) { 
                     client.destroy(); 
                 } 
             });  
             // Add a 'close' event handler for the client socket 
             client.on('close', () => { 
-                console.log('UI closed'); 
+                _inst.log('UI closed'); 
             });  
             client.on('error', (err) => { 
                 console.error(err); 
@@ -189,9 +196,9 @@ class Logger{
 
         
 
-        //console.log("Command: " + comm);
-        //console.log("ID: " + id);
-        //console.log("Message: " + message);
+        //_inst.log("Command: " + comm);
+        //_inst.log("ID: " + id);
+        //_inst.log("Message: " + message);
 
         if (ui_command == "sendCommand"){
             let gprsCommandPacker = new GprsCommandPacker(message)
@@ -257,7 +264,7 @@ class Logger{
             c.write(`-2:\n` + JSON.stringify(inst.devices.gpsDevices))
             inst.clients.pop()
         }
-        //console.log("Clients: " + inst.clients)
+        //_inst.log("Clients: " + inst.clients)
     }
 
 }
