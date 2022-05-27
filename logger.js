@@ -6,7 +6,12 @@ const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
 const formatConsole = require("./utilities/formatConsole")
 
-console.log = formatConsole()
+const originalConsoleLog = console.log;
+console.log = function() {
+    args = formatConsole()
+    
+    originalConsoleLog.apply( console, args );
+};
 
 class Logger{
     /*
