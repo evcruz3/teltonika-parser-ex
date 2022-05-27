@@ -152,7 +152,8 @@ class MqttToBroker{
 
 }
 
-module.exports = MqttToBroker
+
+inst_mqtt = new MqttToBroker()
 
 
 
