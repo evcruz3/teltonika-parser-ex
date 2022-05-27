@@ -1,19 +1,15 @@
 'use strict';
 
 function formatConsole() {
-    const originalConsoleLog = console.log;
-    console.log = function() {
-        args = [];
-        args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + '] ' );
+    console.log("ASDASD")
+    let args = []
+    args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + '] ' );
         // Note: arguments is part of the prototype
-        for( var i = 0; i < arguments.length; i++ ) {
-            args.push( arguments[i] );
-        }
-        
-        originalConsoleLog.apply( console, args );
-    };
+    for( var i = 0; i < arguments.length; i++ ) {
+        args.push( arguments[i] );
+    }
 
-    return originalConsoleLog
+    return args
 };
 
 module.exports = formatConsole;
