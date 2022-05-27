@@ -16,7 +16,7 @@ class MqttToBroker{
         var _inst = this
 
         process.stdout.write("\x1Bc")
-        console.log(Array(process.stdout.rows + 1).join('\n'));
+        log(Array(process.stdout.rows + 1).join('\n'));
 
         const mqtt = require('mqtt')
 
@@ -37,9 +37,9 @@ class MqttToBroker{
         const topic = '/tft100-server/+/command'
         //const topic_subscribe = '/nodejs/mqtt/tft100-server/commands'
         mqtt_client.on('connect', () => {
-            console.log('Connected, client ID: ' + clientId)
+            log('Connected, client ID: ' + clientId)
             mqtt_client.subscribe([topic], () => {
-                console.log(`Subscribe to topic '${topic}'`)
+                log(`Subscribe to topic '${topic}'`)
         })
         /*mqtt_client.publish(topic, 'sendCommand 1 getio', { qos: 0, retain: false }, (error) => {
             if (error) {
@@ -48,7 +48,7 @@ class MqttToBroker{
             })*/
         })
         mqtt_client.on('message', (topic, payload) => {
-            console.log('Received Message:', topic, payload.toString())
+            log('Received Message:', topic, payload.toString())
 
             let d = payload.toString()
 
@@ -62,13 +62,13 @@ class MqttToBroker{
             }
 
             let user_input = d.toString().trim()
-            //console.log("you entered: [" +    user_input + "]");
+            //log("you entered: [" +    user_input + "]");
             let [ui_command, tmp, ...others] = user_input.split(" ");
             let message = others.join(" ");
 
-            //console.log("Command: " + comm);
-            //console.log("ID: " + id);
-            //console.log("Message: " + message);
+            //log("Command: " + comm);
+            //log("ID: " + id);
+            //log("Message: " + message);
 
             if (ui_command == "sendCommand"){
                 client.write(d)
@@ -104,7 +104,7 @@ class MqttToBroker{
         }
 
         client.on('data', (data) => {     
-            console.log(`Client received: ${data}`); 
+            log(`Client received: ${data}`); 
 
             let [id, ...dump] = data.toString().split(":\n")
             let response = dump.join("")
@@ -122,7 +122,7 @@ class MqttToBroker{
                     }
                 })
             }
-            //console.log(`Response from dev ${id}:` + response)
+            //log(`Response from dev ${id}:` + response)
             
 
             if (data.toString().endsWith('exit')) { 
@@ -131,7 +131,7 @@ class MqttToBroker{
         });  
         // Add a 'close' event handler for the client socket 
         client.on('close', () => { 
-            console.log('logger closed'); 
+            log('logger closed'); 
             launchIntervalConnect()
             
         });  
@@ -145,11 +145,15 @@ class MqttToBroker{
 
         client.on('connect', () => {
             clearIntervalConnect()
-            console.log("Created a connection to ui node")
+            log("Created a connection to ui node")
 
         })
 
         connect()
+
+        function log (message){
+            console.log("MQTT", message);
+        }
 
     }
 
