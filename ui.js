@@ -8,23 +8,15 @@ const crc16ibm = require('./utilities/crc16ibm')
 const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
 const myRL = require("serverline");
+const consoleFormatter = require("./utilities/consoleFormatter")
 
-const originalConsoleLog = console.log;
-console.log = function() {
-    args = [];
-    args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + '] ' );
-    // Note: arguments is part of the prototype
-    for( var i = 0; i < arguments.length; i++ ) {
-        args.push( arguments[i] );
-    }
-    originalConsoleLog.apply( console, args );
-};
+console = consoleFormatter(console)
 
 class UI{
     constructor (){
         //this.devices = new Devices()
         var _inst = this
-        const PREFIX = "LOGGER"
+        const PREFIX = "UI"
 
         function log (message){
             console.log(`[${PREFIX}] `, message);

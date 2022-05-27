@@ -4,7 +4,7 @@ module.exports = function(console){
     const originalConsoleLog = console.log;
     console.log = function() {
         let args = [];
-        args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + '] ' );
+        args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + ']' );
         // Note: arguments is part of the prototype
         for( var i = 0; i < arguments.length; i++ ) {
             args.push( arguments[i] );
