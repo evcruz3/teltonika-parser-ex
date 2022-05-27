@@ -2,19 +2,19 @@ const Parser = require('./utilities/teltonika-parser');
 const binutils = require('binutils64');
 const net = require('net');
 const Devices = require('./device/devices')
-const prompt = require('prompt-sync')
-const crc16ibm = require('./utilities/crc16ibm')
 const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
-<<<<<<< HEAD
-const formatConsole = require("./utilities/formatConsole")
-=======
-const myRL = require("serverline")
-//require('log-timestamp')
-//process.env.TZ = "Asia/Manila"
->>>>>>> parent of b7a4061 (added formatConsole module)
 
-console.log = formatConsole(console.log)
+const originalConsoleLog = console.log;
+console.log = function() {
+    args = [];
+    args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + '] ' );
+    // Note: arguments is part of the prototype
+    for( var i = 0; i < arguments.length; i++ ) {
+        args.push( arguments[i] );
+    }
+    originalConsoleLog.apply( console, args );
+};
 
 class Logger{
     /*
