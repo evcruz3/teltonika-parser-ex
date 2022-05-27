@@ -1,7 +1,6 @@
 'use strict';
 
-function formatConsole() {
-    const originalConsoleLog = console.log;
+function formatConsole(originalConsoleLog) {
     let args = [];
     args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + '] ' );
     // Note: arguments is part of the prototype
@@ -9,8 +8,6 @@ function formatConsole() {
         args.push( arguments[i] );
     }
     originalConsoleLog.apply( console, args );
-
-    return originalConsoleLog
 };
 
 module.exports = formatConsole;
