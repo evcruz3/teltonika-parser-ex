@@ -1,5 +1,5 @@
-logger = require('./logger')
-mqtt = require('./mqtt')
+const Logger = require('./logger')
+const Mqtt = require('./mqtt')
 
-inst_logger = new logger()
-inst_mqtt = new mqtt()
+inst_logger = new Logger()
+inst_mqtt = new Mqtt()

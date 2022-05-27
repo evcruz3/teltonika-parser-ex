@@ -155,20 +155,20 @@ class Logger{
         /*let client = new net.Socket();
 
         client.connect(49364, 'localhost', () => {
-           _inst.log("Created a connection to ui node")
+           inst.log("Created a connection to ui node")
         })*/
         let client = inst.clients.pop()
 
         if (client !== undefined){
             client.on('data', (data) => {     
-                _inst.log(`Logger received: ${data}`); 
+                inst.log(`Logger received: ${data}`); 
                 if (data.toString().endsWith('exit')) { 
                     client.destroy(); 
                 } 
             });  
             // Add a 'close' event handler for the client socket 
             client.on('close', () => { 
-                _inst.log('UI closed'); 
+                inst.log('UI closed'); 
             });  
             client.on('error', (err) => { 
                 console.error(err); 
@@ -188,9 +188,9 @@ class Logger{
 
         
 
-        //_inst.log("Command: " + comm);
-        //_inst.log("ID: " + id);
-        //_inst.log("Message: " + message);
+        //inst.log("Command: " + comm);
+        //inst.log("ID: " + id);
+        //inst.log("Message: " + message);
 
         if (ui_command == "sendCommand"){
             let gprsCommandPacker = new GprsCommandPacker(message)
@@ -256,7 +256,7 @@ class Logger{
             c.write(`-2:\n` + JSON.stringify(inst.devices.gpsDevices))
             inst.clients.pop()
         }
-        //_inst.log("Clients: " + inst.clients)
+        //inst.log("Clients: " + inst.clients)
     }
 
 }
