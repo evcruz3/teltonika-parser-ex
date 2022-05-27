@@ -1,9 +1,7 @@
 'use strict';
 
-
-
-module.exports = function () {
-    const originalConsoleLog = console.log;
+module.exports = function (originalConsoleLog) {
+    //const originalConsoleLog = console.log;
     console.log = function() {
         args = [];
         args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + '] ' );
