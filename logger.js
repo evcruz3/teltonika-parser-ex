@@ -25,7 +25,7 @@ class Logger{
      * 
      */
     constructor (){
-        const PREFIX = "LOGGER""
+        const PREFIX = "LOGGER"
 
         function log (message){
             console.log(`[${PREFIX}] `, message);
