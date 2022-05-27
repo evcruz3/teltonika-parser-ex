@@ -1,7 +1,7 @@
 const net = require('net');
 const formatConsole = require("./utilities/formatConsole")
 
-console.log = formatConsole(console.log)
+console.log = formatConsole()
 
 class MqttToBroker{
     constructor (){
