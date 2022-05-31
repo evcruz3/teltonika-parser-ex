@@ -126,7 +126,7 @@ class Logger{
         
         server.listen(49366, () => {
             log("Server started");
-        });
+        }); 
 
 
         // Create port to listen to system commands
@@ -141,7 +141,7 @@ class Logger{
                 inst.clients.push(c)
                 inst._process_message(ui_message, c, inst)
                 //log("Clients: " + inst.clients)
-            });
+            }); 
         })
         commandReceiver.listen(49365, () => {
             log("Waiting for command from ui...")
@@ -171,7 +171,7 @@ class Logger{
                 console.error(err); 
             }); 
             client.write(id + ":\nType: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
-            client.end()
+            //client.end()
         }
 
         
