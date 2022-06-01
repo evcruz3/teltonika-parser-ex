@@ -76,7 +76,6 @@ class MqttToBroker{
             intervalConnect = false
         }
 
-        client.on()
         client.on('data', (data) => {     
             log(`Received from LOGGER: ${data}`); 
 
