@@ -144,10 +144,6 @@ class Logger{
                 //log("Clients: " + inst.clients)
             }); 
 
-            c.on("connect", () => {
-                log("ui connected")
-                
-            })
         })
         commandReceiver.listen(49365, () => {
             log("Waiting for command from ui...")
