@@ -27,6 +27,7 @@ class MqttToBroker{
             reconnectPeriod: 1000,
         })
 
+        const allowed_commands = ['sendCommand', 'setDeviceName', 'getGpsAll']
         const topic = '/tft100-server/+/command'
         mqtt_client.on('connect', () => {
             log('Connected, client ID: ' + clientId)
@@ -42,14 +43,8 @@ class MqttToBroker{
             log('Received Message:', topic, user_input)
 
             let ui_command = user_input.split(" ")[0];
-
-            if (ui_command == "sendCommand"){
-                client.write(d)
-            }
-            else if (ui_command == "setDeviceName"){
-                client.write(d)
-            }
-            else if (ui_command == "getGpsAll"){
+            
+            if (allowed_commands.includes(ui_command)){
                 client.write(d)
             }
         })
@@ -101,7 +96,7 @@ class MqttToBroker{
         // Add a 'close' event handler for the client socket 
         client.on('close', () => { 
             log('logger closed'); 
-            //connect()
+            connect()
         });  
         client.on('error', (err) => { 
             console.error(err); 
