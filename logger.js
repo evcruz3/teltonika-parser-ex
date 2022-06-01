@@ -139,13 +139,14 @@ class Logger{
 
             c.on('data', (ui_message) => {
                 log("ui message: " + ui_message)
+                this.client = c
                 inst._process_message(ui_message, c, inst)
                 //log("Clients: " + inst.clients)
             }); 
 
             c.on("connect", () => {
                 log("ui connected")
-                this.client = c
+                
             })
         })
         commandReceiver.listen(49365, () => {
