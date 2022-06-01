@@ -142,7 +142,7 @@ class Logger{
             c.on('data', (ui_message) => {
                 log("ui message: " + ui_message)
                 this.client = c
-                inst._process_message(ui_message, c, inst)
+                inst._process_message(ui_message, c, inst).then(log("TEST OK"))
                 //log("Clients: " + inst.clients)
             }); 
 
@@ -184,7 +184,7 @@ class Logger{
         
     }
 
-    _process_message(ui_message, c, inst){
+    async _process_message(ui_message, c, inst){
         //let inst = this
         let user_input = ui_message.toString().trim()
         let [ui_command, tmp, ...others] = user_input.split(" ");
