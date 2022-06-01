@@ -64,15 +64,12 @@ class MqttToBroker{
             //log("Message: " + message);
 
             if (ui_command == "sendCommand"){
-                connect()
                 client.write(d)
             }
             else if (ui_command == "setDeviceName"){
-                connect()
                 client.write(d)
             }
             else if (ui_command == "getGpsAll"){
-                connect()
                 client.write(d)
             }
         })
@@ -118,14 +115,13 @@ class MqttToBroker{
                     }
                 })
             }
-            client.end()
             //log(`Response from dev ${id}:` + response)
             
         });  
         // Add a 'close' event handler for the client socket 
         client.on('close', () => { 
             log('logger closed'); 
-            //connect()
+            connect()
             
         });  
         client.on('error', (err) => { 
@@ -139,7 +135,7 @@ class MqttToBroker{
 
         })
 
-        //connect()
+        connect()
 
         function log (message){
             console.log(`[${PREFIX}] `, message);

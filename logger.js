@@ -130,7 +130,8 @@ class Logger{
 
 
         // Create port to listen to system commands
-        this.clients = []
+        //this.clients = []
+        this.clients = null
         let commandReceiver = net.createServer((c) => {
             c.on("end", () => {
                 log("ui disconnected")
@@ -138,10 +139,14 @@ class Logger{
 
             c.on('data', (ui_message) => {
                 log("ui message: " + ui_message)
-                inst.clients.push(c)
                 inst._process_message(ui_message, c, inst)
                 //log("Clients: " + inst.clients)
             }); 
+
+            c.on("connect", () => {
+                log("ui connected")
+                this.client = c
+            })
         })
         commandReceiver.listen(49365, () => {
             log("Waiting for command from ui...")
@@ -157,9 +162,11 @@ class Logger{
         client.connect(49364, 'localhost', () => {
            inst.log("Created a connection to ui node")
         })*/
-        let client = inst.clients.pop()
+        //let client = inst.clients.pop()
 
-        if (client !== undefined){
+        let client = inst.client
+
+        if (client !== undefined && client !== null){
             client.on('data', (data) => {     
                 console.log(`[LOGGER]  Logger received: ${data}`); 
             });  
@@ -171,7 +178,7 @@ class Logger{
                 console.error(err); 
             }); 
             client.write(id + ":\nType: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
-            client.end()
+            //client.end()
         }
 
         
@@ -210,20 +217,20 @@ class Logger{
                 }
                 else{
                     c.write(dev.id + ":\nDevice " + tmp + " is currently disconnected")
-                    inst.clients.pop()
+                    //inst.clients.pop()
                 }
                 
             }
             else{
                 c.write("-1:\nDevice " + tmp + " not found")
-                inst.clients.pop()
+                //inst.clients.pop()
             }
 
             
         }
         else if (ui_command == "listDevices"){
             inst.devices.printDevices(c)
-            inst.clients.pop()
+            //inst.clients.pop()
         }
         else if(ui_command == "setDeviceName"){
             let dev_name = others[0]
@@ -247,11 +254,11 @@ class Logger{
                 c.write(`${id}:\nDevice ` + tmp + " set to '" + dev_name + "'")
                 
             }
-            inst.clients.pop()
+            //inst.clients.pop()
         }
         else if(ui_command == "getGpsAll"){
             c.write(`-2:\n` + JSON.stringify(inst.devices.gpsDevices))
-            inst.clients.pop()
+            //inst.clients.pop()
         }
         //inst.log("Clients: " + inst.clients)
     }
