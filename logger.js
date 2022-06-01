@@ -171,7 +171,7 @@ class Logger{
                 console.error(err); 
             }); 
             client.write(id + ":\nType: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
-            //client.end()
+            client.end()
         }
 
         

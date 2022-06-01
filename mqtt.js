@@ -64,12 +64,15 @@ class MqttToBroker{
             //log("Message: " + message);
 
             if (ui_command == "sendCommand"){
+                connect()
                 client.write(d)
             }
             else if (ui_command == "setDeviceName"){
+                connect()
                 client.write(d)
             }
             else if (ui_command == "getGpsAll"){
+                connect()
                 client.write(d)
             }
         })
@@ -97,7 +100,7 @@ class MqttToBroker{
         }
 
         client.on('data', (data) => {     
-            log(`Client received: ${data}`); 
+            log(`Received from LOGGER: ${data}`); 
 
             let [id, ...dump] = data.toString().split(":\n")
             let response = dump.join("")
@@ -135,7 +138,7 @@ class MqttToBroker{
 
         })
 
-        connect()
+        //connect()
 
         function log (message){
             console.log(`[${PREFIX}] `, message);
