@@ -131,7 +131,7 @@ class Logger{
 
         // Create port to listen to system commands
         //this.clients = []
-        this.clients = null
+        this.client = null
         let commandReceiver = net.createServer((c) => {
             c.on("end", () => {
                 log("ui disconnected")
