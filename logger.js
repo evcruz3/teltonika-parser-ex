@@ -142,7 +142,7 @@ class Logger{
             c.on('data', (ui_message) => {
                 log("ui message: " + ui_message)
                 this.client = c
-                inst._process_message(ui_message, c, inst).then(log("TEST OK"))
+                inst._process_message(ui_message, c, inst)
                 //log("Clients: " + inst.clients)
             }); 
 
@@ -184,7 +184,7 @@ class Logger{
         
     }
 
-    async _process_message(ui_message, c, inst){
+    _process_message(ui_message, c, inst){
         //let inst = this
         let user_input = ui_message.toString().trim()
         let [ui_command, tmp, ...others] = user_input.split(" ");
@@ -216,22 +216,7 @@ class Logger{
                     //inst.devices.sendMessageToDevice(id, outBuffer);
                 }
                 else{
-                    let sent = false
-                    let timeout = 30; //seconds
-                    console.log(`[LOGGER]  Waiting for dev ${dev.id} to reconnect...`);
-                    let start = Number(Date.now());
-                    let end = start + timeout * 1000;
-                    while (Number(Date.now()) < end) {
-                        if(dev.isReady){
-                            c.write("-1:\n'" + message + "' sent to device " + tmp);
-                            dev.sendCommand(outBuffer)
-                            sent = true
-                            break;
-                        }
-                    }
-                    if(!sent){
-                        c.write(dev.id + ":\nDevice " + tmp + " command not sent")
-                    }
+                    c.write(dev.id + ":\nDevice " + tmp + " is currently disconnected")
                     //inst.clients.pop()
                 }
                 
