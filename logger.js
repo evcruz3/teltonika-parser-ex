@@ -12,7 +12,8 @@ class Logger{
     /*
      * COMMUNICATION PORTS
      * 
-     * 49365 - ui <-> logger / mqtt
+     * 49364 - logger <-> ui
+     * 49365 - logger <-> mqtt
      * 49366 - logger <-> tft-devices
      * 
      */
@@ -22,7 +23,6 @@ class Logger{
         function log (message){
             console.log(`[${PREFIX}] `, message);
         }
-
 
         this.devices = new Devices()
         this.devlist_path = ('./device/devlist.json')
@@ -125,8 +125,10 @@ class Logger{
         
         
         server.listen(49366, () => {
-            log("Server started");
+            log("Teltonika Server started");
         }); 
+
+
 
 
         // Create port to listen to system commands
@@ -145,6 +147,7 @@ class Logger{
             }); 
 
         })
+        
         commandReceiver.listen(49365, () => {
             log("Waiting for command from ui...")
         })
@@ -213,7 +216,22 @@ class Logger{
                     //inst.devices.sendMessageToDevice(id, outBuffer);
                 }
                 else{
-                    c.write(dev.id + ":\nDevice " + tmp + " is currently disconnected")
+                    let sent = false
+                    let timeout = 30; //seconds
+                    log(`Waiting for dev ${dev.id} to reconnect...`);
+                    let start = Number(Date.now());
+                    let end = start + timeout * 1000;
+                    while (Number(Date.now()) < end) {
+                        if(dev.isReady){
+                            c.write("-1:\n'" + message + "' sent to device " + tmp);
+                            dev.sendCommand(outBuffer)
+                            sent = true
+                            break;
+                        }
+                    }
+                    if(!sent){
+                        c.write(dev.id + ":\nDevice " + tmp + " command not sent")
+                    }
                     //inst.clients.pop()
                 }
                 

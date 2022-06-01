@@ -28,40 +28,20 @@ class MqttToBroker{
         })
 
         const topic = '/tft100-server/+/command'
-        //const topic_subscribe = '/nodejs/mqtt/tft100-server/commands'
         mqtt_client.on('connect', () => {
             log('Connected, client ID: ' + clientId)
             mqtt_client.subscribe([topic], () => {
                 log(`Subscribe to topic '${topic}'`)
-        })
-        /*mqtt_client.publish(topic, 'sendCommand 1 getio', { qos: 0, retain: false }, (error) => {
-            if (error) {
-            console.error(error)
-            }
-            })*/
+            })
         })
         mqtt_client.on('message', (topic, payload) => {
-            log('Received Message:', topic, payload.toString())
-
+            
             let d = payload.toString()
 
-            let devlist_path = ('./device/devlist.json')
-            let devlist_json = require(devlist_path)
-            let devices = {}
-            
-
-            for (const [key, device] of Object.entries(devlist_json['devices'])) {
-                devices[device.id] = device.name
-            }
-
             let user_input = d.toString().trim()
-            //log("you entered: [" +    user_input + "]");
-            let [ui_command, tmp, ...others] = user_input.split(" ");
-            let message = others.join(" ");
+            log('Received Message:', topic, user_input)
 
-            //log("Command: " + comm);
-            //log("ID: " + id);
-            //log("Message: " + message);
+            let ui_command = user_input.split(" ")[0];
 
             if (ui_command == "sendCommand"){
                 client.write(d)
@@ -96,6 +76,7 @@ class MqttToBroker{
             intervalConnect = false
         }
 
+        client.on()
         client.on('data', (data) => {     
             log(`Received from LOGGER: ${data}`); 
 
@@ -133,6 +114,11 @@ class MqttToBroker{
             clearIntervalConnect()
             log("Created a connection to ui node")
 
+        })
+
+        client.setTimeout(30000)
+        client.on('timeout', () => {
+            log("TIMED OUT")
         })
 
         connect()
