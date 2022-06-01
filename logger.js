@@ -218,7 +218,7 @@ class Logger{
                 else{
                     let sent = false
                     let timeout = 30; //seconds
-                    log(`Waiting for dev ${dev.id} to reconnect...`);
+                    inst.log(`Waiting for dev ${dev.id} to reconnect...`);
                     let start = Number(Date.now());
                     let end = start + timeout * 1000;
                     while (Number(Date.now()) < end) {
