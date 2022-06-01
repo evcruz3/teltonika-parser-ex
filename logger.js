@@ -75,7 +75,7 @@ class Logger{
                     c.write(Buffer.alloc(1,1));
                    
                     this.devices.setDeviceReady(id)
-                    log("Device " + id + " is ready for communication") 
+                    log("Device " + id + " is online") 
                 }
                 else {
                     let device = this.devices.getDeviceBySocket(c)
@@ -216,7 +216,7 @@ class Logger{
                     //inst.devices.sendMessageToDevice(id, outBuffer);
                 }
                 else{
-                    c.write(dev.id + ":\nDevice " + tmp + " is currently disconnected")
+                    c.write(dev.id + ":\nDevice " + tmp + " is currently offline")
                     //inst.clients.pop()
                 }
                 

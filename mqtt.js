@@ -67,7 +67,7 @@ class MqttToBroker{
 
         function launchIntervalConnect() {
             if(false != intervalConnect) return
-            intervalConnect = setInterval(connect, 2000)
+            intervalConnect = setInterval(connect, 5000)
         }
 
         function clearIntervalConnect() {
@@ -101,8 +101,7 @@ class MqttToBroker{
         // Add a 'close' event handler for the client socket 
         client.on('close', () => { 
             log('logger closed'); 
-            connect()
-            
+            //connect()
         });  
         client.on('error', (err) => { 
             console.error(err); 
