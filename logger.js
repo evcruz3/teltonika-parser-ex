@@ -109,21 +109,25 @@ class Logger{
 
                         let requests = this.requests[id]
                         if(requests !== undefined){
-                            log("Pending requests for " + id + ": ")
-                            log(requests)
-                            this.requests[id].forEach(function(item, index, object) {
-                                let now = new Date()
-                                let diff = (now.getTime() - item.timestamp.getTime())/1000
+                            if(requests.length > 0){
+                                log("Pending requests for " + id + ": ")
+                                log(requests)
+                                this.requests[id].forEach(function(item, index, object) {
+                                    let now = new Date()
+                                    let diff = (now.getTime() - item.timestamp.getTime())/1000
 
-                                if (diff <= 30){
-                                    device.sendCommand(item.buffer)
-                                    log("Pending message sent to dev " + id)
-                                    object.splice(index, 1);
-                                }
-                                else{
-                                    object.splice(index, 1);
-                                }
-                            });
+                                    log(`Pending message [${index}] life: ${diff}`)
+                                    if (diff <= 30){
+                                        device.sendCommand(item.buffer)
+                                        log("Pending message [" + index + "] sent to dev " + id)
+                                        object.splice(index, 1);
+                                    }
+                                    else{
+                                        object.splice(index, 1);
+                                    }
+                                });
+                            }
+                            
                         }
 
                         let now = new Date();
@@ -246,6 +250,7 @@ class Logger{
                     if(inst.requests[dev.id] === undefined){
                         inst.requests[dev.id] = []
                     }
+                    
                     
                     inst.requests[dev.id].push({"timestamp" : timestamp, "buffer" : outBuffer})
                     //inst.clients.pop()
