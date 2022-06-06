@@ -242,7 +242,10 @@ class Logger{
                     c.write(dev.id + ":\nDevice " + tmp + " is currently offline, will send once the device go online")
                     let timestamp = new Date()
                     
-                    inst.requests[dev.id] = []
+                    if(inst.requests[dev.id] === undefined){
+                        inst.requests[dev.id] = []
+                    }
+                    
                     inst.requests[dev.id].push({"timestamp" : timestamp, "buffer" : outBuffer})
                     //inst.clients.pop()
                 }
