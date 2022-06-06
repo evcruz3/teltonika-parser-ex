@@ -115,7 +115,7 @@ class Logger{
                                 let diff = (now.getTime() - item.timestamp.getTime())/1000
 
                                 if (diff <= 30){
-                                    dev.sendCommand(item.buffer)
+                                    device.sendCommand(item.buffer)
                                     log("Pending message sent to dev " + id)
                                     object.splice(index, 1);
                                 }
