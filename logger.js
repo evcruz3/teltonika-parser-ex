@@ -79,23 +79,7 @@ class Logger{
                     this.devices.setDeviceReady(id)
                     log("Device " + id + " is online") 
 
-                    let requests = this.requests[id]
-                    if(requests !== undefined){
-                        log(requests)
-                        requests.forEach(function(item, index, object) {
-                            let now = new Date()
-                            let diff = (now.getTime() - item.timestamp.getTime())/1000
-
-                            if (diff <= 30){
-                                dev.sendCommand(item.buffer)
-                                log("Pending message sent to dev " + id)
-                                object.splice(index, 1);
-                            }
-                            else{
-                                object.splice(index, 1);
-                            }
-                        });
-                    }
+                    
                 }
                 else {
                     let device = this.devices.getDeviceBySocket(c)
@@ -122,6 +106,25 @@ class Logger{
                         c.write(response);
 
                         log("Received AVL data from device " + id);
+
+                        let requests = this.requests[id]
+                        if(requests !== undefined){
+                            log(requests)
+                            requests.forEach(function(item, index, object) {
+                                let now = new Date()
+                                let diff = (now.getTime() - item.timestamp.getTime())/1000
+
+                                if (diff <= 30){
+                                    dev.sendCommand(item.buffer)
+                                    log("Pending message sent to dev " + id)
+                                    object.splice(index, 1);
+                                }
+                                else{
+                                    object.splice(index, 1);
+                                }
+                            });
+                        }
+
                         let now = new Date();
                         let tmp_filename = `dev${id}-${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.txt`
 
