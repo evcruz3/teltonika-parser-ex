@@ -64,9 +64,6 @@ class Logger{
                         this.devices[id] = dev
                         log("Device " + id + " reconnected")
 
-                        
-                        
-                        
                     }
                     else{
                         id = this.devices.addDevice(parser.imei, c)
@@ -89,7 +86,7 @@ class Logger{
                             let diff = (now.getTime() - item.timestamp.getTime())/1000
 
                             if (diff <= 30){
-                                dev.sendCommand(item.outBuffer)
+                                dev.sendCommand(item.buffer)
                                 log("Pending message sent to dev " + id)
                             }
                             else{
