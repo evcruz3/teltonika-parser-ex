@@ -28,6 +28,7 @@ class Logger{
         this.devlist_path = ('./device/devlist.json')
         this.devlist_json = require(this.devlist_path)
         var inst = this
+        this.requests = {}
         this.dev_names = []
         
         // Load all devices to a runtime object 'Devices'
@@ -62,6 +63,20 @@ class Logger{
                         id = dev.id
                         this.devices[id] = dev
                         log("Device " + id + " reconnected")
+
+                        this.requests[id].foreach(function(item, index, object) {
+                            let now = new Date()
+                            let diff = (now.getTime() - item.timestamp.getTime())/1000
+
+                            if (diff <= 30){
+                                dev.sendCommand(item.outBuffer)
+                                log("Pending message sent to dev " + id)
+                            }
+                            else{
+                                object.splice(index, 1);
+                            }
+                        });
+                        
                     }
                     else{
                         id = this.devices.addDevice(parser.imei, c)
@@ -216,7 +231,9 @@ class Logger{
                     //inst.devices.sendMessageToDevice(id, outBuffer);
                 }
                 else{
-                    c.write(dev.id + ":\nDevice " + tmp + " is currently offline")
+                    c.write(dev.id + ":\nDevice " + tmp + " is currently offline, will send once the device go online")
+                    let timestamp = new Date()
+                    inst.requests[dev.id].push() = {"timestamp" : timestamp, "buffer" : outBuffer}
                     //inst.clients.pop()
                 }
                 

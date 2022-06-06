@@ -40,7 +40,7 @@ class MqttToBroker{
             let d = payload.toString()
 
             let user_input = d.toString().trim()
-            log('Received Message:', topic, user_input)
+            log('Received Message from ' + topic.toString() + ": " + user_input)
 
             let ui_command = user_input.split(" ")[0];
             
