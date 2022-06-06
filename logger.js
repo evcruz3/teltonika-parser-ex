@@ -64,18 +64,22 @@ class Logger{
                         this.devices[id] = dev
                         log("Device " + id + " reconnected")
 
-                        this.requests[id].foreach(function(item, index, object) {
-                            let now = new Date()
-                            let diff = (now.getTime() - item.timestamp.getTime())/1000
-
-                            if (diff <= 30){
-                                dev.sendCommand(item.outBuffer)
-                                log("Pending message sent to dev " + id)
-                            }
-                            else{
-                                object.splice(index, 1);
-                            }
-                        });
+                        let requests = this.requests[id]
+                        if(requests !== undefined){
+                            requests.foreach(function(item, index, object) {
+                                let now = new Date()
+                                let diff = (now.getTime() - item.timestamp.getTime())/1000
+    
+                                if (diff <= 30){
+                                    dev.sendCommand(item.outBuffer)
+                                    log("Pending message sent to dev " + id)
+                                }
+                                else{
+                                    object.splice(index, 1);
+                                }
+                            });
+                        }
+                        
                         
                     }
                     else{
