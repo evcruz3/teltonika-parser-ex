@@ -109,7 +109,7 @@ class Logger{
 
                         let requests = this.requests[id]
                         if(requests !== undefined){
-                            log(requests)
+                            log("Pending requests for " + id + ": " + requests)
                             this.requests[id].forEach(function(item, index, object) {
                                 let now = new Date()
                                 let diff = (now.getTime() - item.timestamp.getTime())/1000
