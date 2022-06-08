@@ -109,7 +109,7 @@ class Logger{
                             let myobj = {device: id, avl: avl}
                             dbo.collection("AVL DATA").insertOne(myobj, function(err, res){
                                 if (err) throw err
-                                inst.log(" MONGODB: 1 AVL document inserted")
+                                log(" MONGODB: 1 AVL document inserted")
                                 db.close()
                             })
                         })
