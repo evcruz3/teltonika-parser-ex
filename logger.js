@@ -5,6 +5,7 @@ const Devices = require('./device/devices')
 const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
 const consoleFormatter = require("./utilities/consoleFormatter")
+const mongo = require('mongodb')
 
 console = consoleFormatter(console)
 
@@ -30,6 +31,9 @@ class Logger{
         var inst = this
         this.requests = {}
         this.dev_names = []
+
+        var MongoClient = mongo.MongoClient
+        var mongoUrl = "mongodb://localhost:27017/"
         
         // Load all devices to a runtime object 'Devices'
         for (const [key, device] of Object.entries(this.devlist_json['devices'])) {
@@ -98,6 +102,17 @@ class Logger{
                     }
                     else if(header.codec_id == 142){
                         let avl = parser.getAvl()                   
+
+                        MongoClient.connect(mongoUrl, function(err, db) {
+                            if (err) throw err
+                            let dbo = db.db("mydb")
+                            let myobj = {device: id, avl: avl}
+                            dbo.collection("AVL DATA").insertOne(myobj, function(err, res){
+                                if (err) throw err
+                                inst.log(" MONGODB: 1 AVL document inserted")
+                                db.close()
+                            })
+                        })
 
                         let writer = new binutils.BinaryWriter();
                         writer.WriteInt32(avl.number_of_data);
