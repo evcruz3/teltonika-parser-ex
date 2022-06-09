@@ -33,7 +33,7 @@ class Logger{
         this.dev_names = []
 
         var MongoClient = mongo.MongoClient
-        var mongoUrl = "mongodb://localhost:27017/"
+        var mongoUrl = "mongodb://tft-server:tft100@167.71.159.65:27017/tft-server"
         
         // Load all devices to a runtime object 'Devices'
         for (const [key, device] of Object.entries(this.devlist_json['devices'])) {
