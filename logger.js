@@ -105,7 +105,7 @@ class Logger{
 
                         MongoClient.connect(mongoUrl, function(err, db) {
                             if (err) throw err
-                            let dbo = db.db("mydb")
+                            let dbo = db.db("tft-server")
                             let myobj = {device: id, avl: avl}
                             dbo.collection("AVL DATA").insertOne(myobj, function(err, res){
                                 if (err) throw err
