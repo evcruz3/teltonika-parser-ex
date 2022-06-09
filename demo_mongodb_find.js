@@ -1,5 +1,5 @@
 var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://tft-server:tft100@167.71.159.65:27017/";
+var url = "mongodb://tft-server:tft100@167.71.159.65:27017/tft-server";
 
 MongoClient.connect(url, function(err, db) {
   if (err) throw err;
