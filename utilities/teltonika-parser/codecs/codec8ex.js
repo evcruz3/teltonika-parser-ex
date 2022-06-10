@@ -1879,7 +1879,7 @@ class Codec8e extends Codec {
         label: "Aftertreatment 1 Diesel Oxidation Catalyst Outlet Temperature Preliminary FMI"
       },
       958: {
-        label: "Aftertreatment 1 Diesel Oxidation Catalyst Differential Pressure Preliminary FMI"\
+        label: "Aftertreatment 1 Diesel Oxidation Catalyst Differential Pressure Preliminary FMI"
       },
       959: {
         dimension: "%",
