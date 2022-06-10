@@ -2688,6 +2688,7 @@ class Codec8e extends Codec {
         label: "BMS0 Voltage Cell Max"
       }
     }
+  }
 }
 
 module.exports = Codec8e;
