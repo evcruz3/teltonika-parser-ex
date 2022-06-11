@@ -101,7 +101,12 @@ class Logger{
                         //this.devices.pushGprsRecord(id, gprs);
                     }
                     else if(header.codec_id == 142){
-                        let avl = parser.getAvl()                   
+                        let avl = parser.getAvl() 
+                        
+                        if("0000" != avl._preamble){
+                            console.log("WARNING: Parsed preamble is not 0x0000; " + avl._preamble);
+                            //this._preamble = Buffer.from("0x0000", "hex")
+                        } 
 
                         MongoClient.connect(mongoUrl, function(err, db) {
                             if (err) throw err

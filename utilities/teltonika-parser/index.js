@@ -29,12 +29,9 @@ class TeltonikaParser {
       this.imei = this._reader.ReadBytes(imeiLength).toString();
     } else {
       let tmp = this._toInt(this._reader.ReadBytes(2));
-      this._preamble = Buffer.from(imeiLength.toString(16).padStart(2,0) + tmp.toString(16).padStart(2,0), "hex")
-      if("0000" != this._preamble.toString("hex")){
-        console.log("WARNING: Parsed preamble is not 0x0000; " + this._preamble.toString("hex"));
-        //this._preamble = Buffer.from("0x0000", "hex")
-      } 
-      this._preamble = this._preamble.toString("hex")
+      // this._preamble = Buffer.from(imeiLength.toString(16).padStart(2,0) + tmp.toString(16).padStart(2,0), "hex")
+      // this._preamble = this._preamble.toString("hex")
+      this._preamble = imeiLength.toString(16).padStart(2,0) + tmp.toString(16).padStart(2,0)
     }
   }
 
