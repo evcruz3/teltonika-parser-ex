@@ -103,8 +103,8 @@ class Logger{
                     else if(header.codec_id == 142){
                         let avl = parser.getAvl() 
                         
-                        if("0000" != avl._preamble){
-                            console.log("WARNING: Parsed preamble is not 0x0000; " + avl._preamble);
+                        if("0000" != avl.zero){
+                            console.log("WARNING: Parsed preamble is not 0x0000; " + avl.zero);
                             //this._preamble = Buffer.from("0x0000", "hex")
                         } 
 
