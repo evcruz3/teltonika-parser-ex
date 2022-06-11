@@ -104,7 +104,7 @@ class Logger{
                         let avl = parser.getAvl() 
                         
                         if("0000" != avl.zero){
-                            console.log("WARNING: Parsed preamble is not 0x0000; " + avl.zero);
+                            log("WARNING: Parsed preamble is not 0x0000; " + avl.zero);
                             //this._preamble = Buffer.from("0x0000", "hex")
                         } 
 
