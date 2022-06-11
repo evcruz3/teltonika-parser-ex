@@ -265,7 +265,7 @@ class Codec8e extends Codec {
         //   beacon_flag: this.toInt(this.reader.ReadBytes(1)),
         //   beacon_id: this.toInt(this.reader.ReadBytes(beacon_length)),
         //   signal_strength: this.toInt(this.reader.ReadBytes(1))
-        }
+        // }
       }
       else{
         value = this.toString(this.reader.ReadBytes(ioValueLength));
