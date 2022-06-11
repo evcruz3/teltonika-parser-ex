@@ -236,9 +236,10 @@ class Codec8e extends Codec {
     for (var i = 0; i < ioCountIntX; i++) {
       let property_id = this.toInt(this.reader.ReadBytes(2));
       let ioValueLength = this.toInt(this.reader.ReadBytes(2));
+
+      console.log(`Property: ${property_id}; io value length: ${ioValueLength} `)
       let value = null
       if (property_id == 385){
-        console.log("iovaluelength: " + ioValueLength)
         if (ioValueLength == 19){
           value = {
             data: this.toInt(this.reader.ReadBytes(1)),
@@ -257,6 +258,13 @@ class Codec8e extends Codec {
         }
         else{
           value = this.toString(this.reader.ReadBytes(ioValueLength));
+        }
+        // let beacon_length = ioValueLength - 3
+        // value = {
+        //   data: this.toInt(this.reader.ReadBytes(1)),
+        //   beacon_flag: this.toInt(this.reader.ReadBytes(1)),
+        //   beacon_id: this.toInt(this.reader.ReadBytes(beacon_length)),
+        //   signal_strength: this.toInt(this.reader.ReadBytes(1))
         }
       }
       else{
