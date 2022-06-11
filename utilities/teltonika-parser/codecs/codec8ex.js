@@ -238,6 +238,7 @@ class Codec8e extends Codec {
       let ioValueLength = this.toInt(this.reader.ReadBytes(2));
       let value = null
       if (property_id == 385){
+        console.log("iovaluelength: " + ioValueLength)
         if (ioValueLength == 19){
           value = {
             data: this.toInt(this.reader.ReadBytes(1)),
