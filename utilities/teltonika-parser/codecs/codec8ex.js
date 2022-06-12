@@ -240,7 +240,7 @@ class Codec8e extends Codec {
       console.log(`Property: ${property_id}; io value length: ${ioValueLength} `)
       let value = null
       if (property_id == 385){
-        [data_part, data_size] = this.dataParts()[this.reader.ReadBytes(2).toString("hex")]
+        let [data_part, data_size] = this.dataParts()[this.reader.ReadBytes(2).toString("hex")]
         ioValueLength = ioValueLength - 1
         let beacons = []
 
@@ -310,8 +310,8 @@ class Codec8e extends Codec {
         return twosComplement;
     
     // Else convert to it's negative representation
-    return -(((~twosComplement) & ((1 << numberBits) - 1)) + 1);
-}
+    return -(((~twosComplement) & ((1 << numberBits) - 1)) + 1);  
+  }
 
   beaconFlags(){
     return {
