@@ -240,25 +240,31 @@ class Codec8e extends Codec {
       console.log(`Property: ${property_id}; io value length: ${ioValueLength} `)
       let value = null
       if (property_id == 385){
-        if (ioValueLength == 19){
-          value = {
-            data: this.toInt(this.reader.ReadBytes(1)),
-            beacon_flag: this.toInt(this.reader.ReadBytes(1)),
-            beacon_id: this.toInt(this.reader.ReadBytes(16)),
-            signal_strength: this.toInt(this.reader.ReadBytes(1))
+        [data_part, data_size] = this.dataParts()[this.reader.ReadBytes(2).toString("hex")]
+        ioValueLength = ioValueLength - 1
+        let beacons = []
+
+        while(ioValueLength>0){
+          let flag_id = this.reader.ReadBytes(2).toString("hex")
+          let beacon_flag = this.beaconFlags()[flag_id]
+          let beacon_id = ''
+          let signal_strength = null
+
+          if (flag_id[0] == "2"){ //iBeacon
+            beacon_id = this.reader.ReadBytes(16).toString("hex") + ":" + this.reader.ReadBytes(2).toString("hex") + ":" + this.reader.ReadBytes(2).toString("hex")
+            signal_strength = this.fromTwosComplement(this.reader.ReadBytes(2), 2)
+            ioValueLength = ioValueLength - 24
           }
-        }
-        else if (ioValueLength == 23){
-          value = {
-            data: this.toInt(this.reader.ReadBytes(1)),
-            beacon_flag: this.toInt(this.reader.ReadBytes(1)),
-            beacon_id: this.toInt(this.reader.ReadBytes(20)),
-            signal_strength: this.toInt(this.reader.ReadBytes(1))
+          else if (flag_id[0] == "0"){ // Eddystone
+            beacon_id = this.reader.ReadBytes(10).toString("hex") + ":" + this.reader.ReadBytes(6).toString("hex")
+            signal_strength = this.fromTwosComplement(this.reader.ReadBytes(2), 2)
+            ioValueLength = ioValueLength - 20
           }
+
+          beacons.push({flag: beacon_flag, id: beacon_id, strength: signal_strength})
+
         }
-        else{
-          value = this.toString(this.reader.ReadBytes(ioValueLength));
-        }
+        
         // let beacon_length = ioValueLength - 3
         // value = {
         //   data: this.toInt(this.reader.ReadBytes(1)),
@@ -290,6 +296,42 @@ class Codec8e extends Codec {
     }
 
     return ioElement;
+  }
+
+  fromTwosComplement(twosComplement, numberBytes) {   
+    var numberBits = (numberBytes || 1) * 8;
+    
+    if (twosComplement < 0 || twosComplement > (1 << numberBits) - 1)
+        throw "Two's complement out of range given " + numberBytes + " byte(s) to represent.";
+    
+    // If less than the maximum positive: 2^(n-1)-1, the number stays positive
+    if (twosComplement <= Math.pow(2, numberBits - 1) - 1)
+        return twosComplement;
+    
+    // Else convert to it's negative representation
+    return -(((~twosComplement) & ((1 << numberBits) - 1)) + 1);
+}
+
+  beaconFlags(){
+    return {
+      "21":	"iBeacon with RSSI",
+      "23":	"iBeacon with RSSI, Battery Voltage",
+      "27":	"iBeacon with RSSI, Battery Voltage, Temperature",
+      "01":	"Eddystone with RSSI",
+      "03":	"Eddystone with RSSI, Battery Voltage",
+      "07":	"Eddystone with RSSI, Battery Voltage, Temperature"
+    }
+  }
+
+  dataParts(){
+    return {
+      "11": [1,1],
+      "12": [1,2],
+      "13": [1,3],
+      "22": [2,2],
+      "23": [2,3],
+      "33": [3,3]
+    }
   }
 
   /**
