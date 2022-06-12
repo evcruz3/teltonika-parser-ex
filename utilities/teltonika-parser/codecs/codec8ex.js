@@ -272,7 +272,7 @@ class Codec8e extends Codec {
         //   beacon_id: this.toInt(this.reader.ReadBytes(beacon_length)),
         //   signal_strength: this.toInt(this.reader.ReadBytes(1))
         // }
-        value = beacons
+        value = {data_part: data_part, data_size: data_size, beacons: beacons}
       }
       else{
         value = this.toString(this.reader.ReadBytes(ioValueLength));
