@@ -279,7 +279,7 @@ class Codec8e extends Codec {
         value = {data_part: data_part, beacons: beacons}
       }
       else{
-        if (ioValueLength != NaN) value = this.toString(this.reader.ReadBytes(ioValueLength));
+        if (!isNaN(ioValueLength)) value = this.toString(this.reader.ReadBytes(ioValueLength));
       }
       
 
