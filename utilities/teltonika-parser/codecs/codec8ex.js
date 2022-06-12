@@ -265,6 +265,8 @@ class Codec8e extends Codec {
 
           beacons.push({flag: beacon_flag, id: beacon_id, strength: signal_strength})
 
+          console.log("iovaluelength: ", ioValueLength)
+
         }
         
         // let beacon_length = ioValueLength - 3
