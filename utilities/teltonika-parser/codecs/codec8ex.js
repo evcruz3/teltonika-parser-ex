@@ -242,12 +242,12 @@ class Codec8e extends Codec {
       let value = ""
       if (property_id == 385){
         
-        let data_part = this.reader.ReadBytes(2).toString("hex")
+        let data_part = this.reader.ReadBytes(1).toString("hex")
         ioValueLength = ioValueLength - 1
         let beacons = []
 
         while(ioValueLength>0){
-          let flag_id = this.reader.ReadBytes(2).toString("hex")
+          let flag_id = this.reader.ReadBytes(1).toString("hex")
           let beacon_flag = this.beaconFlags()[flag_id]
           let beacon_id = ''
           let signal_strength = null
@@ -255,12 +255,12 @@ class Codec8e extends Codec {
           if (flag_id[0] == "2"){ //iBeacon
             beacon_id = this.reader.ReadBytes(16).toString("hex") + ":" + this.reader.ReadBytes(2).toString("hex") + ":" + this.reader.ReadBytes(2).toString("hex")
             signal_strength = this.fromTwosComplement(this.reader.ReadBytes(2), 2)
-            ioValueLength = ioValueLength - 24
+            ioValueLength = ioValueLength - 22
           }
           else if (flag_id[0] == "0"){ // Eddystone
             beacon_id = this.reader.ReadBytes(10).toString("hex") + ":" + this.reader.ReadBytes(6).toString("hex")
             signal_strength = this.fromTwosComplement(this.reader.ReadBytes(2), 2)
-            ioValueLength = ioValueLength - 20
+            ioValueLength = ioValueLength - 18
           }
 
           beacons.push({flag: beacon_flag, id: beacon_id, strength: signal_strength})
