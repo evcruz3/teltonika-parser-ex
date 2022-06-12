@@ -240,7 +240,8 @@ class Codec8e extends Codec {
       console.log(`Property: ${property_id}; io value length: ${ioValueLength} `)
       let value = null
       if (property_id == 385){
-        let [data_part, data_size] = this.dataParts()[this.reader.ReadBytes(2).toString("hex")]
+        
+        let data_part = this.reader.ReadBytes(2).toString("hex")
         ioValueLength = ioValueLength - 1
         let beacons = []
 
@@ -272,7 +273,7 @@ class Codec8e extends Codec {
         //   beacon_id: this.toInt(this.reader.ReadBytes(beacon_length)),
         //   signal_strength: this.toInt(this.reader.ReadBytes(1))
         // }
-        value = {data_part: data_part, data_size: data_size, beacons: beacons}
+        value = {data_part: data_part, beacons: beacons}
       }
       else{
         value = this.toString(this.reader.ReadBytes(ioValueLength));
