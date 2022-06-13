@@ -4,8 +4,8 @@ const mqtt = require('mqtt')
 const uuid = require('uuid');
 var schema = require('protocol-buffers-schema');
 var fs = require('fs');
-var proto = schema.parse(fs.readFileSync('safetravelph.proto'));
-var Bikeshare = compile(proto).Bikeshare;
+var proto = schema.parse(fs.readFileSync('tftserver.proto'));
+var TFTDevice = compile(proto).DeviceDetails;
 
 console = consoleFormatter(console)
 
