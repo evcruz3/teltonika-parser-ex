@@ -54,8 +54,8 @@ class Logger{
         })
 
 
-        var MongoClient = mongo.MongoClient
-        var mongoUrl = "mongodb://tft-server:tft100@167.71.159.65:27017/tft-server"
+        // var MongoClient = mongo.MongoClient
+        // var mongoUrl = "mongodb://tft-server:tft100@167.71.159.65:27017/tft-server"
         
         // Load all devices to a runtime object 'Devices'
         for (const [key, device] of Object.entries(this.devlist_json['devices'])) {
@@ -145,16 +145,16 @@ class Logger{
                         })
                         
 
-                        MongoClient.connect(mongoUrl, function(err, db) {
-                            if (err) throw err
-                            let dbo = db.db("tft-server")
-                            let myobj = {device: id, avl: avl}
-                            dbo.collection("AVL DATA").insertOne(myobj, function(err, res){
-                                if (err) throw err
-                                log(" MONGODB: 1 AVL document inserted")
-                                db.close()
-                            })
-                        })
+                        // MongoClient.connect(mongoUrl, function(err, db) {
+                        //     if (err) throw err
+                        //     let dbo = db.db("tft-server")
+                        //     let myobj = {device: id, avl: avl}
+                        //     dbo.collection("AVL DATA").insertOne(myobj, function(err, res){
+                        //         if (err) throw err
+                        //         log(" MONGODB: 1 AVL document inserted")
+                        //         db.close()
+                        //     })
+                        // })
 
                         let writer = new binutils.BinaryWriter();
                         writer.WriteInt32(avl.number_of_data);
