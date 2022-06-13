@@ -37,12 +37,13 @@ mqtt_client.on('connect', () => {
     })
 })
 mqtt_client.on('message', (topic, payload) => {
+    let dev_id = topic.split("/")[2]
     let json_records = JSON.parse(payload)
 
     let recordlength = json_records.length
     let record = json_records[recordlength-1]
     all_gps["timestamp"] = record.timestamp
-    all_gps[id] = {"gps" : {"timestamp" : record.timestamp, "latitude" : record.gps.latitude, "longitude" : record.gps.longitude, "speed" : record.gps.speed}}
+    all_gps[dev_id] = {"gps" : {"timestamp" : record.timestamp, "latitude" : record.gps.latitude, "longitude" : record.gps.longitude, "speed" : record.gps.speed}}
 
     mqtt_client.publish('/tft100-server/all-gps', response, { qos: 0, retain: true }, (error) => {
         if (error) {
