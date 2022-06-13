@@ -8,6 +8,7 @@ const consoleFormatter = require("./utilities/consoleFormatter")
 //const mongo = require('mongodb')
 const mqtt = require('mqtt')
 const uuid = require('uuid');
+const moment = require('moment')
 
 console = consoleFormatter(console)
 Date.prototype.toJSON = function(){ return moment(this).format(); }
