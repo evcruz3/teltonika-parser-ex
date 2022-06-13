@@ -2,21 +2,27 @@ const net = require('net');
 const consoleFormatter = require("./utilities/consoleFormatter")
 const mqtt = require('mqtt')
 const uuid = require('uuid');
-const mongo = require('mongodb')
+var schema = require('protocol-buffers-schema');
+var fs = require('fs');
+var proto = schema.parse(fs.readFileSync('safetravelph.proto'));
+var Bikeshare = compile(proto).Bikeshare;
+
 console = consoleFormatter(console)
 
-const PREFIX = "MONGGO_LOGGER"
+const PREFIX = "DEV_BROADCASTER"
+
+// BROADCASTS GPS OF ALL DEVICES TO THE MQTT BROKER
 
 process.stdout.write("\x1Bc")
 log(Array(process.stdout.rows + 1).join('\n'));
-
-var MongoClient = mongo.MongoClient
-var mongoUrl = "mongodb://tft-server:tft100@167.71.159.65:27017/tft-server"
 
 
 const host = '167.71.159.65'
 const port = '1883'
 const clientId = uuid.v1;
+
+const lockParam = require('./lockparameter.json')
+const digOut = lockParam.digOut
 
 const connectUrl = `mqtt://${host}:${port}`
 const mqtt_client = mqtt.connect(connectUrl, {
@@ -30,27 +36,31 @@ const mqtt_client = mqtt.connect(connectUrl, {
 
 const topic = '/tft100-server/+/avlrecords'
 
+var all_gps = {}
+
 mqtt_client.on('connect', () => {
     log('Connected to MQTT broker')
     mqtt_client.subscribe([topic], () => {
-        log(`Subscribe to topic '${topic}'`)
+        log(`Subscribed to topic '${topic}'`)
     })
 })
 mqtt_client.on('message', (topic, payload) => {
-    
     let dev_id = topic.split("/")[2]
     let json_records = JSON.parse(payload)
 
-    MongoClient.connect(mongoUrl, function(err, db) {
-        if (err) throw err
-        let dbo = db.db("tft-server")
-        let myobj = {deviceID: dev_id, records: json_records}
-        dbo.collection("AVL DATA").insertOne(myobj, function(err, res){
-            if (err) throw err
-            log("1 AVL document inserted for deviceID " + dev_id)
-            db.close()
-        })
-    })
+    let digOutAvlID = digOut == 1 ? 179 : digOut == 2 ? 180:null;
+    
+    log("digOutAvlID: " + digOutAvlID)
+    
+
+
+    // mqtt_client.publish('/tft100-server/all-gps', JSON.stringify(all_gps), { qos: 0, retain: true }, (error) => {
+    //     if (error) {
+    //         console.error(error)
+    //     }
+    //     log("Broadcasted GPS")
+    // })
+
 
 })
 
