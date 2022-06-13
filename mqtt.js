@@ -1,5 +1,6 @@
 const net = require('net');
 const consoleFormatter = require("./utilities/consoleFormatter")
+const mqtt = require('mqtt')
 
 console = consoleFormatter(console)
 
@@ -11,8 +12,7 @@ class MqttToBroker{
         process.stdout.write("\x1Bc")
         log(Array(process.stdout.rows + 1).join('\n'));
 
-        const mqtt = require('mqtt')
-
+        
         const host = '167.71.159.65'
         const port = '1883'
         const clientId = `mqtt_${Math.random().toString(16).slice(3)}`

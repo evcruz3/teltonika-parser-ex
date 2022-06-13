@@ -6,12 +6,15 @@ const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
 const consoleFormatter = require("./utilities/consoleFormatter")
 const mongo = require('mongodb')
+const mqtt = require('mqtt')
+const uuid = require('uuid');
 
 console = consoleFormatter(console)
 
 class Logger{
     /*
      * COMMUNICATION PORTS
+     * 
      * 
      * 49364 - logger <-> ui
      * 49365 - logger <-> mqtt
@@ -31,6 +34,25 @@ class Logger{
         var inst = this
         this.requests = {}
         this.dev_names = []
+
+        const host = '167.71.159.65'
+        const port = '1883'
+        const clientId = uuid.v1
+
+        const connectUrl = `mqtt://${host}:${port}`
+        const mqtt_client = mqtt.connect(connectUrl, {
+            clientId,
+            clean: true,
+            connectTimeout: 4000,
+            username: 'tft100',
+            password: 'S8Y5mvDdGGWjxj5h',
+            reconnectPeriod: 1000,
+        })
+
+        mqtt_client.on('connect', () => {
+            log('Connected, client ID: ' + clientId)
+        })
+
 
         var MongoClient = mongo.MongoClient
         var mongoUrl = "mongodb://tft-server:tft100@167.71.159.65:27017/tft-server"
@@ -108,6 +130,21 @@ class Logger{
                             //this._preamble = Buffer.from("0x0000", "hex")
                         } 
 
+
+                        // After parsing AVL data, emit to mqtt broker?? or server port??
+                        /*
+                        * if broker, only one transmission is needed
+                        * if server port, you need to do a loop to send the message on each client (worst case, if you have many clients, it might cause a bottleneck)
+                        */
+
+                        let message = JSON.stringify(avl)
+                        mqtt_client.publish(`/tft100-server/${id}/avl`, message, { qos: 0, retain: false }, (error) => {
+                            if (error) {
+                                console.error(error)
+                            }
+                        })
+                        
+
                         MongoClient.connect(mongoUrl, function(err, db) {
                             if (err) throw err
                             let dbo = db.db("tft-server")
@@ -150,6 +187,8 @@ class Logger{
                             
                         }
 
+
+                        // Send to logger port 
                         let now = new Date();
                         let tmp_filename = `dev${id}-${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.txt`
 
