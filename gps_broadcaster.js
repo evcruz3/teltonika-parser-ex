@@ -46,8 +46,9 @@ mqtt_client.on('message', (topic, payload) => {
 
     mqtt_client.publish('/tft100-server/all-gps', response, { qos: 0, retain: true }, (error) => {
         if (error) {
-        console.error(error)
+            console.error(error)
         }
+        log("Broadcasted GPS")
     })
 
 
