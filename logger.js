@@ -10,6 +10,7 @@ const mqtt = require('mqtt')
 const uuid = require('uuid');
 
 console = consoleFormatter(console)
+Date.prototype.toJSON = function(){ return moment(this).format(); }
 
 class Logger{
     /*
