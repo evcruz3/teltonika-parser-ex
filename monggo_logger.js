@@ -47,3 +47,7 @@ mqtt_client.on('message', (topic, payload) => {
     // }
 })
 
+function log (message){
+    console.log(`[${PREFIX}] `, message);
+}
+
