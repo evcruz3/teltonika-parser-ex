@@ -39,7 +39,6 @@ mqtt_client.on('connect', () => {
 })
 mqtt_client.on('message', (topic, payload) => {
     
-    log(topic.split("/"))
     let dev_id = topic.split("/")[2]
     let json_records = JSON.parse(payload)
 
