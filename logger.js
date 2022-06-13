@@ -5,7 +5,7 @@ const Devices = require('./device/devices')
 const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
 const consoleFormatter = require("./utilities/consoleFormatter")
-const mongo = require('mongodb')
+//const mongo = require('mongodb')
 const mqtt = require('mqtt')
 const uuid = require('uuid');
 
@@ -137,8 +137,8 @@ class Logger{
                         * if server port, you need to do a loop to send the message on each client (worst case, if you have many clients, it might cause a bottleneck)
                         */
 
-                        let message = JSON.stringify(avl.records)
-                        mqtt_client.publish(`/tft100-server/${id}/avlrecords`, message, { qos: 0, retain: false }, (error) => {
+                        //let message = JSON.stringify(avl.records)
+                        mqtt_client.publish(`/tft100-server/${id}/avlrecords`, avl.records, { qos: 0, retain: false }, (error) => {
                             if (error) {
                                 console.error(error)
                             }
