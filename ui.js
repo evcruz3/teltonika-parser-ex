@@ -8,14 +8,22 @@ const crc16ibm = require('./utilities/crc16ibm')
 const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
 const myRL = require("serverline");
+const consoleFormatter = require("./utilities/consoleFormatter")
+
+console = consoleFormatter(console)
 
 class UI{
     constructor (){
         //this.devices = new Devices()
         var _inst = this
+        const PREFIX = "UI"
+
+        function log (message){
+            console.log(`[${PREFIX}] `, message);
+        }
 
         process.stdout.write("\x1Bc")
-        console.log(Array(process.stdout.rows + 1).join('\n'));
+        log(Array(process.stdout.rows + 1).join('\n'));
 
         myRL.init()
         myRL.setCompletion(['sendCommand', 'listDevices', 'setDeviceName']);
@@ -30,19 +38,19 @@ class UI{
             }
 
             let user_input = d.toString().trim()
-            //console.log("you entered: [" +    user_input + "]");
+            //log("you entered: [" +    user_input + "]");
             let [ui_command, tmp, ...others] = user_input.split(" ");
             let message = others.join(" ");
 
-            //console.log("Command: " + comm);
-            //console.log("ID: " + id);
-            //console.log("Message: " + message);
+            //log("Command: " + comm);
+            //log("ID: " + id);
+            //log("Message: " + message);
 
             if (ui_command == "sendCommand"){
                 _inst.client.write(d)
             }
             else if (ui_command == "listDevices"){
-                //console.log("TODO: list all devices here and their status")
+                //log("TODO: list all devices here and their status")
                 _inst.client.write(d)
             }
             else if (ui_command == "displayLog"){
@@ -63,10 +71,13 @@ class UI{
                     
                 }
                 else{
-                    console.log("Device not found / specified")
+                    log("Device not found / specified")
                 }
             }
             else if (ui_command == "setDeviceName"){
+                _inst.client.write(d)
+            }
+            else if (ui_command == "getGpsAll"){
                 _inst.client.write(d)
             }
             
@@ -77,48 +88,34 @@ class UI{
         this.client = new net.Socket();
 
         this.client.connect(49365, 'localhost', () => {
-            console.log("Created a connection to ui node")
+            log("Created a connection to ui node")
         })
 
         this.client.on('data', (data) => {     
-            console.log(`Client received: ${data}`); 
+            log(`Client received: ${data}`); 
             if (data.toString().endsWith('exit')) { 
                 client.destroy(); 
             } 
         });  
         // Add a 'close' event handler for the client socket 
         this.client.on('close', () => { 
-            console.log('logger closed'); 
+            log('logger closed'); 
         });  
         this.client.on('error', (err) => { 
             console.error(err); 
         }); 
 
-        // Port 49364 for receiving forwarded GPRS response by the logger module
-        let commandReceiver = net.createServer((c) => {
-            c.on("end", () => {
-                console.log("Logger disconnected")
-            });
-
-            c.on('data', (logger_message) => {
-                console.log("GPRS Response: " + logger_message)
-                //c.write("SAMPLE RESPONSE FROM LOGGER")
-                //inst._process_message(ui_message, c, inst)
-            });
-        })
-
-        commandReceiver.listen(49364, () => {
-            console.log("GPRS listening port is up")
-        })
-
-
+        
 
     }
 
     _displayLog(id, _inst, n=-1){
         //let devices = new Devices()
         //devices.addDevice(null, null, id)
-        let filename = "dev"+id+"-log.txt"
+        let now = new Date();
+        let dir_path = `devlogs/${id}/`
+        let filestring = `dev${id}-${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.txt`
+        let filename = dir_path + filestring
 
         if(n && n>0){
             let lineReader = require('read-last-lines')
@@ -154,44 +151,44 @@ class UI{
         if(header.codec_id == 142){
             let avl = parser.getAvl()
 
-            console.log("AVL DATA")
+            _inst.log("AVL DATA")
             for (var i = 0; i < avl.number_of_data; i++) {
                 _inst._printAvlRecord(avl.records, i);
             }
-            console.log()
+            _inst.log()
         }
     }
 
     _printAvlRecord(avlRecords, index){
         let avlRecord = avlRecords[index]
   
-        //console.log("KEYS: " + Object.keys(avlRecord))
-        console.log("Timestamp: " + avlRecord.timestamp)
-        console.log("Priority: " + avlRecord.priority)
+        //_inst.log("KEYS: " + Object.keys(avlRecord))
+        _inst.log("Timestamp: " + avlRecord.timestamp)
+        _inst.log("Priority: " + avlRecord.priority)
         for (const [key, value] of Object.entries(avlRecord.gps)) {
-            console.log(`GPS ${key}: ${value}`);
+            _inst.log(`GPS ${key}: ${value}`);
             if (key == "valueHuman" && value){
                 
                 for (const [property, val] of Object.entries(value)) {
-                    console.log(`GPS ${key} ${value} ${property} : ${val}`);
+                    _inst.log(`GPS ${key} ${value} ${property} : ${val}`);
                 }
             }
         }
-        //console.log("GPS: " + avlRecord.gps)
-        console.log("Event ID: " + avlRecord.event_id)
-        console.log("Properties Count " + avlRecord.properties_count)
+        //_inst.log("GPS: " + avlRecord.gps)
+        _inst.log("Event ID: " + avlRecord.event_id)
+        _inst.log("Properties Count " + avlRecord.properties_count)
         for (const [key, element] of Object.entries(avlRecord.ioElements)) {
             for (const [property, val] of Object.entries(element)) {
                 if (val){
-                    console.log(`IO Element ${key} ${property}: ${val}`);
+                    _inst.log(`IO Element ${key} ${property}: ${val}`);
                 }
                 if (property == "value"){
                     for (const [prop, v] of Object.entries(val)) {
-                        console.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
+                        _inst.log(`IO Element ${key} ${property} ${val} ${prop}: ${v}`);
                     }
                 }
             }
-            //console.log(`IO Element ${key}: ${value}`);
+            //_inst.log(`IO Element ${key}: ${value}`);
         }
     }
 

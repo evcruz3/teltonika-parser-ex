@@ -9,6 +9,7 @@ class Devices{
    constructor(){
        this.id = 0
        this.devices = []
+       this.gpsDevices = {}
    }
    
    addDevice(imei, socket, ID = null){
@@ -30,7 +31,6 @@ class Devices{
        
        //console.log("Success id assignment for connected device; id: " + this.id)
        //console.log("addDevice: Remote Address: " + this.devices[this.id].socket.remoteAddress + ":" + this.devices[this.id].socket.remotePort)
-       
        
    }
 
@@ -153,7 +153,7 @@ class Devices{
             //console.log(`${id}\t${dev.imei}\t${dev.isReady}`);
         }
         if(socket){
-            socket.write(JSON.stringify(table));
+            socket.write("-1:\n" + JSON.stringify(table));
         }else{
             console.table(table);
         }

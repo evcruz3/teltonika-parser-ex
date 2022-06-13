@@ -2,44 +2,54 @@ const Parser = require('./utilities/teltonika-parser');
 const binutils = require('binutils64');
 const net = require('net');
 const Devices = require('./device/devices')
-const prompt = require('prompt-sync')
-const crc16ibm = require('./utilities/crc16ibm')
 const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
-const myRL = require("serverline")
-//require('log-timestamp')
-//process.env.TZ = "Asia/Manila"
+const consoleFormatter = require("./utilities/consoleFormatter")
+const mongo = require('mongodb')
 
-const originalConsoleLog = console.log;
-console.log = function() {
-    args = [];
-    args.push( '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + '] ' );
-    // Note: arguments is part of the prototype
-    for( var i = 0; i < arguments.length; i++ ) {
-        args.push( arguments[i] );
-    }
-    originalConsoleLog.apply( console, args );
-};
+console = consoleFormatter(console)
 
 class Logger{
+    /*
+     * COMMUNICATION PORTS
+     * 
+     * 49364 - logger <-> ui
+     * 49365 - logger <-> mqtt
+     * 49366 - logger <-> tft-devices
+     * 
+     */
     constructor (){
+        const PREFIX = "LOGGER"
+
+        function log (message){
+            console.log(`[${PREFIX}] `, message);
+        }
+
         this.devices = new Devices()
         this.devlist_path = ('./device/devlist.json')
         this.devlist_json = require(this.devlist_path)
         var inst = this
+        this.requests = {}
         this.dev_names = []
+
+        var MongoClient = mongo.MongoClient
+        var mongoUrl = "mongodb://tft-server:tft100@167.71.159.65:27017/tft-server"
         
+        // Load all devices to a runtime object 'Devices'
         for (const [key, device] of Object.entries(this.devlist_json['devices'])) {
             this.devices.addDevice(device.imei, null, device.id)
             if("name" in device){
                 this.dev_names.push(device.name)
             }
-            console.log("Device " + device.id + " loaded")
+            log("Device " + device.id + " loaded")
         }
+
+        
+        // Define methods for device connections
         let server = net.createServer((c) => {
             c.on('end', () => {
                 let id = this.devices.getDeviceBySocket(c).id
-                console.log("Device " + id + " disconnected");
+                log("Device " + id + " disconnected");
                 this.devices.setDeviceReady(id, false);
                 //this.devices.removeDeviceBySocket(c);
                 //clients
@@ -56,48 +66,105 @@ class Logger{
                         dev.updateSocket(c)
                         id = dev.id
                         this.devices[id] = dev
-                        console.log("Device " + id + " reconnected")
+                        log("Device " + id + " reconnected")
+
                     }
                     else{
                         id = this.devices.addDevice(parser.imei, c)
-                        console.log("New device added; ID: " + id + "; IMEI: " + parser.imei)   
+                        log("New device added; ID: " + id + "; IMEI: " + parser.imei)   
                         this.devlist_json['devices'].push({"id":id,"imei":parser.imei,"name":""});
                         let stream = fs.createWriteStream(this.devlist_path, {flags:'w'});
                         stream.write(JSON.stringify(this.devlist_json))
                     }
                     
-                    //console.log("Received IMEI from device " + id);
+                    //log("Received IMEI from device " + id);
                     c.write(Buffer.alloc(1,1));
                    
                     this.devices.setDeviceReady(id)
-                    console.log("Device " + id + " is ready for communication") 
+                    log("Device " + id + " is online") 
+
+                    
                 }
                 else {
                     let device = this.devices.getDeviceBySocket(c)
                     let id = device.id
                     let header = parser.getHeader();
-                    //console.log("CODEC: " + header.codec_id);
+                    //log("CODEC: " + header.codec_id);
         
                     if(header.codec_id == 12){
-                        console.log("Received GPRS message from device  " + id)
+                        log("Received GPRS message from device  " + id)
                         let gprs = parser.getGprs()
                         
                         
-                        console.log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
+                        log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
                         inst.send_to_ui(inst, id, gprs)
                         //this.devices.pushGprsRecord(id, gprs);
                     }
                     else if(header.codec_id == 142){
-                        let avl = parser.getAvl()
+                        let avl = parser.getAvl() 
+                        
+                        if("0000" != avl.zero){
+                            log("WARNING: Parsed preamble is not 0x0000; " + avl.zero);
+                            //this._preamble = Buffer.from("0x0000", "hex")
+                        } 
 
-                        console.log("Received AVL data from device " + id);
-                        let stream = fs.createWriteStream("dev"+id+"-log.txt", {flags:'a'});
-                        stream.write(data.toString("hex")+"\n");
+                        MongoClient.connect(mongoUrl, function(err, db) {
+                            if (err) throw err
+                            let dbo = db.db("tft-server")
+                            let myobj = {device: id, avl: avl}
+                            dbo.collection("AVL DATA").insertOne(myobj, function(err, res){
+                                if (err) throw err
+                                log(" MONGODB: 1 AVL document inserted")
+                                db.close()
+                            })
+                        })
+
                         let writer = new binutils.BinaryWriter();
                         writer.WriteInt32(avl.number_of_data);
         
                         let response = writer.ByteBuffer;
                         c.write(response);
+
+                        log("Received AVL data from device " + id);
+
+                        let requests = this.requests[id]
+                        if(requests !== undefined){
+                            if(requests.length > 0){
+                                log("Pending requests for " + id + ": ")
+                                log(requests)
+                                this.requests[id].forEach(function(item, index, object) {
+                                    let now = new Date()
+                                    let diff = (now.getTime() - item.timestamp.getTime())/1000
+
+                                    log(`Pending message [${index}] life: ${diff}`)
+                                    if (diff <= 30){
+                                        device.sendCommand(item.buffer)
+                                        log("Pending message [" + index + "] sent to dev " + id)
+                                        object.splice(index, 1);
+                                    }
+                                    else{
+                                        object.splice(index, 1);
+                                    }
+                                });
+                            }
+                            
+                        }
+
+                        let now = new Date();
+                        let tmp_filename = `dev${id}-${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.txt`
+
+                        let tmp_path = `devlogs/${id}/`
+
+                        if (!fs.existsSync(tmp_path)){
+                            fs.mkdirSync(tmp_path, { recursive: true });
+                        }
+
+                        let recordlength = avl.records.length
+                        let record = avl.records[recordlength-1]
+                        this.devices.gpsDevices["timestamp"] = record.timestamp
+                        this.devices.gpsDevices[id] = {"gps" : {"timestamp" : record.timestamp, "latitude" : record.gps.latitude, "longitude" : record.gps.longitude}}
+                        let stream = fs.createWriteStream(`${tmp_path}${tmp_filename}`, {flags:'a'});
+                        stream.write(data.toString("hex")+"\n");
                     }
                         
                 }
@@ -106,23 +173,31 @@ class Logger{
         
         
         server.listen(49366, () => {
-            console.log("Server started");
-        });
+            log("Teltonika Server started");
+        }); 
 
+
+
+
+        // Create port to listen to system commands
+        //this.clients = []
+        this.client = null
         let commandReceiver = net.createServer((c) => {
             c.on("end", () => {
-                console.log("ui disconnected")
+                log("ui disconnected")
             });
 
             c.on('data', (ui_message) => {
-                console.log("ui message: " + ui_message)
-                //c.write("SAMPLE RESPONSE FROM LOGGER")
+                log("ui message: " + ui_message)
+                this.client = c
                 inst._process_message(ui_message, c, inst)
-            });
-        })
+                //log("Clients: " + inst.clients)
+            }); 
 
+        })
+        
         commandReceiver.listen(49365, () => {
-            console.log("Waiting for command from ui...")
+            log("Waiting for command from ui...")
         })
 
         // For sending GPRS responses to ui
@@ -130,28 +205,33 @@ class Logger{
     }
 
     send_to_ui(inst, id, gprs){
-        let client = new net.Socket();
+        /*let client = new net.Socket();
 
         client.connect(49364, 'localhost', () => {
-            console.log("Created a connection to ui node")
-        })
+           inst.log("Created a connection to ui node")
+        })*/
+        //let client = inst.clients.pop()
 
-        client.on('data', (data) => {     
-            console.log(`Logger received: ${data}`); 
-            if (data.toString().endsWith('exit')) { 
-                client.destroy(); 
-            } 
-        });  
-        // Add a 'close' event handler for the client socket 
-        client.on('close', () => { 
-            console.log('UI closed'); 
-        });  
-        client.on('error', (err) => { 
-            console.error(err); 
-        }); 
-        client.write("From dev " + id + "\nType: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
-        client.end()
+        let client = inst.client
+
+        if (client !== undefined && client !== null){
+            client.on('data', (data) => {     
+                console.log(`[LOGGER]  Logger received: ${data}`); 
+            });  
+            // Add a 'close' event handler for the client socket 
+            client.on('close', () => { 
+                console.log('[LOGGER]  UI closed'); 
+            });  
+            client.on('error', (err) => { 
+                console.error(err); 
+            }); 
+            client.write(id + ":\nType: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
+            //client.end()
+        }
+
+        
     }
+
     _process_message(ui_message, c, inst){
         //let inst = this
         let user_input = ui_message.toString().trim()
@@ -160,9 +240,9 @@ class Logger{
 
         
 
-        //console.log("Command: " + comm);
-        //console.log("ID: " + id);
-        //console.log("Message: " + message);
+        //inst.log("Command: " + comm);
+        //inst.log("ID: " + id);
+        //inst.log("Message: " + message);
 
         if (ui_command == "sendCommand"){
             let gprsCommandPacker = new GprsCommandPacker(message)
@@ -179,51 +259,66 @@ class Logger{
 
             if (dev !== undefined && dev !== null){
                 if(dev.isReady){
-                    c.write("'" + message + "' sent to device " + tmp);
+                    c.write("-1:\n'" + message + "' sent to device " + tmp);
                     dev.sendCommand(outBuffer)
                     //inst.devices.sendMessageToDevice(id, outBuffer);
                 }
                 else{
-                    c.write("Device " + tmp + " is currently disconnected")
+                    c.write(dev.id + ":\nDevice " + tmp + " is currently offline, will send once the device go online")
+                    let timestamp = new Date()
+                    
+                    if(inst.requests[dev.id] === undefined){
+                        inst.requests[dev.id] = []
+                    }
+                    
+                    
+                    inst.requests[dev.id].push({"timestamp" : timestamp, "buffer" : outBuffer})
+                    //inst.clients.pop()
                 }
                 
             }
             else{
-                c.write("Device " + tmp + " not found")
+                c.write("-1:\nDevice " + tmp + " not found")
+                //inst.clients.pop()
             }
+
+            
         }
         else if (ui_command == "listDevices"){
             inst.devices.printDevices(c)
+            //inst.clients.pop()
         }
         else if(ui_command == "setDeviceName"){
             let dev_name = others[0]
-
-            
-
-            if(dev_name in inst.dev_names){
-                c.write(dev_name + "already in use, please use another name")
+            if(isNaN(tmp)){
+                var dev = inst.devices.getDeviceByName(tmp)
             }
             else{
+                var dev = inst.devices.getDeviceByID(tmp)
+            }
 
-                if(isNaN(tmp)){
-                    var dev = inst.devices.getDeviceByName(tmp)
-                }
-                else{
-                    var dev = inst.devices.getDeviceByID(tmp)
-                }
+            let id = dev.id
 
-                let id = dev.id
-
+            if(dev_name in inst.dev_names){
+                c.write(`${id}:\n`+dev_name + "already in use, please use another name")
+            }
+            else{
                 inst.devlist_json['devices'][id].name = dev_name
                 let stream = fs.createWriteStream(inst.devlist_path, {flags:'w'});
                 stream.write(JSON.stringify(inst.devlist_json))
                 dev.setName(dev_name)
-                c.write("Device " + tmp + " set to '" + dev_name + "'")
+                c.write(`${id}:\nDevice ` + tmp + " set to '" + dev_name + "'")
                 
             }
+            //inst.clients.pop()
         }
+        else if(ui_command == "getGpsAll"){
+            c.write(`-2:\n` + JSON.stringify(inst.devices.gpsDevices))
+            //inst.clients.pop()
+        }
+        //inst.log("Clients: " + inst.clients)
     }
 
 }
 
-inst = new Logger()
+module.exports = Logger
