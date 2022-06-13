@@ -2,7 +2,10 @@ const net = require('net');
 const consoleFormatter = require("./utilities/consoleFormatter")
 const mqtt = require('mqtt')
 const uuid = require('uuid');
+const moment = require('moment')
+
 console = consoleFormatter(console)
+Date.prototype.toJSON = function(){ return moment(this).format(); }
 
 const PREFIX = "GPS_LOGGER"
 
@@ -45,7 +48,7 @@ mqtt_client.on('message', (topic, payload) => {
     all_gps["timestamp"] = record.timestamp
     all_gps[dev_id] = {"gps" : {"timestamp" : record.timestamp, "latitude" : record.gps.latitude, "longitude" : record.gps.longitude, "speed" : record.gps.speed}}
 
-    mqtt_client.publish('/tft100-server/all-gps', response, { qos: 0, retain: true }, (error) => {
+    mqtt_client.publish('/tft100-server/all-gps', JSON.stringify(all_gps), { qos: 0, retain: true }, (error) => {
         if (error) {
             console.error(error)
         }
