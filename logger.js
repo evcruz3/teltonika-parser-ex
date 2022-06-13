@@ -35,7 +35,7 @@ class Logger{
         this.requests = {}
         this.dev_names = []
 
-        const host = '167.71.159.65'
+        const host = 'localhost'
         const port = '1883'
         const clientId = uuid.v1
 
