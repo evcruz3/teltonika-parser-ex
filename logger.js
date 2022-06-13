@@ -50,7 +50,7 @@ class Logger{
         })
 
         mqtt_client.on('connect', () => {
-            log('Connected, client ID: ' + clientId)
+            log('Connected to MQTT')
         })
 
 
