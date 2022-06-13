@@ -138,7 +138,6 @@ class Logger{
                         * if broker, only one transmission is needed
                         * if server port, you need to do a loop to send the message on each client (worst case, if you have many clients, it might cause a bottleneck)
                         */
-
                         let message = JSON.stringify(avl.records)
                         mqtt_client.publish(`/tft100-server/${id}/avlrecords`, message, { qos: 0, retain: false }, (error) => {
                             if (error) {
@@ -200,10 +199,11 @@ class Logger{
                             fs.mkdirSync(tmp_path, { recursive: true });
                         }
 
-                        let recordlength = avl.records.length
-                        let record = avl.records[recordlength-1]
-                        this.devices.gpsDevices["timestamp"] = record.timestamp
-                        this.devices.gpsDevices[id] = {"gps" : {"timestamp" : record.timestamp, "latitude" : record.gps.latitude, "longitude" : record.gps.longitude}}
+                        // let recordlength = avl.records.length
+                        // let record = avl.records[recordlength-1]
+                        // this.devices.gpsDevices["timestamp"] = record.timestamp
+                        // this.devices.gpsDevices[id] = {"gps" : {"timestamp" : record.timestamp, "latitude" : record.gps.latitude, "longitude" : record.gps.longitude}}
+                        
                         let stream = fs.createWriteStream(`${tmp_path}${tmp_filename}`, {flags:'a'});
                         stream.write(data.toString("hex")+"\n");
                     }
@@ -305,7 +305,7 @@ class Logger{
                     //inst.devices.sendMessageToDevice(id, outBuffer);
                 }
                 else{
-                    c.write(dev.id + ":\nDevice " + tmp + " is currently offline, will send once the device go online")
+                    c.write(dev.id + ":\nDevice " + tmp + " is currently offline, will send once the device goes online")
                     let timestamp = new Date()
                     
                     if(inst.requests[dev.id] === undefined){
@@ -353,10 +353,10 @@ class Logger{
             }
             //inst.clients.pop()
         }
-        else if(ui_command == "getGpsAll"){
-            c.write(`-2:\n` + JSON.stringify(inst.devices.gpsDevices))
-            //inst.clients.pop()
-        }
+        // else if(ui_command == "getGpsAll"){
+        //     c.write(`-2:\n` + JSON.stringify(inst.devices.gpsDevices))
+        //     //inst.clients.pop()
+        // }
         //inst.log("Clients: " + inst.clients)
     }
 

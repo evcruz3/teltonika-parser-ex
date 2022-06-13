@@ -27,7 +27,7 @@ class MqttToBroker{
             reconnectPeriod: 1000,
         })
 
-        const allowed_commands = ['sendCommand', 'setDeviceName', 'getGpsAll']
+        const allowed_commands = ['sendCommand', 'setDeviceName']
         const topic = '/tft100-server/+/command'
         mqtt_client.on('connect', () => {
             log('Connected, client ID: ' + clientId)
@@ -76,20 +76,20 @@ class MqttToBroker{
 
             let [id, ...dump] = data.toString().split(":\n")
             let response = dump.join("")
-            if(id == -2){
-                mqtt_client.publish('/tft100-server/all-gps', response, { qos: 0, retain: true }, (error) => {
-                    if (error) {
-                    console.error(error)
-                    }
-                })
-            }
-            else{
-                mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
-                    if (error) {
-                    console.error(error)
-                    }
-                })
-            }
+            // if(id == -2){
+            //     mqtt_client.publish('/tft100-server/all-gps', response, { qos: 0, retain: true }, (error) => {
+            //         if (error) {
+            //         console.error(error)
+            //         }
+            //     })
+            // }
+            // else{
+            mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
+                if (error) {
+                console.error(error)
+                }
+            })
+            // }
             //log(`Response from dev ${id}:` + response)
             
         });  

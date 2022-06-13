@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+//option java_package = "ph.safetravel.app";
+option java_outer_classname = "protos";
+
+message DeviceGps {
+    string timestamp = 1;
+    string lat = 2;
+    string lng = 3;
+    string speed = 4;
+}
+
+message AllDeviceGps {
+    repeated DeviceGps allgps = 1;
+}

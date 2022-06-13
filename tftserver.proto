@@ -4,14 +4,14 @@ syntax = "proto3";
 option java_outer_classname = "protos";
 
 message AvlRecord {
-    string deviceId = 0;
-    string timestamp = 1;
-    string lat = 2;
-    string lng = 3;
-    string speed = 4;
-    string property_id = 5;
-    string property_label = 6;
-    string property_dimension = 7;
-    string property_value = 8;
-    string property_humanvalue = 9;
+    string deviceId = 1;
+    string timestamp = 2;
+    string lat = 3;
+    string lng = 4;
+    string speed = 5;
+    string property_id = 6;
+    string property_label = 7;
+    string property_dimension = 8;
+    string property_value = 9;
+    string property_humanvalue = 10;
 }
