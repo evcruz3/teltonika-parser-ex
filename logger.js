@@ -262,7 +262,6 @@ function sendMessage(c, data){
 }
 
 function processSystemCommand(command, parameterString, c){
-    log("Entered processSystemCommand()")
     if (command == "listDevices"){
         devices.printDevices(c)
         //clients.pop()
@@ -271,7 +270,6 @@ function processSystemCommand(command, parameterString, c){
         let parameters = parameterString.split(" ")
         
         if (parameters.length < 2) {
-            log("Entered processSystemCommand() if1")
             let data_buffer = {deviceId : "_sys", 
                 messageType : SystemMessage.MessageType.RESPONSE, 
                 messageCode : SystemMessage.MessageCode.INVALID_FORMAT,
@@ -280,7 +278,6 @@ function processSystemCommand(command, parameterString, c){
             sendMessage(c, data_buffer)
         }
         else{
-            log("Entered processSystemCommand() if2")
 
             let tmp = parameters[0]
             let dev_name = parameters[1]
@@ -288,7 +285,6 @@ function processSystemCommand(command, parameterString, c){
             
 
             if(dev_name in dev_names){
-                log("Entered processSystemCommand() if21")
 
                 let data_buffer = {deviceId : "_sys", 
                     messageType : SystemMessage.MessageType.RESPONSE, 
@@ -301,12 +297,10 @@ function processSystemCommand(command, parameterString, c){
                 //c.write(`${id}:\n`+dev_name + "already in use, please use another name")
             }
             else{
-                log("Entered processSystemCommand() if22")
 
                 let dev = isNaN(tmp) ? devices.getDeviceByName(tmp) : devices.getDeviceByID(tmp)
 
                 if(dev){
-                    log("Entered processSystemCommand() if221")
                     let id = dev.id
                     devlist_json['devices'][id].name = dev_name
                     let stream = fs.createWriteStream(devlist_path, {flags:'w'});
@@ -321,7 +315,6 @@ function processSystemCommand(command, parameterString, c){
                     sendMessage(c, data_buffer)
                 }
                 else{
-                    log("Entered processSystemCommand() if222")
                     let data_buffer = {deviceId : "_sys", 
                         messageType : SystemMessage.MessageType.RESPONSE, 
                         messageCode : SystemMessage.MessageCode.INVALID_DEVICE_ID,
