@@ -213,24 +213,30 @@ let commandReceiver = net.createServer((c) => {
     });
 
     c.on('data', (message) => {
-        let pbf = new Pbf(message);
-        let data = SystemMessage.read(pbf)
-
-        log(data)
         
-        let deviceId = data.deviceId
-        // let messageType = data.type
-        // let messageCode = data.code 
-        let command = data.command
-        let parameters = data.parameters
+        try {
+            let pbf = new Pbf(message);
+            let data = SystemMessage.read(pbf)
 
+            log(data)
+            
+            let deviceId = data.deviceId
+            // let messageType = data.type
+            // let messageCode = data.code 
+            let command = data.command
+            let parameters = data.parameters
+
+            
+            client = c
+
+            if(deviceId == "_sys" || deviceId == "-1")
+                processSystemCommand(command, parameters, c)
+            else
+                processDeviceCommand(deviceId, command, parameters, c)
+        } catch (error) {
+            log(error)
+        }
         
-        client = c
-
-        if(deviceId == "_sys" || deviceId == "-1")
-            processSystemCommand(command, parameters, c)
-        else
-            processDeviceCommand(deviceId, command, parameters, c)
             
     }); 
 
