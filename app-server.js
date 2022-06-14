@@ -44,8 +44,6 @@ const topics = ['/tft100-server/+/request', '/tft100-server/+/_gps']
 var all_gps = {}
 
 mqtt_client.on('connect', () => {
-    log('Connected, client ID: ' + clientId)
-
     topics.forEach(topic => {
         mqtt_client.subscribe([topic], () => {
             log(`Subscribed to topic '${topic}'`)
