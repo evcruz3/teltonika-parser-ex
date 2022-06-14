@@ -209,7 +209,7 @@ function clearIntervalConnect() {
 }
 
 var pending_requests = {}
-client.on('data', (data) => {     
+client.on('data', (payload) => {     
     log(`Received from LOGGER: ${data}`); 
 
     let pbf = new Pbf(payload);
