@@ -37,7 +37,7 @@ const mqtt_client = mqtt.connect(connectUrl, {
     reconnectPeriod: 1000,
 })
 
-const topic = '/tft100-server/+/avlrecords'
+const topic = '/tft100-server/+/_avlrecords'
 
 mqtt_client.on('connect', () => {
     log('Connected to MQTT broker')

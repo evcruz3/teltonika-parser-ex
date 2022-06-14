@@ -10,16 +10,20 @@ const mqtt = require('mqtt')
 const uuid = require('uuid');
 const moment = require('moment')
 
-var Pbf = require('pbf');
-var compile = require('pbf/compile');
-var schema = require('protocol-buffers-schema');
-var proto = schema.parse(fs.readFileSync('tftserver.proto'));
-var SystemMessage = compile(proto).SystemMessage;
+const Pbf = require('pbf');
+const compile = require('pbf/compile');
+const schema = require('protocol-buffers-schema');
+const { assert } = require('console');
+const proto = schema.parse(fs.readFileSync('tftserver.proto'));
+const SystemMessage = compile(proto).SystemMessage;
+
+const devlist_path = ('./device/devlist.json')
+const devlist_json = require(devlist_path)
 
 console = consoleFormatter(console)
 Date.prototype.toJSON = function(){ return moment(this).format(); }
 
-class Logger{
+// class Logger{
     /*
      * COMMUNICATION PORTS
      * 
@@ -29,334 +33,317 @@ class Logger{
      * 49366 - logger <-> tft-devices
      * 
      */
-    constructor (){
-        const PREFIX = "LOGGER"
+    // constructor (){
+const PREFIX = "LOGGER"
 
-        function log (message){
-            console.log(`[${PREFIX}] `, message);
-        }
+function log (message){
+    console.log(`[${PREFIX}] `, message);
+}
 
-        this.devices = new Devices()
-        this.devlist_path = ('./device/devlist.json')
-        this.devlist_json = require(this.devlist_path)
-        var inst = this
-        this.requests = {}
-        this.dev_names = []
-
-        const host = 'localhost'
-        const port = '1883'
-        const clientId = uuid.v1
-
-        const connectUrl = `mqtt://${host}:${port}`
-        const mqtt_client = mqtt.connect(connectUrl, {
-            clientId,
-            clean: true,
-            connectTimeout: 4000,
-            username: 'tft100',
-            password: 'S8Y5mvDdGGWjxj5h',
-            reconnectPeriod: 1000,
-        })
-
-        mqtt_client.on('connect', () => {
-            log('Connected to MQTT')
-        })
+var devices = new Devices()
+//var inst = this
+//var requests = {}
+var dev_names = []
 
 
-        // var MongoClient = mongo.MongoClient
-        // var mongoUrl = "mongodb://tft-server:tft100@167.71.159.65:27017/tft-server"
-        
-        // Load all devices to a runtime object 'Devices'
-        for (const [key, device] of Object.entries(this.devlist_json['devices'])) {
-            this.devices.addDevice(device.imei, null, device.id)
-            if("name" in device){
-                this.dev_names.push(device.name)
-                this.devices.devices[device.id].name = device.name
-            }
-            log("Device " + device.id + " loaded")
-        }
+/*-----------------------
+ --------- MQTT ---------
+ ------------------------*/
+const host = 'localhost'
+const port = '1883'
+const clientId = uuid.v1
 
-        
-        // Define methods for device connections
-        let server = net.createServer((c) => {
-            c.on('end', () => {
-                let id = this.devices.getDeviceBySocket(c).id
-                log("Device " + id + " disconnected");
-                this.devices.setDeviceReady(id, false);
-                //this.devices.removeDeviceBySocket(c);
-                //clients
-            });
-        
-            c.on('data', (data) => {
-                
-                let buffer = data;
-                let parser = new Parser(buffer);
-                if(parser.isImei){
-                    let id = -1
-                    let dev = this.devices.getDeviceByImei(parser.imei)
-                    if (dev){
-                        dev.updateSocket(c)
-                        id = dev.id
-                        this.devices[id] = dev
-                        log("Device " + id + " reconnected")
+const connectUrl = `mqtt://${host}:${port}`
+const mqtt_client = mqtt.connect(connectUrl, {
+    clientId,
+    clean: true,
+    connectTimeout: 4000,
+    username: 'tft100',
+    password: 'S8Y5mvDdGGWjxj5h',
+    reconnectPeriod: 1000,
+})
 
-                    }
-                    else{
-                        id = this.devices.addDevice(parser.imei, c)
-                        log("New device added; ID: " + id + "; IMEI: " + parser.imei)   
-                        this.devlist_json['devices'].push({"id":id,"imei":parser.imei,"name":""});
-                        let stream = fs.createWriteStream(this.devlist_path, {flags:'w'});
-                        stream.write(JSON.stringify(this.devlist_json))
-                    }
-                    
-                    //log("Received IMEI from device " + id);
-                    c.write(Buffer.alloc(1,1));
-                   
-                    this.devices.setDeviceReady(id)
-                    log("Device " + id + " is online") 
+mqtt_client.on('connect', () => {
+    log('Connected to MQTT')
+})
 
-                    
-                }
-                else {
-                    let device = this.devices.getDeviceBySocket(c)
-                    let id = device.id
-                    let header = parser.getHeader();
-                    //log("CODEC: " + header.codec_id);
-        
-                    if(header.codec_id == 12){
-                        log("Received GPRS message from device  " + id)
-                        let gprs = parser.getGprs()
-                        
-                        
-                        log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
-                        inst.send_to_ui(inst, id, gprs)
-                        //this.devices.pushGprsRecord(id, gprs);
-                    }
-                    else if(header.codec_id == 142){
-                        let avl = parser.getAvl() 
-                        
-                        if("0000" != avl.zero){
-                            log("WARNING: Parsed preamble is not 0x0000; " + avl.zero);
-                            //this._preamble = Buffer.from("0x0000", "hex")
-                        } 
-
-
-                        // After parsing AVL data, emit to mqtt broker?? or server port??
-                        /*
-                        * if broker, only one transmission is needed
-                        * if server port, you need to do a loop to send the message on each client (worst case, if you have many clients, it might cause a bottleneck)
-                        */
-                        let message = JSON.stringify(avl.records)
-                        mqtt_client.publish(`/tft100-server/${id}/avlrecords`, message, { qos: 0, retain: false }, (error) => {
-                            if (error) {
-                                console.error(error)
-                            }
-                        })
-
-                        let writer = new binutils.BinaryWriter();
-                        writer.WriteInt32(avl.number_of_data);
-        
-                        let response = writer.ByteBuffer;
-                        c.write(response);
-
-                        log("Received AVL data from device " + id);
-
-                        let request = this.requests[id]
-                        if(request !== undefined){
-                            log("Pending request for " + id + ": ")
-                            log(request)
-                            let now = new Date()
-                            let diff = (now.getTime() - request.timestamp.getTime())/1000
-
-                            log(`Pending request life: ${diff}`)
-                            if (diff <= 30){
-                                device.sendCommand(request.buffer)
-                                log("Pending message sent to dev " + id)
-                            }
-                            
-                        }
-
-
-                        // Send to logger port 
-                        let now = new Date();
-                        let tmp_filename = `dev${id}-${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.txt`
-
-                        let tmp_path = `devlogs/${id}/`
-
-                        if (!fs.existsSync(tmp_path)){
-                            fs.mkdirSync(tmp_path, { recursive: true });
-                        }
-
-                        // let recordlength = avl.records.length
-                        // let record = avl.records[recordlength-1]
-                        // this.devices.gpsDevices["timestamp"] = record.timestamp
-                        // this.devices.gpsDevices[id] = {"gps" : {"timestamp" : record.timestamp, "latitude" : record.gps.latitude, "longitude" : record.gps.longitude}}
-                        
-                        let stream = fs.createWriteStream(`${tmp_path}${tmp_filename}`, {flags:'a'});
-                        stream.write(data.toString("hex")+"\n");
-                    }
-                        
-                }
-            });
-        });
-        
-        
-        server.listen(49366, () => {
-            log("Teltonika Server started");
-        }); 
-
-
-        // Create port to listen to system commands
-        //this.clients = []
-        this.client = null
-        let commandReceiver = net.createServer((c) => {
-            c.on("end", () => {
-                log("ui disconnected")
-            });
-
-            c.on('data', (message) => {
-                //log("ui message: " + ui_message)
-
-
-                let pbf = new Pbf(message);
-
-
-
-                let data = SystemMessage.read(pbf)
-
-                log(data)
-                
-                let deviceId = data.deviceId
-                let messageType = data.type
-                let messageCode = data.code 
-                let command = data.command
-                let parameters = data.parameters
-
-                let ui_message = command + " " + parameters
-                this.client = c
-                inst._process_message(ui_message, c, inst)
-                //log("Clients: " + inst.clients)
-            }); 
-
-        })
-        
-        commandReceiver.listen(49365, () => {
-            log("Waiting for command from ui...")
-        })
-
-        // For sending GPRS responses to ui
-        
+/*
+ * Load Devices from JSON file
+ */
+for (const [key, device] of Object.entries(devlist_json['devices'])) {
+    devices.addDevice(device.imei, null, device.id)
+    if("name" in device){
+        dev_names.push(device.name)
+        devices.devices[device.id].name = device.name
     }
-
-    send_to_ui(inst, id, gprs){
-        /*let client = new net.Socket();
-
-        client.connect(49364, 'localhost', () => {
-           inst.log("Created a connection to ui node")
-        })*/
-        //let client = inst.clients.pop()
-
-        let client = inst.client
-
-        if (client !== undefined && client !== null){
-            client.on('data', (data) => {     
-                console.log(`[LOGGER]  Logger received: ${data}`); 
-            });  
-            // Add a 'close' event handler for the client socket 
-            client.on('close', () => { 
-                console.log('[LOGGER]  UI closed'); 
-            });  
-            client.on('error', (err) => { 
-                console.error(err); 
-            }); 
-            client.write(id + ":\nType: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
-            //client.end()
-        }
+    log("Device " + device.id + " loaded")
+}
 
         
-    }
-
-    _process_message(ui_message, c, inst){
-        //let inst = this
-        let user_input = ui_message.toString().trim()
-        let [ui_command, tmp, ...others] = user_input.split(" ");
-        let message = others.join(" ");
-
+/*-----------------------
+ ------ TFT SERVER ------
+ ------------------------*/
+const tft_server = net.createServer((c) => {
+    c.on('end', () => {
+        let id = devices.getDeviceBySocket(c).id
+        log("Device " + id + " disconnected");
+        devices.setDeviceReady(id, false);
+        //devices.removeDeviceBySocket(c);
+        //clients
+    });
         
+    c.on('data', (data) => {
+        
+        let buffer = data;
+        let parser = new Parser(buffer);
+        if(parser.isImei){
+            let id = -1
+            let dev = devices.getDeviceByImei(parser.imei)
+            if (dev){
+                dev.updateSocket(c)
+                id = dev.id
+                devices[id] = dev
+                log("Device " + id + " reconnected")
 
-        //inst.log("Command: " + comm);
-        //inst.log("ID: " + id);
-        //inst.log("Message: " + message);
-
-        if (ui_command == "sendCommand"){
-            let gprsCommandPacker = new GprsCommandPacker(message)
-            let outBuffer = gprsCommandPacker.getGprsMessageBuffer()
-
-            if(isNaN(tmp)){
-                var dev = inst.devices.getDeviceByName(tmp)
             }
             else{
-                var dev = inst.devices.getDeviceByID(tmp)
+                id = devices.addDevice(parser.imei, c)
+                log("New device added; ID: " + id + "; IMEI: " + parser.imei)   
+                devlist_json['devices'].push({"id":id,"imei":parser.imei,"name":""});
+                let stream = fs.createWriteStream(devlist_path, {flags:'w'});
+                stream.write(JSON.stringify(devlist_json))
             }
-
-            //let id = dev.id
-
-            if (dev !== undefined && dev !== null){
-                if(dev.isReady){
-                    c.write("-1:\n'" + message + "' sent to device " + tmp);
-                    dev.sendCommand(outBuffer)
-                    //inst.devices.sendMessageToDevice(id, outBuffer);
-                }
-                else{
-                    c.write(dev.id + ":\nDevice " + tmp + " is currently offline, will send once the device goes online")
-                    let timestamp = new Date()
-                    
-                    inst.requests[dev.id] = {"timestamp" : timestamp, "buffer" : outBuffer}
-                    //inst.clients.pop()
-                }
-                
-            }
-            else{
-                c.write("-1:\nDevice " + tmp + " not found")
-                //inst.clients.pop()
-            }
-
             
+            c.write(Buffer.alloc(1,1));
+            
+            devices.setDeviceReady(id)
+            log("Device " + id + " is online")       
         }
-        else if (ui_command == "listDevices"){
-            inst.devices.printDevices(c)
-            //inst.clients.pop()
-        }
-        else if(ui_command == "setDeviceName"){
-            let dev_name = others[0]
-            if(isNaN(tmp)){
-                var dev = inst.devices.getDeviceByName(tmp)
-            }
-            else{
-                var dev = inst.devices.getDeviceByID(tmp)
-            }
+        else { // Parse Data
+            let device = devices.getDeviceBySocket(c)
+            let id = device.id
+            let header = parser.getHeader();
 
+            if(header.codec_id == 12){
+                log("Received GPRS message from device  " + id)
+                let gprs = parser.getGprs()
+                
+                mqtt_publishGprs(id, gprs)
+                // log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
+                // send_to_ui(inst, id, gprs)
+            }
+            else if(header.codec_id == 142){
+                // 1: Parse AVL Data
+                let avl = parser.getAvl() 
+
+                // 2. Write Response to TFT Device
+                let writer = new binutils.BinaryWriter();
+                writer.WriteInt32(avl.number_of_data);
+                let response = writer.ByteBuffer;
+                c.write(response);
+                
+                // 3: Warn if parsed preamble is not zero
+                if("0000" != avl.zero)
+                    log("WARNING: Parsed preamble is not 0x0000; " + avl.zero);
+                else
+                    log("Received AVL data from device " + id);
+
+                // 4. Publish AVL records to MQTT Broker
+                let message = JSON.stringify(avl.records)
+                mqtt_publishAvlRecords(id, message)
+                
+                // 5. Check for pending message for the TFT device
+                // let request = requests[id]
+                // if(request !== undefined){
+                //     log("Pending request for " + id + ": ")
+                //     log(request)
+                //     let now = new Date()
+                //     let diff = (now.getTime() - request.timestamp.getTime())/1000
+
+                //     log(`Pending request life: ${diff}`)
+                //     if (diff <= 30){
+                //         device.sendCommand(request.buffer)
+                //         log("Pending message sent to dev " + id)
+                //     }
+                    
+                // }
+
+                // 6. Log raw data to local folder
+                let now = new Date();
+                let tmp_filename = `dev${id}-${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}.txt`
+                let tmp_path = `devlogs/${id}/`
+
+                if (!fs.existsSync(tmp_path)) fs.mkdirSync(tmp_path, { recursive: true });
+
+                let stream = fs.createWriteStream(`${tmp_path}${tmp_filename}`, {flags:'a'});
+                stream.write(data.toString("hex")+"\n");
+            }
+                
+        }
+    });
+});
+        
+function mqtt_publishAvlRecords(id, message){
+    mqtt_client.publish(`/tft100-server/${id}/_avlrecords`, message, { qos: 0, retain: false }, (error) => {
+        if (error) {
+            console.error(error)
+        }
+    })
+}    
+
+function mqtt_publishGprs(id, gprs){
+    mqtt_client.publish(`/tft100-server/${id}/_gprs`, gprs, { qos: 0, retain: false }, (error) => {
+        if (error) {
+            console.error(error)
+        }
+    })
+}
+
+tft_server.listen(49366, () => {
+    log("Teltonika Server started");
+}); 
+
+
+// Create port to listen to system commands
+//clients = []
+var client = null
+let commandReceiver = net.createServer((c) => {
+    c.on("end", () => {
+        log("ui disconnected")
+    });
+
+    c.on('data', (message) => {
+        let pbf = new Pbf(message);
+        let data = SystemMessage.read(pbf)
+
+        log(data)
+        
+        let deviceId = data.deviceId
+        // let messageType = data.type
+        // let messageCode = data.code 
+        let command = data.command
+        let parameters = data.parameters
+
+        
+        client = c
+
+        if(deviceId == "_sys" || deviceId == "-1")
+            processSystemCommand(command, parameters, c)
+        else
+            processDeviceCommand(deviceId, command, parameters, c)
+            
+    }); 
+
+})
+
+function sendMessage(c, data_buffer){
+    let pbf = new Pbf();
+    SystemMessage.write(data_buffer, pbf);
+    let buffer = pbf.finish();
+    c.write(buffer)
+}
+
+function processSystemCommand(command, parameterString, c){
+    if (command == "listDevices"){
+        devices.printDevices(c)
+        //clients.pop()
+    }
+    else if(command == "setDeviceName"){
+        let parameters = parameterString.split(" ")
+        
+        if (parameters.length < 2) {
+            let data_buffer = {deviceId : "_sys", 
+                messageType : SystemMessage.MessageType.RESPONSE, 
+                messageCode : SystemMessage.MessageCode.INVALID_FORMAT,
+                command : command,
+                parameters : parameterString}
+            sendMessage(c, data_buffer)
+        }
+        else{
+            let tmp = parameters[0]
+            let dev_name = parameters[1]
+
+            let dev = isNaN(tmp) ? devices.getDeviceByName(tmp) : devices.getDeviceByID(tmp)
             let id = dev.id
 
-            if(dev_name in inst.dev_names){
-                c.write(`${id}:\n`+dev_name + "already in use, please use another name")
+            if(dev_name in dev_names){
+                let data_buffer = {deviceId : "_sys", 
+                    messageType : SystemMessage.MessageType.RESPONSE, 
+                    messageCode : SystemMessage.MessageCode.OTHER,
+                    command : command,
+                    parameters : parameterString,
+                    additional_info : `${dev_name} already in use, please use another name`
+                }
+                sendMessage(c, data_buffer)
+                //c.write(`${id}:\n`+dev_name + "already in use, please use another name")
             }
             else{
-                inst.devlist_json['devices'][id].name = dev_name
-                let stream = fs.createWriteStream(inst.devlist_path, {flags:'w'});
-                stream.write(JSON.stringify(inst.devlist_json))
+                devlist_json['devices'][id].name = dev_name
+                let stream = fs.createWriteStream(devlist_path, {flags:'w'});
+                stream.write(JSON.stringify(devlist_json))
                 dev.setName(dev_name)
                 c.write(`${id}:\nDevice ` + tmp + " set to '" + dev_name + "'")
                 
             }
-            //inst.clients.pop()
         }
-        // else if(ui_command == "getGpsAll"){
-        //     c.write(`-2:\n` + JSON.stringify(inst.devices.gpsDevices))
-        //     //inst.clients.pop()
-        // }
-        //inst.log("Clients: " + inst.clients)
+        //clients.pop()
     }
-
 }
 
-module.exports = Logger
+commandReceiver.listen(49365, () => {
+    log("Waiting for command from ui...")
+})
+
+function processDeviceCommand(deviceId, command, parameterString, c){
+    let message = command + " " + parameterString
+    let gprsCommandPacker = new GprsCommandPacker(message)
+    let outBuffer = gprsCommandPacker.getGprsMessageBuffer()
+
+    let tmp = deviceId
+    let dev = isNaN(tmp) ? devices.getDeviceByName(tmp) : devices.getDeviceByID(tmp)
+
+    //let id = dev.id
+
+    if (dev !== undefined && dev !== null){
+        if(dev.isReady){
+            // c.write("-1:\n'" + message + "' sent to device " + tmp);
+            dev.sendCommand(outBuffer)
+            let data_buffer = {deviceId : deviceId, 
+                    messageType : SystemMessage.MessageType.RESPONSE, 
+                    messageCode : SystemMessage.MessageCode.OK,
+                    command : command,
+                    parameters : parameterString
+                }
+            sendMessage(c, data_buffer)
+        }
+        else{
+            let data_buffer = {deviceId : deviceId, 
+                    messageType : SystemMessage.MessageType.RESPONSE, 
+                    messageCode : SystemMessage.MessageCode.DEVICE_OFFLINE,
+                    command : command,
+                    parameters : parameterString
+                }
+            sendMessage(c, data_buffer)
+            //c.write(dev.id + ":\nDevice " + tmp + " is currently offline, will send once the device goes online")
+            //let timestamp = new Date()
+
+            //requests[dev.id] = {"timestamp" : timestamp, "buffer" : outBuffer}
+            //clients.pop()
+        }
+        
+    }
+    else{
+        let data_buffer = {deviceId : deviceId, 
+            messageType : SystemMessage.MessageType.RESPONSE, 
+            messageCode : SystemMessage.MessageCode.INVALID_DEVICE_ID,
+            command : command,
+            parameters : parameterString
+        }
+        sendMessage(c, data_buffer)
+        // c.write("-1:\nDevice " + tmp + " not found")
+        //clients.pop()
+    }
+}
+
+// }
+

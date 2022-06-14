@@ -48,43 +48,22 @@ class UI{
             let [ui_command, tmp, ...others] = user_input.split(" ");
             let message = others.join(" ");
 
-            //log("Command: " + comm);
-            //log("ID: " + id);
-            //log("Message: " + message);
-            
-
 
             if (ui_command == "sendCommand"){
                 //_inst.client.write(d)
+                var pbf = new Pbf();
+                var obj = SystemMessage.read(pbf);
+                //let command = others[0]
+                let command = others.splice(0,1)
+                let param = others.join(" ")
 
-                if(isNaN(tmp)){
-                    var id = Object.keys(devices).find(key => devices[key] === tmp);
-                } 
-                else{
-                    var id = tmp
-                }
+                SystemMessage.write(obj, pbf);
+                pbf.writeStringField(1, `${id}`)
+                pbf.writeStringField(4, `${command}`)
+                pbf.writeStringField(5, `${param}`)
+                var buffer = pbf.finish();
 
-                if(id in devices){
-                    var pbf = new Pbf();
-                    var obj = SystemMessage.read(pbf);
-                    //let command = others[0]
-                    let command = others.splice(0,1)
-                    let param = others.join(" ")
-                    SystemMessage.write(obj, pbf);
-                    pbf.writeVarintField(1, `${id}`)
-                    pbf.writeVarintField(2, SystemMessage.MessageType.REQUEST)
-                    pbf.writeStringField(4, `${command}`)
-                    pbf.writeStringField(5, `${param}`)
-                    var buffer = pbf.finish();
-
-                    _inst.client.write(buffer)
-                    
-                }
-                else{
-                    log("Device not found / specified")
-                }
-
-
+                _inst.client.write(buffer)
                 
             }
             else if (ui_command == "listDevices"){
@@ -112,8 +91,20 @@ class UI{
                     log("Device not found / specified")
                 }
             }
-            else if (ui_command == "setDeviceName"){
-                _inst.client.write(d)
+            else{
+                var pbf = new Pbf();
+                var obj = SystemMessage.read(pbf);
+                //let command = others[0]
+                //let command = others.splice(0,1)
+                let param = others.join(" ")
+
+                SystemMessage.write(obj, pbf);
+                pbf.writeStringField(1, `_sys`)
+                pbf.writeStringField(4, `${ui_command}`)
+                pbf.writeStringField(5, `${param}`)
+                var buffer = pbf.finish();
+
+                _inst.client.write(buffer)
             }
             // else if (ui_command == "getGpsAll"){
             //     _inst.client.write(d)

@@ -26,11 +26,14 @@ message SystemMessage {
         OK = 0;
         UNKNOWN_COMMAND = 1;
         INVALID_FORMAT = 2; //Command exists, but format is invalid
-        OTHER = 3; //see message for details
+        DEVICE_OFFLINE = 3;
+        INVALID_DEVICE_ID = 4;
+        OTHER = 5; //see message for details
     }
-    int32 deviceId = 1; // "_system" if system, else deviceID
-    MessageType type = 2; // 
+    string deviceId = 1; // "_sys" if system, else deviceID / deviceName
+    optional MessageType type = 2; // 
     optional MessageCode code = 3;
     string command = 4;
     optional string parameters = 5; // separated by whitespaces
+    optional string additional_info = 6;
 }
