@@ -259,6 +259,7 @@ function processSystemCommand(command, parameterString, c){
         let parameters = parameterString.split(" ")
         
         if (parameters.length < 2) {
+            log("Entered processSystemCommand() if1")
             let data_buffer = {deviceId : "_sys", 
                 messageType : SystemMessage.MessageType.RESPONSE, 
                 messageCode : SystemMessage.MessageCode.INVALID_FORMAT,
@@ -267,6 +268,8 @@ function processSystemCommand(command, parameterString, c){
             sendMessage(c, data_buffer)
         }
         else{
+            log("Entered processSystemCommand() if2")
+
             let tmp = parameters[0]
             let dev_name = parameters[1]
 
@@ -274,6 +277,8 @@ function processSystemCommand(command, parameterString, c){
             let id = dev.id
 
             if(dev_name in dev_names){
+                log("Entered processSystemCommand() if21")
+
                 let data_buffer = {deviceId : "_sys", 
                     messageType : SystemMessage.MessageType.RESPONSE, 
                     messageCode : SystemMessage.MessageCode.OTHER,
@@ -285,6 +290,7 @@ function processSystemCommand(command, parameterString, c){
                 //c.write(`${id}:\n`+dev_name + "already in use, please use another name")
             }
             else{
+                log("Entered processSystemCommand() if22")
                 devlist_json['devices'][id].name = dev_name
                 let stream = fs.createWriteStream(devlist_path, {flags:'w'});
                 stream.write(JSON.stringify(devlist_json))
