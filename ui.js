@@ -120,11 +120,12 @@ class UI{
             log("Created a connection to ui node")
         })
 
-        this.client.on('data', (data) => {     
+        this.client.on('data', (message) => {     
             log(`Client received: ${data}`); 
-            if (data.toString().endsWith('exit')) { 
-                client.destroy(); 
-            } 
+            let pbf = new Pbf(message);
+            let data = SystemMessage.read(pbf)
+
+            log(data)
         });  
         // Add a 'close' event handler for the client socket 
         this.client.on('close', () => { 
