@@ -254,8 +254,9 @@ function sendMessage(c, data){
     pbf.writeStringField(5, `${data.parameters}`)
     data.additional_info ? pbf.writeStringField(6, `${data.additional_info}`):'';
 
-    log("Sending: ", SystemMessage.read(new Pbf(buffer)))
+    
     let buffer = pbf.finish();
+    log("Sending: ", SystemMessage.read(new Pbf(buffer)))
     c.write(buffer)
 }
 
