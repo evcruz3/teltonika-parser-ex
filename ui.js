@@ -118,10 +118,15 @@ class UI{
 
         this.client.on('data', (message) => {     
             //log(`Client received: ${data}`); 
-            let pbf = new Pbf(message);
-            let data = SystemMessage.read(pbf)
+            try {
+                let pbf = new Pbf(message);
+                let data = SystemMessage.read(pbf)
 
-            log(data)
+                log(data)
+            } catch (error) {
+                log(message)
+            }
+            
         });  
         // Add a 'close' event handler for the client socket 
         this.client.on('close', () => { 
