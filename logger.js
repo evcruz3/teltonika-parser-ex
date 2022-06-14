@@ -246,7 +246,7 @@ function sendMessage(c, data){
     let pbf = new Pbf();
     let obj = SystemMessage.read(pbf);
     //SystemMessage.write(obj, pbf);
-    SystemMessage.write(data_buffer, pbf);
+    SystemMessage.write(data, pbf);
     // pbf.writeStringField(1, `${data.deviceId}`)
     // pbf.writeVarintField(2, data.messageType.value)
     // pbf.writeVarintField(3, data.messageCode.value)
@@ -256,7 +256,7 @@ function sendMessage(c, data){
 
     
     let buffer = pbf.finish();
-    console.log("Sending: ", data)
+    //console.log("Sending: ", data)
     console.log("Sending: ", SystemMessage.read(new Pbf(buffer)))
     c.write(buffer)
 }
@@ -328,7 +328,7 @@ function processSystemCommand(command, parameterString, c){
                         command : command,
                         parameters : parameterString
                     }
-                    console.log("Sending: ", data_buffer)
+                    //console.log("Sending: ", data_buffer)
                     sendMessage(c, data_buffer)
                 }
                 
