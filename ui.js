@@ -58,7 +58,7 @@ class UI{
                 let param = others.join(" ")
 
                 SystemMessage.write(obj, pbf);
-                pbf.writeStringField(1, `${id}`)
+                pbf.writeStringField(1, `${tmp}`)
                 pbf.writeStringField(4, `${command}`)
                 pbf.writeStringField(5, `${param}`)
                 var buffer = pbf.finish();
