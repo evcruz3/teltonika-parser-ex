@@ -3,6 +3,12 @@ const consoleFormatter = require("./utilities/consoleFormatter")
 const mqtt = require('mqtt')
 const uuid = require('uuid');
 const mongo = require('mongodb')
+var Pbf = require('pbf');
+var compile = require('pbf/compile');
+var schema = require('protocol-buffers-schema');
+var fs = require('fs');
+var proto = schema.parse(fs.readFileSync('tftserver.proto'));
+var AvlRecords = compile(proto).AvlRecords;
 console = consoleFormatter(console)
 
 const PREFIX = "MONGGO_LOGGER"
@@ -36,9 +42,14 @@ mqtt_client.on('connect', () => {
         log(`Subscribed to topic '${topic}'`)
     })
 })
-mqtt_client.on('message', (topic, payload) => {
+mqtt_client.on('message', (topic, buffer) => {
     
     let dev_id = topic.split("/")[2]
+    let pbf = new Pbf(message);
+    let payload = AvlRecords.read(pbf)
+
+    console.log(payload)
+    
     let json_records = null
     try {
         json_records = JSON.parse(payload)

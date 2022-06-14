@@ -8,6 +8,7 @@ var schema = require('protocol-buffers-schema');
 var fs = require('fs');
 var proto = schema.parse(fs.readFileSync('tftserver.proto'));
 var TFTDevice = compile(proto).DeviceGps;
+var AvlRecords = compile(proto).AvlRecords;
 
 console = consoleFormatter(console)
 
@@ -45,8 +46,14 @@ mqtt_client.on('connect', () => {
         log(`Subscribed to topic '${topic}'`)
     })
 })
-mqtt_client.on('message', (topic, payload) => {
+mqtt_client.on('message', (topic, buffer) => {
     let dev_id = topic.split("/")[2]
+
+    let pbf = new Pbf(message);
+    let payload = AvlRecords.read(pbf)
+
+    console.log(payload)
+
     let json_records = null
     try {
         json_records = JSON.parse(payload)
