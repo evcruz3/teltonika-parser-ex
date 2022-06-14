@@ -273,8 +273,8 @@ function processSystemCommand(command, parameterString, c){
         if (parameters.length < 2) {
             log("Entered processSystemCommand() if1")
             let data_buffer = {deviceId : "_sys", 
-                messageType : SystemMessage.MessageType.RESPONSE.value, 
-                messageCode : SystemMessage.MessageCode.INVALID_FORMAT.value,
+                messageType : SystemMessage.MessageType.RESPONSE, 
+                messageCode : SystemMessage.MessageCode.INVALID_FORMAT,
                 command : command,
                 parameters : parameterString}
             sendMessage(c, data_buffer)
@@ -291,8 +291,8 @@ function processSystemCommand(command, parameterString, c){
                 log("Entered processSystemCommand() if21")
 
                 let data_buffer = {deviceId : "_sys", 
-                    messageType : SystemMessage.MessageType.RESPONSE.value, 
-                    messageCode : SystemMessage.MessageCode.OTHER.value,
+                    messageType : SystemMessage.MessageType.RESPONSE, 
+                    messageCode : SystemMessage.MessageCode.OTHER,
                     command : command,
                     parameters : parameterString,
                     additional_info : `${dev_name} already in use, please use another name`
@@ -313,8 +313,8 @@ function processSystemCommand(command, parameterString, c){
                     stream.write(JSON.stringify(devlist_json))
                     dev.setName(dev_name)
                     let data_buffer = {deviceId : "_sys", 
-                        messageType : SystemMessage.MessageType.RESPONSE.value, 
-                        messageCode : SystemMessage.MessageCode.OK.value,
+                        messageType : SystemMessage.MessageType.RESPONSE, 
+                        messageCode : SystemMessage.MessageCode.OK,
                         command : command,
                         parameters : parameterString
                     }
@@ -323,8 +323,8 @@ function processSystemCommand(command, parameterString, c){
                 else{
                     log("Entered processSystemCommand() if222")
                     let data_buffer = {deviceId : "_sys", 
-                        messageType : SystemMessage.MessageType.RESPONSE.value, 
-                        messageCode : SystemMessage.MessageCode.INVALID_DEVICE_ID.value,
+                        messageType : SystemMessage.MessageType.RESPONSE, 
+                        messageCode : SystemMessage.MessageCode.INVALID_DEVICE_ID,
                         command : command,
                         parameters : parameterString
                     }
@@ -358,8 +358,8 @@ function processDeviceCommand(deviceId, command, parameterString, c){
             // c.write("-1:\n'" + message + "' sent to device " + tmp);
             dev.sendCommand(outBuffer)
             let data_buffer = {deviceId : deviceId, 
-                    messageType : SystemMessage.MessageType.RESPONSE.value, 
-                    messageCode : SystemMessage.MessageCode.OK.value,
+                    messageType : SystemMessage.MessageType.RESPONSE, 
+                    messageCode : SystemMessage.MessageCode.OK,
                     command : command,
                     parameters : parameterString
                 }
@@ -367,8 +367,8 @@ function processDeviceCommand(deviceId, command, parameterString, c){
         }
         else{
             let data_buffer = {deviceId : deviceId, 
-                    messageType : SystemMessage.MessageType.RESPONSE.value, 
-                    messageCode : SystemMessage.MessageCode.DEVICE_OFFLINE.value,
+                    messageType : SystemMessage.MessageType.RESPONSE, 
+                    messageCode : SystemMessage.MessageCode.DEVICE_OFFLINE,
                     command : command,
                     parameters : parameterString
                 }
@@ -383,8 +383,8 @@ function processDeviceCommand(deviceId, command, parameterString, c){
     }
     else{
         let data_buffer = {deviceId : deviceId, 
-            messageType : SystemMessage.MessageType.RESPONSE.value, 
-            messageCode : SystemMessage.MessageCode.INVALID_DEVICE_ID.value,
+            messageType : SystemMessage.MessageType.RESPONSE, 
+            messageCode : SystemMessage.MessageCode.INVALID_DEVICE_ID,
             command : command,
             parameters : parameterString
         }
