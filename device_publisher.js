@@ -87,7 +87,7 @@ mqtt_client.on('message', (topic, payload) => {
             var buffer = pbf.finish();
 
             // publish the mqtt message
-            mqtt_client.publish(`/tft100-server/${dev_id}/gps`, buffer, { qos: 0, retain: true }, (error) => {
+            mqtt_client.publish(`/tft100-server/${dev_id}/_gps`, buffer, { qos: 0, retain: true }, (error) => {
                 if (error) {
                     console.error(error)
                 }

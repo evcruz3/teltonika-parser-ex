@@ -37,3 +37,7 @@ message SystemMessage {
     optional string parameters = 5; // separated by whitespaces
     optional string additional_info = 6;
 }
+
+message AvlRecords {
+    string data = 1;
+}

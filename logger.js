@@ -16,6 +16,7 @@ const schema = require('protocol-buffers-schema');
 const { assert } = require('console');
 const proto = schema.parse(fs.readFileSync('tftserver.proto'));
 const SystemMessage = compile(proto).SystemMessage;
+const AvlRecords = compile(proto).AvlRecords;
 
 const devlist_path = ('./device/devlist.json')
 const devlist_json = require(devlist_path)
@@ -28,7 +29,7 @@ Date.prototype.toJSON = function(){ return moment(this).format(); }
      * COMMUNICATION PORTS
      * 
      * 
-     * 49364 - logger <-> ui
+     * 
      * 49365 - logger <-> mqtt_ware
      * 49366 - logger <-> tft-devices
      * 
@@ -128,7 +129,7 @@ const tft_server = net.createServer((c) => {
                 log("Received GPRS message from device  " + id)
                 let gprs = parser.getGprs()
                 
-                mqtt_publishGprs(id, gprs)
+                mqtt_publishGprs(id, gprs.response)
                 // log("Type: " + gprs.type + "; Size: " + gprs.size + "\nMessage: " + gprs.response)
                 // send_to_ui(inst, id, gprs)
             }
@@ -184,7 +185,20 @@ const tft_server = net.createServer((c) => {
 });
         
 function mqtt_publishAvlRecords(id, message){
-    mqtt_client.publish(`/tft100-server/${id}/_avlrecords`, message, { qos: 0, retain: false }, (error) => {
+
+    let pbf = new Pbf();
+    let obj = AvlRecords.read(pbf);
+    AvlRecords.write(obj, pbf);
+    // SystemMessage.write(data, pbf);
+    
+    pbf.writeStringField(1, message) 
+    
+    let buffer = pbf.finish();
+    // console.log("Sending: ", data)
+    // console.log("Sending: ", SystemMessage.read(new Pbf(buffer)))
+    //c.write(buffer)
+
+    mqtt_client.publish(`/tft100-server/${id}/_avlrecords`, buffer, { qos: 0, retain: false }, (error) => {
         if (error) {
             console.error(error)
         }
@@ -206,7 +220,7 @@ tft_server.listen(49366, () => {
 
 // Create port to listen to system commands
 //clients = []
-var client = null
+//var client = null
 let commandReceiver = net.createServer((c) => {
     c.on("end", () => {
         log("ui disconnected")
@@ -227,7 +241,7 @@ let commandReceiver = net.createServer((c) => {
             let parameters = data.parameters
 
             
-            client = c
+            //client = c
 
             if(deviceId == "_sys" || deviceId == "-1")
                 processSystemCommand(command, parameters, c)
@@ -242,17 +256,18 @@ let commandReceiver = net.createServer((c) => {
 
 })
 
-function sendMessage(c, data){
+function sendSystemMessage(c, data){
     let pbf = new Pbf();
     let obj = SystemMessage.read(pbf);
     SystemMessage.write(obj, pbf);
     // SystemMessage.write(data, pbf);
-    pbf.writeStringField(1, `${data.deviceId}`)
-    pbf.writeVarintField(2, data.messageType.value)
-    pbf.writeVarintField(3, data.messageCode.value)
-    pbf.writeStringField(4, `${data.command}`)
-    pbf.writeStringField(5, `${data.parameters}`)
-    data.additional_info ? pbf.writeStringField(6, `${data.additional_info}`):'';
+    
+    if (data.hasOwnProperty("deviceId"))        pbf.writeStringField(1, `${data.deviceId}`)
+    if (data.hasOwnProperty("messageType"))     pbf.writeVarintField(2, data.messageType.value)
+    if (data.hasOwnProperty("messageCode"))     pbf.writeVarintField(3, data.messageCode.value)
+    if (data.hasOwnProperty("command"))         pbf.writeStringField(4, `${data.command}`)
+    if (data.hasOwnProperty("parameters"))      pbf.writeStringField(5, `${data.parameters}`)
+    if (data.hasOwnProperty("additional_info")) pbf.writeStringField(6, `${data.additional_info}`) 
 
     
     let buffer = pbf.finish();
@@ -275,7 +290,7 @@ function processSystemCommand(command, parameterString, c){
                 messageCode : SystemMessage.MessageCode.INVALID_FORMAT,
                 command : command,
                 parameters : parameterString}
-            sendMessage(c, data_buffer)
+            sendSystemMessage(c, data_buffer)
         }
         else{
 
@@ -293,7 +308,7 @@ function processSystemCommand(command, parameterString, c){
                     parameters : parameterString,
                     additional_info : `${dev_name} already in use, please use another name`
                 }
-                sendMessage(c, data_buffer)
+                sendSystemMessage(c, data_buffer)
                 //c.write(`${id}:\n`+dev_name + "already in use, please use another name")
             }
             else{
@@ -312,7 +327,7 @@ function processSystemCommand(command, parameterString, c){
                         command : command,
                         parameters : parameterString
                     }
-                    sendMessage(c, data_buffer)
+                    sendSystemMessage(c, data_buffer)
                 }
                 else{
                     let data_buffer = {deviceId : "_sys", 
@@ -322,7 +337,7 @@ function processSystemCommand(command, parameterString, c){
                         parameters : parameterString
                     }
                     //console.log("Sending: ", data_buffer)
-                    sendMessage(c, data_buffer)
+                    sendSystemMessage(c, data_buffer)
                 }
                 
                 
@@ -357,7 +372,7 @@ function processDeviceCommand(deviceId, command, parameterString, c){
                     command : command,
                     parameters : parameterString
                 }
-            sendMessage(c, data_buffer)
+            sendSystemMessage(c, data_buffer)
         }
         else{
             let data_buffer = {deviceId : deviceId, 
@@ -366,7 +381,7 @@ function processDeviceCommand(deviceId, command, parameterString, c){
                     command : command,
                     parameters : parameterString
                 }
-            sendMessage(c, data_buffer)
+            sendSystemMessage(c, data_buffer)
             //c.write(dev.id + ":\nDevice " + tmp + " is currently offline, will send once the device goes online")
             //let timestamp = new Date()
 
@@ -382,7 +397,7 @@ function processDeviceCommand(deviceId, command, parameterString, c){
             command : command,
             parameters : parameterString
         }
-        sendMessage(c, data_buffer)
+        sendSystemMessage(c, data_buffer)
         // c.write("-1:\nDevice " + tmp + " not found")
         //clients.pop()
     }
