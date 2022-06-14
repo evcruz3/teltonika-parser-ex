@@ -294,6 +294,7 @@ function processSystemCommand(command, parameterString, c){
                 let dev = isNaN(tmp) ? devices.getDeviceByName(tmp) : devices.getDeviceByID(tmp)
 
                 if(dev){
+                    log("Entered processSystemCommand() if221")
                     let id = dev.id
                     devlist_json['devices'][id].name = dev_name
                     let stream = fs.createWriteStream(devlist_path, {flags:'w'});
@@ -308,6 +309,7 @@ function processSystemCommand(command, parameterString, c){
                     sendMessage(c, data_buffer)
                 }
                 else{
+                    log("Entered processSystemCommand() if222")
                     let data_buffer = {deviceId : "_sys", 
                         messageType : SystemMessage.MessageType.RESPONSE, 
                         messageCode : SystemMessage.MessageCode.INVALID_DEVICE_ID,
