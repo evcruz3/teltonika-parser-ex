@@ -92,7 +92,7 @@ class UI{
                 var obj = SystemMessage.read(pbf);
                 //let command = others[0]
                 //let command = others.splice(0,1)
-                let param = others.join(" ")
+                let param = tmp + " " + others.join(" ")
 
                 SystemMessage.write(obj, pbf);
                 pbf.writeStringField(1, `_sys`)
