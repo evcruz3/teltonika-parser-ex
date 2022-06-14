@@ -110,8 +110,10 @@ mqtt_client.on('message', (topic, payload) => {
                     console.error(error)
                     }
                 })
+                
                 //log("Pending message sent to dev " + id)
             }
+            delete pending_requests[id]
         }
     }
     
@@ -137,12 +139,12 @@ function processAppCommand(deviceId, command){
 
             client.write(buffer)
 
-            let response = "OK"
-            mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
-                if (error) {
-                console.error(error)
-                }
-            })
+            // let response = "OK"
+            // mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
+            //     if (error) {
+            //     console.error(error)
+            //     }
+            // })
             break;
         }
         case "lockDevice":{
@@ -162,12 +164,12 @@ function processAppCommand(deviceId, command){
 
             client.write(buffer)
 
-            let response = "OK"
-            mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
-                if (error) {
-                console.error(error)
-                }
-            })
+            // let response = "OK"
+            // mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
+            //     if (error) {
+            //     console.error(error)
+            //     }
+            // })
             break;
         }
         case "fetchAllGps":{
