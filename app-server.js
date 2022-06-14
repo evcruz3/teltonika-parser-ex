@@ -218,7 +218,7 @@ client.on('data', (payload) => {
     console.log(data)
 
     let id = data.deviceId
-    let messageCode = data.messageCode
+    let messageCode = data.code
     let now = new Date()
 
     
