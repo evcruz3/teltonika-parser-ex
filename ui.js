@@ -1,20 +1,13 @@
 const Parser = require('./utilities/teltonika-parser');
-const binutils = require('binutils64');
 const net = require('net');
-const ByteBuffer = require("bytebuffer");
-const Devices = require('./device/devices')
-const prompt = require('prompt-sync')
-const crc16ibm = require('./utilities/crc16ibm')
-const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
 const myRL = require("serverline");
 const consoleFormatter = require("./utilities/consoleFormatter")
-
-var Pbf = require('pbf');
-var compile = require('pbf/compile');
-var schema = require('protocol-buffers-schema');
-var proto = schema.parse(fs.readFileSync('tftserver.proto'));
-var SystemMessage = compile(proto).SystemMessage;
+const Pbf = require('pbf');
+const compile = require('pbf/compile');
+const schema = require('protocol-buffers-schema');
+const proto = schema.parse(fs.readFileSync('tftserver.proto'));
+const SystemMessage = compile(proto).SystemMessage;
 
 console = consoleFormatter(console)
 
