@@ -13,10 +13,17 @@ log(Array(process.stdout.rows + 1).join('\n'));
 var MongoClient = mongo.MongoClient
 var mongoUrl = "mongodb://tft-server:tft100@167.71.159.65:27017/tft-server"
 
-const dbo = MongoClient.connect(mongoUrl, function(err, db) {
-    if (err) throw err
-    return db.db("tft-server")
-})
+var dbo = connectToMongo()
+
+
+function connectToMongo(){
+    let dbo = null
+    MongoClient.connect(mongoUrl, function(err, db) {
+        if (err) throw err
+        dbo = db.db("tft-server")
+    })
+    return dbo
+}
 
 const host = '167.71.159.65'
 const port = '1883'
@@ -52,11 +59,18 @@ mqtt_client.on('message', (topic, payload) => {
                 myobjects.push({deviceID: dev_id, record: record})
             })
             //let myobj = {deviceID: dev_id, records: json_records}
-            dbo.collection("AVL DATA").insertMany(myobj, {ordered:true}, function(err, res){
-                if (err) throw err
-                log(`${myobjects.length} records inserted for deviceID ${dev_id}`)
-                // db.close()
-            })
+            if(dbo){
+                dbo.collection("AVL DATA").insertMany(myobj, {ordered:true}, function(err, res){
+                    if (err) throw err
+                    log(`${myobjects.length} records inserted for deviceID ${dev_id}`)
+                    // db.close()
+                })
+            }
+            else{
+                log("ERROR Cannot open database")
+                connectToMongo()
+            }
+            
     }
     else{
         log("Received data is not an AVL record")
