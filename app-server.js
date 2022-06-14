@@ -54,6 +54,7 @@ mqtt_client.on('message', (topic, payload) => {
     
     tmp = topic.split("/")
     topic_ending = tmp[tmp.length - 1]
+    id = tmp[tmp.length - 2]
 
     let d = payload.toString()
 
@@ -64,7 +65,7 @@ mqtt_client.on('message', (topic, payload) => {
         let ui_command = user_input.split(" ")[0];
         
         if (allowed_commands.includes(ui_command)){
-            processAppCommand(ui_command)
+            processAppCommand(id, ui_command)
         }
         else{
             let response = "Invalid command"
@@ -116,7 +117,8 @@ mqtt_client.on('message', (topic, payload) => {
     
 })
 
-function processAppCommand(command){
+function processAppCommand(deviceId, command){
+    let id = deviceId
     switch (command) {
         case "unlockDevice":{
             let pbf = new Pbf();
@@ -128,7 +130,7 @@ function processAppCommand(command){
             let param = digOut == 1 ? "1 ?" : digOut == 2 ? "? 1" : "1 1";
 
             SystemMessage.write(obj, pbf);
-            pbf.writeStringField(1, `${tmp}`)
+            pbf.writeStringField(1, `${id}`)
             pbf.writeStringField(4, `${command}`)
             pbf.writeStringField(5, `${param}`)
             var buffer = pbf.finish();
@@ -153,7 +155,7 @@ function processAppCommand(command){
             let param = digOut == 1 ? "1 ?" : digOut == 2 ? "? 1" : "1 1";
 
             SystemMessage.write(obj, pbf);
-            pbf.writeStringField(1, `${tmp}`)
+            pbf.writeStringField(1, `${id}`)
             pbf.writeStringField(4, `${command}`)
             pbf.writeStringField(5, `${param}`)
             var buffer = pbf.finish();
