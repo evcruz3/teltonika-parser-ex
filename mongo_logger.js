@@ -53,7 +53,7 @@ mqtt_client.on('message', (topic, payload) => {
                     myobjects.push({deviceID: dev_id, record: record})
                 })
                 //let myobj = {deviceID: dev_id, records: json_records}
-                dbo.collection("AVL DATA").insertMany(myobj, {ordered:true}, function(err, res){
+                dbo.collection("AVL DATA").insertMany(myobjects, {ordered:true}, function(err, res){
                     if (err) throw err
                     log(`${myobjects.length} records inserted for deviceID ${dev_id}`)
                     db.close()
