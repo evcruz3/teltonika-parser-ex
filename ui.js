@@ -117,7 +117,7 @@ class UI{
         })
 
         this.client.on('data', (message) => {     
-            //log(`Client received: ${data}`); 
+            log("Received Data")
             try {
                 let pbf = new Pbf(message);
                 let data = SystemMessage.read(pbf)
