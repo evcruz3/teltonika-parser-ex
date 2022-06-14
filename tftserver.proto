@@ -28,7 +28,7 @@ message SystemMessage {
         INVALID_FORMAT = 2; //Command exists, but format is invalid
         OTHER = 3; //see message for details
     }
-    string deviceId = 1; // "_system" if system, else deviceID
+    int32 deviceId = 1; // "_system" if system, else deviceID
     MessageType type = 2; // 
     optional MessageCode code = 3;
     string command = 4;

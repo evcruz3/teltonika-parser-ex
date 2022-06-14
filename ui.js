@@ -67,11 +67,13 @@ class UI{
                 if(id in devices){
                     var pbf = new Pbf();
                     var obj = SystemMessage.read(pbf);
-                    let param = others.splice(0,1).join(" ")
+                    //let command = others[0]
+                    let command = others.splice(0,1)
+                    let param = others.join(" ")
                     SystemMessage.write(obj, pbf);
-                    pbf.writeStringField(1, `${id}`)
+                    pbf.writeVarintField(1, `${id}`)
                     pbf.writeVarintField(2, SystemMessage.MessageType.REQUEST)
-                    pbf.writeStringField(4, `${others[0]}`)
+                    pbf.writeStringField(4, `${command}`)
                     pbf.writeStringField(5, `${param}`)
                     var buffer = pbf.finish();
 
