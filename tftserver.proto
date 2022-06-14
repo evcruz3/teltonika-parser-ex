@@ -9,7 +9,6 @@ message DeviceDetails {
     string lat = 3;
     string lng = 4;
     string speed = 5;
-    string locked = 6;
     // string property_id = 6;
     // string property_label = 7;
     // string property_dimension = 8;
