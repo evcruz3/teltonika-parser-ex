@@ -244,17 +244,17 @@ let commandReceiver = net.createServer((c) => {
 
 function sendMessage(c, data){
     let pbf = new Pbf();
-    var obj = SystemMessage.read(pbf);
+    let obj = SystemMessage.read(pbf);
     SystemMessage.write(obj, pbf);
     //SystemMessage.write(data_buffer, pbf);
     pbf.writeStringField(1, `${data.deviceId}`)
-    pbf.writeVarintField(2, `${data.messageType}`)
-    pbf.writeVarintField(3, `${data.messageCode}`)
+    pbf.writeVarintField(2, data.messageType)
+    pbf.writeVarintField(3, data.messageCode)
     pbf.writeStringField(4, `${data.command}`)
     pbf.writeStringField(5, `${data.parameters}`)
-    data.additional_info ? pbf.writeStringField(6, `${data.additional_info}`) : ''
+    data.additional_info ? pbf.writeStringField(6, `${data.additional_info}`):'';
 
-    //log("Sending: ", data_buffer)
+    log("Sending: ", SystemMessage.read(new Pbf(buffer)))
     let buffer = pbf.finish();
     c.write(buffer)
 }
