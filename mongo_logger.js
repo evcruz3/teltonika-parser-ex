@@ -13,7 +13,7 @@ log(Array(process.stdout.rows + 1).join('\n'));
 var MongoClient = mongo.MongoClient
 var mongoUrl = "mongodb://tft-server:tft100@167.71.159.65:27017/tft-server"
 
-const db = MongoClient.connect(mongoUrl, function(err, db) {
+const dbo = MongoClient.connect(mongoUrl, function(err, db) {
     if (err) throw err
     return db.db("tft-server")
 })
