@@ -11,7 +11,7 @@ var TFTDevice = compile(proto).DeviceGps;
 
 console = consoleFormatter(console)
 
-const PREFIX = "DEV_BROADCASTER"
+const PREFIX = "DEV_PUBLISHER"
 
 // BROADCASTS GPS OF ALL DEVICES TO THE MQTT BROKER
 
