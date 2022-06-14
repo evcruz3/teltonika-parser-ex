@@ -753,7 +753,11 @@ class Codec8e extends Codec {
         }
       },
       180: {
-        label: "Digital Output 2"
+        label: "Digital Output 2",
+        values: {
+          0: "0",
+          1: "1"
+        }
       },
       181: {
         label: "GNSS PDOP"

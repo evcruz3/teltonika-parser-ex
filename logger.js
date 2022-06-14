@@ -19,7 +19,7 @@ class Logger{
      * 
      * 
      * 49364 - logger <-> ui
-     * 49365 - logger <-> mqtt
+     * 49365 - logger <-> mqtt_ware
      * 49366 - logger <-> tft-devices
      * 
      */
@@ -64,6 +64,7 @@ class Logger{
             this.devices.addDevice(device.imei, null, device.id)
             if("name" in device){
                 this.dev_names.push(device.name)
+                this.devices.devices[device.id].name = device.name
             }
             log("Device " + device.id + " loaded")
         }
