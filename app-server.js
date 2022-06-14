@@ -13,7 +13,7 @@ const DeviceGps = compile(proto).DeviceGps
 
 console = consoleFormatter(console)
 
-const PREFIX = "MQTT"
+const PREFIX = "APP-SERVER"
 const lockParam = require('./lockparameter.json');
 const { isBuffer } = require('util');
 const digOut = lockParam.digOut
