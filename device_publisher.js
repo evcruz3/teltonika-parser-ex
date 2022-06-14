@@ -74,15 +74,15 @@ mqtt_client.on('message', (topic, payload) => {
 
             // Published GPS details
 
-            let gps = json_records[json_records.length - 1].gps
+            let record = json_records[json_records.length - 1]
             let pbf = new Pbf();
             let obj = TFTDevice.read(pbf);
             TFTDevice.write(obj, pbf);
             pbf.writeStringField(1, `${dev_id}`)
-            pbf.writeStringField(2, `${gps.timestamp}`)
-            pbf.writeStringField(3, `${gps.latitude}`)
-            pbf.writeStringField(4, `${gps.longitude}`)
-            pbf.writeStringField(5, `${gps.speed}`)
+            pbf.writeStringField(2, `${record.timestamp}`)
+            pbf.writeStringField(3, `${record.gps.latitude}`)
+            pbf.writeStringField(4, `${record.gps.longitude}`)
+            pbf.writeStringField(5, `${record.gps.speed}`)
 
             var buffer = pbf.finish();
 
