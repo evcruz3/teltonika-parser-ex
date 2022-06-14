@@ -66,10 +66,6 @@ class UI{
                 _inst.client.write(buffer)
                 
             }
-            else if (ui_command == "listDevices"){
-                //log("TODO: list all devices here and their status")
-                _inst.client.write(d)
-            }
             else if (ui_command == "displayLog"){
                 if(isNaN(tmp)){
                     var id = Object.keys(devices).find(key => devices[key] === tmp);
