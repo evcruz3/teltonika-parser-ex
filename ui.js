@@ -125,6 +125,7 @@ class UI{
                 log(data)
             } catch (error) {
                 log(message)
+                log(error)
             }
             
         });  
