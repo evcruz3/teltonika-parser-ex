@@ -328,6 +328,7 @@ function processSystemCommand(command, parameterString, c){
                         command : command,
                         parameters : parameterString
                     }
+                    log("Sending: ", data_buffer)
                     sendMessage(c, data_buffer)
                 }
                 
