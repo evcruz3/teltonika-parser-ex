@@ -50,7 +50,7 @@ mqtt_client.on('message', (topic, buffer) => {
     let dev_id = topic.split("/")[2]
 
     let pbf = new Pbf(buffer);
-    let payload = AvlRecords.read(pbf)
+    let payload = AvlRecords.read(pbf).data
 
     console.log(payload)
 
