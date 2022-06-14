@@ -192,7 +192,7 @@ function mqtt_publishAvlRecords(id, message){
 }    
 
 function mqtt_publishGprs(id, gprs){
-    mqtt_client.publish(`/tft100-server/${id}/_gprs`, gprs, { qos: 0, retain: false }, (error) => {
+    mqtt_client.publish(`/tft100-server/${id}/_gprs`, JSON.stringify(gprs), { qos: 0, retain: false }, (error) => {
         if (error) {
             console.error(error)
         }
