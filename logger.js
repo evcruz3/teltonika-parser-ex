@@ -244,6 +244,7 @@ function sendMessage(c, data_buffer){
 }
 
 function processSystemCommand(command, parameterString, c){
+    log("Entered processSystemCommand()")
     if (command == "listDevices"){
         devices.printDevices(c)
         //clients.pop()
@@ -282,7 +283,13 @@ function processSystemCommand(command, parameterString, c){
                 let stream = fs.createWriteStream(devlist_path, {flags:'w'});
                 stream.write(JSON.stringify(devlist_json))
                 dev.setName(dev_name)
-                c.write(`${id}:\nDevice ` + tmp + " set to '" + dev_name + "'")
+                let data_buffer = {deviceId : "_sys", 
+                    messageType : SystemMessage.MessageType.RESPONSE, 
+                    messageCode : SystemMessage.MessageCode.OK,
+                    command : command,
+                    parameters : parameterString
+                }
+                sendMessage(c, data_buffer)
                 
             }
         }
@@ -346,4 +353,3 @@ function processDeviceCommand(deviceId, command, parameterString, c){
 }
 
 // }
-
