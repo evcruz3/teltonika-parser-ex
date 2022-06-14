@@ -3,7 +3,7 @@ syntax = "proto3";
 //option java_package = "ph.safetravel.app";
 option java_outer_classname = "protos";
 
-message DeviceDetails {
+message DeviceGps {
     string deviceId = 1;
     string timestamp = 2;
     string lat = 3;
@@ -15,3 +15,4 @@ message DeviceDetails {
     // string property_value = 9;
     // string property_humanvalue = 10;
 }
+
