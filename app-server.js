@@ -210,14 +210,18 @@ function clearIntervalConnect() {
 
 var pending_requests = {}
 client.on('data', (payload) => {     
-    log(`Received from LOGGER: ${data}`); 
+    //log(`Received from LOGGER: ${data}`); 
 
     let pbf = new Pbf(payload);
     let data = SystemMessage.read(pbf)
 
+    console.log(data)
+
     let id = data.deviceId
     let messageCode = data.messageCode
     let now = new Date()
+
+    
 
     if(messageCode == 3){
         pending_requests[id] = {command: data.command, parameters : data.parameters, timestamp : now}
