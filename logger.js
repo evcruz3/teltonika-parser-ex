@@ -245,19 +245,19 @@ let commandReceiver = net.createServer((c) => {
 function sendMessage(c, data){
     let pbf = new Pbf();
     let obj = SystemMessage.read(pbf);
-    //SystemMessage.write(obj, pbf);
-    SystemMessage.write(data, pbf);
-    // pbf.writeStringField(1, `${data.deviceId}`)
-    // pbf.writeVarintField(2, data.messageType.value)
-    // pbf.writeVarintField(3, data.messageCode.value)
-    // pbf.writeStringField(4, `${data.command}`)
-    // pbf.writeStringField(5, `${data.parameters}`)
-    // data.additional_info ? pbf.writeStringField(6, `${data.additional_info}`):'';
+    SystemMessage.write(obj, pbf);
+    // SystemMessage.write(data, pbf);
+    pbf.writeStringField(1, `${data.deviceId}`)
+    pbf.writeVarintField(2, data.messageType.value)
+    pbf.writeVarintField(3, data.messageCode.value)
+    pbf.writeStringField(4, `${data.command}`)
+    pbf.writeStringField(5, `${data.parameters}`)
+    data.additional_info ? pbf.writeStringField(6, `${data.additional_info}`):'';
 
     
     let buffer = pbf.finish();
-    console.log("Sending: ", data)
-    console.log("Sending: ", SystemMessage.read(new Pbf(buffer)))
+    // console.log("Sending: ", data)
+    // console.log("Sending: ", SystemMessage.read(new Pbf(buffer)))
     c.write(buffer)
 }
 
