@@ -273,8 +273,7 @@ function processSystemCommand(command, parameterString, c){
             let tmp = parameters[0]
             let dev_name = parameters[1]
 
-            let dev = isNaN(tmp) ? devices.getDeviceByName(tmp) : devices.getDeviceByID(tmp)
-            let id = dev.id
+            
 
             if(dev_name in dev_names){
                 log("Entered processSystemCommand() if21")
@@ -291,17 +290,33 @@ function processSystemCommand(command, parameterString, c){
             }
             else{
                 log("Entered processSystemCommand() if22")
-                devlist_json['devices'][id].name = dev_name
-                let stream = fs.createWriteStream(devlist_path, {flags:'w'});
-                stream.write(JSON.stringify(devlist_json))
-                dev.setName(dev_name)
-                let data_buffer = {deviceId : "_sys", 
-                    messageType : SystemMessage.MessageType.RESPONSE, 
-                    messageCode : SystemMessage.MessageCode.OK,
-                    command : command,
-                    parameters : parameterString
+
+                let dev = isNaN(tmp) ? devices.getDeviceByName(tmp) : devices.getDeviceByID(tmp)
+
+                if(dev){
+                    let id = dev.id
+                    devlist_json['devices'][id].name = dev_name
+                    let stream = fs.createWriteStream(devlist_path, {flags:'w'});
+                    stream.write(JSON.stringify(devlist_json))
+                    dev.setName(dev_name)
+                    let data_buffer = {deviceId : "_sys", 
+                        messageType : SystemMessage.MessageType.RESPONSE, 
+                        messageCode : SystemMessage.MessageCode.OK,
+                        command : command,
+                        parameters : parameterString
+                    }
+                    sendMessage(c, data_buffer)
                 }
-                sendMessage(c, data_buffer)
+                else{
+                    let data_buffer = {deviceId : "_sys", 
+                        messageType : SystemMessage.MessageType.RESPONSE, 
+                        messageCode : SystemMessage.MessageCode.INVALID_DEVICE_ID,
+                        command : command,
+                        parameters : parameterString
+                    }
+                    sendMessage(c, data_buffer)
+                }
+                
                 
             }
         }
