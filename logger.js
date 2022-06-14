@@ -245,6 +245,7 @@ let commandReceiver = net.createServer((c) => {
 function sendMessage(c, data_buffer){
     let pbf = new Pbf();
     SystemMessage.write(data_buffer, pbf);
+    log("Sending: ", data_buffer)
     let buffer = pbf.finish();
     c.write(buffer)
 }
