@@ -17,6 +17,7 @@ const { assert } = require('console');
 const proto = schema.parse(fs.readFileSync('tftserver.proto'));
 const SystemMessage = compile(proto).SystemMessage;
 const AvlRecords = compile(proto).AvlRecords;
+const DeviceResponse = compile(proto).DeviceResponse;
 
 const devlist_path = ('./device/devlist.json')
 const devlist_json = require(devlist_path)
@@ -205,8 +206,18 @@ function mqtt_publishAvlRecords(id, message){
     })
 }    
 
-function mqtt_publishGprs(id, gprs){
-    mqtt_client.publish(`/tft100-server/${id}/_gprs`, JSON.stringify(gprs), { qos: 0, retain: false }, (error) => {
+function mqtt_publishGprs(id, message){
+
+    let pbf = new Pbf();
+    let obj = DeviceResponse.read(pbf);
+    DeviceResponse.write(obj, pbf);
+    // SystemMessage.write(data, pbf);
+    
+    pbf.writeStringField(1, message) 
+    
+    let buffer = pbf.finish();
+
+    mqtt_client.publish(`/tft100-server/${id}/_response`, buffer, { qos: 0, retain: false }, (error) => {
         if (error) {
             console.error(error)
         }

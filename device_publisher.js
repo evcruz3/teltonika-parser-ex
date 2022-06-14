@@ -50,13 +50,12 @@ mqtt_client.on('message', (topic, buffer) => {
     let dev_id = topic.split("/")[2]
 
     let pbf = new Pbf(buffer);
-    let payload = AvlRecords.read(pbf)
-
-    console.log(payload.data)
+    let json_obj = AvlRecords.read(pbf)
+    let payload = json_obj.data
 
     let json_records = null
     try {
-        json_records = JSON.parse(payload.data)
+        json_records = JSON.parse(payload)
 
         if(Array.isArray(json_records)){
 

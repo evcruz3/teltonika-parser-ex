@@ -41,3 +41,7 @@ message SystemMessage {
 message AvlRecords {
     string data = 1;
 }
+
+message DeviceResponse {
+    string response = 1;
+}
