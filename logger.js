@@ -248,8 +248,8 @@ function sendMessage(c, data){
     SystemMessage.write(obj, pbf);
     //SystemMessage.write(data_buffer, pbf);
     pbf.writeStringField(1, `${data.deviceId}`)
-    pbf.writeVarintField(2, data.messageType)
-    pbf.writeVarintField(3, data.messageCode)
+    pbf.writeVarintField(2, data.messageType.value)
+    pbf.writeVarintField(3, data.messageCode.value)
     pbf.writeStringField(4, `${data.command}`)
     pbf.writeStringField(5, `${data.parameters}`)
     data.additional_info ? pbf.writeStringField(6, `${data.additional_info}`):'';
