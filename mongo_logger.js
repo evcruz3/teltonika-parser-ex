@@ -33,7 +33,7 @@ const topic = '/tft100-server/+/avlrecords'
 mqtt_client.on('connect', () => {
     log('Connected to MQTT broker')
     mqtt_client.subscribe([topic], () => {
-        log(`Subscribe to topic '${topic}'`)
+        log(`Subscribed to topic '${topic}'`)
     })
 })
 mqtt_client.on('message', (topic, payload) => {
@@ -64,13 +64,9 @@ mqtt_client.on('message', (topic, payload) => {
             log("Received data is not an AVL record")
         }
     } catch (error) {
-        log("Received data is not parseable")
+        log("Received data is not JSON-parseable")
     }
     
-    
-
-    
-
 })
 
 function log (message){
