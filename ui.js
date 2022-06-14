@@ -10,6 +10,12 @@ const fs = require('fs')
 const myRL = require("serverline");
 const consoleFormatter = require("./utilities/consoleFormatter")
 
+var Pbf = require('pbf');
+var compile = require('pbf/compile');
+var schema = require('protocol-buffers-schema');
+var proto = schema.parse(fs.readFileSync('tftserver.proto'));
+var SystemMessage = compile(proto).SystemMessage;
+
 console = consoleFormatter(console)
 
 class UI{
@@ -45,9 +51,39 @@ class UI{
             //log("Command: " + comm);
             //log("ID: " + id);
             //log("Message: " + message);
+            
+
 
             if (ui_command == "sendCommand"){
-                _inst.client.write(d)
+                //_inst.client.write(d)
+
+                if(isNaN(tmp)){
+                    var id = Object.keys(devices).find(key => devices[key] === tmp);
+                } 
+                else{
+                    var id = tmp
+                }
+
+                if(id in devices){
+                    var pbf = new Pbf();
+                    var obj = SystemMessage.read(pbf);
+                    let param = others.splice(0,1).join(" ")
+                    SystemMessage.write(obj, pbf);
+                    pbf.writeStringField(1, `${id}`)
+                    pbf.writeVarintField(2, SystemMessage.MessageType.REQUEST)
+                    pbf.writeStringField(4, `${others[0]}`)
+                    pbf.writeStringField(5, `${param}`)
+                    var buffer = pbf.finish();
+
+                    _inst.client.write(buffer)
+                    
+                }
+                else{
+                    log("Device not found / specified")
+                }
+
+
+                
             }
             else if (ui_command == "listDevices"){
                 //log("TODO: list all devices here and their status")
@@ -77,9 +113,9 @@ class UI{
             else if (ui_command == "setDeviceName"){
                 _inst.client.write(d)
             }
-            else if (ui_command == "getGpsAll"){
-                _inst.client.write(d)
-            }
+            // else if (ui_command == "getGpsAll"){
+            //     _inst.client.write(d)
+            // }
             
             
         });

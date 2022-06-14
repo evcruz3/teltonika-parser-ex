@@ -10,6 +10,12 @@ const mqtt = require('mqtt')
 const uuid = require('uuid');
 const moment = require('moment')
 
+var Pbf = require('pbf');
+var compile = require('pbf/compile');
+var schema = require('protocol-buffers-schema');
+var proto = schema.parse(fs.readFileSync('tftserver.proto'));
+var SystemMessage = compile(proto).SystemMessage;
+
 console = consoleFormatter(console)
 Date.prototype.toJSON = function(){ return moment(this).format(); }
 
@@ -145,18 +151,6 @@ class Logger{
                                 console.error(error)
                             }
                         })
-                        
-
-                        // MongoClient.connect(mongoUrl, function(err, db) {
-                        //     if (err) throw err
-                        //     let dbo = db.db("tft-server")
-                        //     let myobj = {device: id, avl: avl}
-                        //     dbo.collection("AVL DATA").insertOne(myobj, function(err, res){
-                        //         if (err) throw err
-                        //         log(" MONGODB: 1 AVL document inserted")
-                        //         db.close()
-                        //     })
-                        // })
 
                         let writer = new binutils.BinaryWriter();
                         writer.WriteInt32(avl.number_of_data);
@@ -166,25 +160,17 @@ class Logger{
 
                         log("Received AVL data from device " + id);
 
-                        let requests = this.requests[id]
-                        if(requests !== undefined){
-                            if(requests.length > 0){
-                                log("Pending requests for " + id + ": ")
-                                log(requests)
-                                this.requests[id].forEach(function(item, index, object) {
-                                    let now = new Date()
-                                    let diff = (now.getTime() - item.timestamp.getTime())/1000
+                        let request = this.requests[id]
+                        if(request !== undefined){
+                            log("Pending request for " + id + ": ")
+                            log(request)
+                            let now = new Date()
+                            let diff = (now.getTime() - request.timestamp.getTime())/1000
 
-                                    log(`Pending message [${index}] life: ${diff}`)
-                                    if (diff <= 30){
-                                        device.sendCommand(item.buffer)
-                                        log("Pending message [" + index + "] sent to dev " + id)
-                                        object.splice(index, 1);
-                                    }
-                                    else{
-                                        object.splice(index, 1);
-                                    }
-                                });
+                            log(`Pending request life: ${diff}`)
+                            if (diff <= 30){
+                                device.sendCommand(request.buffer)
+                                log("Pending message sent to dev " + id)
                             }
                             
                         }
@@ -219,8 +205,6 @@ class Logger{
         }); 
 
 
-
-
         // Create port to listen to system commands
         //this.clients = []
         this.client = null
@@ -229,8 +213,25 @@ class Logger{
                 log("ui disconnected")
             });
 
-            c.on('data', (ui_message) => {
-                log("ui message: " + ui_message)
+            c.on('data', (message) => {
+                //log("ui message: " + ui_message)
+
+
+                let pbf = new Pbf(message);
+
+
+
+                let data = SystemMessage.read(pbf)
+
+                log(data)
+                
+                let deviceId = data.deviceId
+                let messageType = data.type
+                let messageCode = data.code 
+                let command = data.command
+                let parameters = data.parameters
+
+                let ui_message = command + " " + parameters
                 this.client = c
                 inst._process_message(ui_message, c, inst)
                 //log("Clients: " + inst.clients)
@@ -309,12 +310,7 @@ class Logger{
                     c.write(dev.id + ":\nDevice " + tmp + " is currently offline, will send once the device goes online")
                     let timestamp = new Date()
                     
-                    if(inst.requests[dev.id] === undefined){
-                        inst.requests[dev.id] = []
-                    }
-                    
-                    
-                    inst.requests[dev.id].push({"timestamp" : timestamp, "buffer" : outBuffer})
+                    inst.requests[dev.id] = {"timestamp" : timestamp, "buffer" : outBuffer}
                     //inst.clients.pop()
                 }
                 

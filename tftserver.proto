@@ -16,3 +16,21 @@ message DeviceGps {
     // string property_humanvalue = 10;
 }
 
+message SystemMessage {
+    enum MessageType {
+        REQUEST = 0;
+        RESPONSE = 1;
+    }
+
+    enum MessageCode {
+        OK = 0;
+        UNKNOWN_COMMAND = 1;
+        INVALID_FORMAT = 2; //Command exists, but format is invalid
+        OTHER = 3; //see message for details
+    }
+    string deviceId = 1; // "_system" if system, else deviceID
+    MessageType type = 2; // 
+    optional MessageCode code = 3;
+    string command = 4;
+    optional string parameters = 5; // separated by whitespaces
+}
