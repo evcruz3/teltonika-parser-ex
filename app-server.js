@@ -86,8 +86,8 @@ mqtt_client.on('message', (topic, payload) => {
         // Check for pending message for the TFT device
         let request = pending_requests[id]
         if(request !== undefined){
-            log("Pending request for " + id + ": ")
-            log(request)
+            //log("Pending request for " + id + ": ")
+            //log(request)
             let now = new Date()
             let diff = (now.getTime() - request.timestamp.getTime())/1000
 
@@ -111,7 +111,7 @@ mqtt_client.on('message', (topic, payload) => {
                     }
                 })
                 
-                //log("Pending message sent to dev " + id)
+                log("Pending message sent to dev " + id)
             }
             delete pending_requests[id]
         }
