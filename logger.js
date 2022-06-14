@@ -328,7 +328,7 @@ function processSystemCommand(command, parameterString, c){
                         command : command,
                         parameters : parameterString
                     }
-                    log("Sending: ", JSON.stringify(data_buffer))
+                    log("Sending: ", data_buffer.command)
                     sendMessage(c, data_buffer)
                 }
                 
