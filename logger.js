@@ -341,7 +341,8 @@ function processDeviceCommand(deviceId, command, parameterString, c){
     let gprsCommandPacker = new GprsCommandPacker(message)
     let outBuffer = gprsCommandPacker.getGprsMessageBuffer()
 
-    let tmp = deviceId
+    let tmp = 
+    console.log(deviceId,command, parameterString )
     let dev = isNaN(tmp) ? devices.getDeviceByName(tmp) : devices.getDeviceByID(tmp)
 
     //let id = dev.id
