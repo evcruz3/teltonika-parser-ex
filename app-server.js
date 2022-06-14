@@ -118,7 +118,7 @@ mqtt_client.on('message', (topic, payload) => {
     
 })
 
-processAppCommand(command){
+function processAppCommand(command){
     switch (command) {
         case "unlockDevice":{
             let pbf = new Pbf();
