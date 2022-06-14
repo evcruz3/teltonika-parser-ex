@@ -256,6 +256,7 @@ function sendMessage(c, data){
 
     
     let buffer = pbf.finish();
+    log("Sending: ", data)
     log("Sending: ", SystemMessage.read(new Pbf(buffer)))
     c.write(buffer)
 }
