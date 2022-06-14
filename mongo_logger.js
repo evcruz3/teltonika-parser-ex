@@ -13,17 +13,6 @@ log(Array(process.stdout.rows + 1).join('\n'));
 var MongoClient = mongo.MongoClient
 var mongoUrl = "mongodb://tft-server:tft100@167.71.159.65:27017/tft-server"
 
-var dbo = connectToMongo()
-
-
-function connectToMongo(){
-    let dbo = null
-    MongoClient.connect(mongoUrl, function(err, db) {
-        if (err) throw err
-        dbo = db.db("tft-server")
-    })
-    return dbo
-}
 
 const host = '167.71.159.65'
 const port = '1883'
@@ -44,37 +33,41 @@ const topic = '/tft100-server/+/avlrecords'
 mqtt_client.on('connect', () => {
     log('Connected to MQTT broker')
     mqtt_client.subscribe([topic], () => {
-        log(`Subscribed to topic '${topic}'`)
+        log(`Subscribe to topic '${topic}'`)
     })
 })
 mqtt_client.on('message', (topic, payload) => {
     
     let dev_id = topic.split("/")[2]
-    let json_records = JSON.parse(payload)
-    if(Array.isArray(json_records)){
+    let json_records = null
+    try {
+        json_records = JSON.parse(payload)
+
+        if(Array.isArray(json_records)){
+            MongoClient.connect(mongoUrl, function(err, db) {
+                if (err) throw err
+                let dbo = db.db("tft-server")
+                let myobjects = []
         
-            let myobjects = []
-    
-            json_records.forEach(record => {
-                myobjects.push({deviceID: dev_id, record: record})
-            })
-            //let myobj = {deviceID: dev_id, records: json_records}
-            if(dbo){
+                json_records.forEach(record => {
+                    myobjects.push({deviceID: dev_id, record: record})
+                })
+                //let myobj = {deviceID: dev_id, records: json_records}
                 dbo.collection("AVL DATA").insertMany(myobj, {ordered:true}, function(err, res){
                     if (err) throw err
                     log(`${myobjects.length} records inserted for deviceID ${dev_id}`)
-                    // db.close()
+                    db.close()
                 })
-            }
-            else{
-                log("ERROR Cannot open database")
-                connectToMongo()
-            }
-            
+            })
+        }
+        else{
+            log("Received data is not an AVL record")
+        }
+    } catch (error) {
+        log("Received data is not parseable")
     }
-    else{
-        log("Received data is not an AVL record")
-    }
+    
+    
 
     
 
