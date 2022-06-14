@@ -252,12 +252,13 @@ class Codec8e extends Codec {
           let beacon_id = ''
           let signal_strength = null
 
-          if (flag_id[0] == "2"){ //iBeacon
+          let beacon_type = flag_id.substr(0,1)
+          if (beacon_type == "2"){ //iBeacon
             beacon_id = this.reader.ReadBytes(16).toString("hex") + ":" + this.reader.ReadBytes(2).toString("hex") + ":" + this.reader.ReadBytes(2).toString("hex")
             signal_strength = this.fromTwosComplement(this.reader.ReadBytes(2), 2)
             ioValueLength = ioValueLength - 22
           }
-          else if (flag_id[0] == "0"){ // Eddystone
+          else if (beacon_type == "0"){ // Eddystone
             beacon_id = this.reader.ReadBytes(10).toString("hex") + ":" + this.reader.ReadBytes(6).toString("hex")
             signal_strength = this.fromTwosComplement(this.reader.ReadBytes(2), 2)
             ioValueLength = ioValueLength - 18
