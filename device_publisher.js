@@ -121,7 +121,7 @@ mqtt_client.on('message', (topic, buffer) => {
         let payload = DeviceResponse.read(pbf)
         let message = payload.response
 
-        let regex = `DOUT${digOut}:\\d`
+        let regex = `DOUT${digOut}:/\d`
         console.log(message)
         console.log(`Search for '${regex}'`)
         
