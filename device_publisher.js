@@ -118,7 +118,7 @@ mqtt_client.on('message', (topic, buffer) => {
     }
     else{
         let pbf = new Pbf(buffer);
-        let payload = DeviceResponse.read(pbf).toString()
+        let payload = DeviceResponse.read(pbf)
 
         console.log(payload)
         
