@@ -24,7 +24,6 @@ log(Array(process.stdout.rows + 1).join('\n'));
 /*-----------------------
  --------- MQTT ---------
  ------------------------*/
-//const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
 const clientId = uuid.v1
 const host = '167.71.159.65'
 const port = '1883'
@@ -182,6 +181,7 @@ function processAppCommand(deviceId, command){
             break;
         }
         default:
+            console.log(command, " not a valid command")
             break;
     }
 }

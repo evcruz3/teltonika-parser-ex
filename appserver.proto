@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option java_outer_classname = "protos";
+
+message DeviceGps {
+    string deviceId = 1;
+    string timestamp = 2;
+    string lat = 3;
+    string lng = 4;
+    string speed = 5;
+}

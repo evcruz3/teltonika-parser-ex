@@ -1,4 +1,3 @@
-const net = require('net');
 const consoleFormatter = require("./utilities/consoleFormatter")
 const mqtt = require('mqtt')
 const uuid = require('uuid');
