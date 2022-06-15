@@ -127,12 +127,14 @@ mqtt_client.on('message', (topic, buffer) => {
             console.log(`Search for '${regex}'`)
             
             let re = new RegExp(regex)
-            let result = message.match(re)
+            let result = re.findAll()
+            message.match(re)
             console.log("result: ", result)
             
             if(result){
-                let isLocked = result[0].split(":")[1]
-                mqtt_client.publish(`/tft100-server/${dev_id}/isLocked`, buffer, { qos: 0, retain: true }, (error) => {
+                let isLocked = result[0]
+                console.log("isLocked: ", isLocked)
+                mqtt_client.publish(`/tft100-server/${dev_id}/isLocked`, isLocked, { qos: 0, retain: true }, (error) => {
                     if (error) {
                         console.error(error)
                     }
