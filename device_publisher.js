@@ -119,8 +119,21 @@ mqtt_client.on('message', (topic, buffer) => {
     else{
         let pbf = new Pbf(buffer);
         let payload = DeviceResponse.read(pbf)
+        let message = payload.response
 
-        console.log(payload)
+        let regex = `DOUT${digOut}:\d`
+        let re = new RegExp(regex)
+        let result = re.exec(message)
+        if(result){
+            let isLocked = result.split(":")[1]
+            mqtt_client.publish(`/tft100-server/${dev_id}/isLocked`, buffer, { qos: 0, retain: true }, (error) => {
+                if (error) {
+                    console.error(error)
+                }
+                log(`Updated lock status of ${dev_id}:${isLocked}`)
+            })
+        }
+        console.log(message)
         
     }
 
