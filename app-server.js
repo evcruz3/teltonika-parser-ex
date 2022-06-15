@@ -69,7 +69,7 @@ mqtt_client.on('message', (topic, payload) => {
             processAppCommand(id, ui_command)
         }
         else{
-            let response = "Invalid command"
+            let response = "ERROR. Invalid command"
             mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
                 if (error) {
                 console.error(error)
@@ -180,6 +180,7 @@ function processAppCommand(deviceId, command){
                 console.error(error)
                 }
             })
+            console.log("all gps sent")
             break;
         }
         default:
