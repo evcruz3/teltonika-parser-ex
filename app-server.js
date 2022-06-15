@@ -76,44 +76,49 @@ mqtt_client.on('message', (topic, payload) => {
         }
     }
     else if(topic_ending == '_gps'){
-        let pbf = new Pbf(payload);
-        let data = DeviceGps.read(pbf)
-        let id = data.deviceId
-
-        all_gps[id] = {timestamp: data.timestamp, lat: data.lat, lng:data.lng, speed:data.speed}
-
-        // Check for pending message for the TFT device
-        let request = pending_requests[id]
-        if(request !== undefined){
-            //log("Pending request for " + id + ": ")
-            //log(request)
-            let now = new Date()
-            let diff = (now.getTime() - request.timestamp.getTime())/1000
-
-            log(`Pending request life: ${diff}`)
-            if (diff <= 30){
-                let pbf = new Pbf();
-                let obj = SystemMessage.read(pbf);
-
-                SystemMessage.write(obj, pbf);
-                pbf.writeStringField(1, `${id}`)
-                pbf.writeStringField(4, `${request.command}`)
-                pbf.writeStringField(5, `${request.parameters}`)
-                var buffer = pbf.finish();
-
-                client.write(buffer)
-
-                let response = "Pending Message Sent"
-                mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
-                    if (error) {
-                    console.error(error)
-                    }
-                })
-                
-                log("Pending message sent to dev " + id)
-            }
-            delete pending_requests[id]
+        try {
+            let pbf = new Pbf(payload);
+            let data = DeviceGps.read(pbf)
+            let id = data.deviceId
+    
+            all_gps[id] = {timestamp: data.timestamp, lat: data.lat, lng:data.lng, speed:data.speed}
+    
+            // Check for pending message for the TFT device
+            let request = pending_requests[id]
+            if(request !== undefined){
+                //log("Pending request for " + id + ": ")
+                //log(request)
+                let now = new Date()
+                let diff = (now.getTime() - request.timestamp.getTime())/1000
+    
+                log(`Pending request life: ${diff}`)
+                if (diff <= 30){
+                    let pbf = new Pbf();
+                    let obj = SystemMessage.read(pbf);
+    
+                    SystemMessage.write(obj, pbf);
+                    pbf.writeStringField(1, `${id}`)
+                    pbf.writeStringField(4, `${request.command}`)
+                    pbf.writeStringField(5, `${request.parameters}`)
+                    var buffer = pbf.finish();
+    
+                    client.write(buffer)
+    
+                    let response = "Pending Message Sent"
+                    mqtt_client.publish('/tft100-server/'+id+'/response', response, { qos: 0, retain: false }, (error) => {
+                        if (error) {
+                        console.error(error)
+                        }
+                    })
+                    
+                    log("Pending message sent to dev " + id)
+                }
+                delete pending_requests[id]
+            } 
+        } catch (error) {
+            log("Received data is not in gps proto format")
         }
+        
     }
     
 })
@@ -153,7 +158,7 @@ function processAppCommand(deviceId, command){
             let command = "setdigout"
 
             // Might need a discussion on which is more energy-efficient to set to 1, locking or unlocking?
-            let param = digOut == 1 ? "1 ?" : digOut == 2 ? "? 1" : "1 1";
+            let param = digOut == 1 ? "0 ?" : digOut == 2 ? "? 0" : "0 0";
 
             SystemMessage.write(obj, pbf);
             pbf.writeStringField(1, `${id}`)

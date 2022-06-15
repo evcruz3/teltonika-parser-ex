@@ -8,6 +8,7 @@ var fs = require('fs');
 var proto = schema.parse(fs.readFileSync('tftserver.proto'));
 var TFTDevice = compile(proto).DeviceGps;
 var AvlRecords = compile(proto).AvlRecords;
+var DeviceResponse = compile(proto).DeviceResponse;
 
 console = consoleFormatter(console)
 
@@ -37,76 +38,90 @@ const mqtt_client = mqtt.connect(connectUrl, {
     reconnectPeriod: 1000,
 })
 
-const topic = '/tft100-server/+/_avlrecords'
+const topics = ['/tft100-server/+/_avlrecords', '/tft100-server/+/_response']
 
 mqtt_client.on('connect', () => {
     log('Connected to MQTT broker')
-    mqtt_client.subscribe([topic], () => {
-        log(`Subscribed to topic '${topic}'`)
-    })
+    topics.forEach(topic => {
+        mqtt_client.subscribe([topic], () => {
+            log(`Subscribed to topic '${topic}'`)
+        })
+    }) 
 })
 mqtt_client.on('message', (topic, buffer) => {
-    let dev_id = topic.split("/")[2]
+    let tmp = topic.split("/")
+    let dev_id = tmp[2]
 
-    let pbf = new Pbf(buffer);
-    let json_obj = AvlRecords.read(pbf)
-    let payload = json_obj.data
+    let topic_ending = tmp[tmp.length - 1]
 
-    let json_records = null
-    try {
-        json_records = JSON.parse(payload)
+    if(topic_ending == '_avlrecords'){
+        let pbf = new Pbf(buffer);
+        let json_obj = AvlRecords.read(pbf)
+        let payload = json_obj.data
 
-        if(Array.isArray(json_records)){
+        let json_records = null
+        try {
+            json_records = JSON.parse(payload)
 
-            // Check Lock Status if the AVL ID of DigOut(1/2) exists on the record
-            if (digOutAvlID){
-                json_records.every(record => {
-                    let ioElements = record.ioElements
-                    res = ioElements.find(o => o.id === digOutAvlID)
-                    if(res){
-                        let locked = res.value;
-                        mqtt_client.publish(`/tft100-server/${dev_id}/isLocked`, locked, { qos: 0, retain: true }, (error) => {
-                            if (error) {
-                                console.error(error)
-                            }
-                            log(`Published Lock Status of devID ${dev_id}: ${locked}`)
-                        })
-                        return false; // break from loop
-                    }
-                    else return true
-                })
-            }
+            if(Array.isArray(json_records)){
 
-            // Published GPS details
-
-            let record = json_records[json_records.length - 1]
-            let pbf = new Pbf();
-            let obj = TFTDevice.read(pbf);
-            TFTDevice.write(obj, pbf);
-            pbf.writeStringField(1, `${dev_id}`)
-            pbf.writeStringField(2, `${record.timestamp}`)
-            pbf.writeStringField(3, `${record.gps.latitude}`)
-            pbf.writeStringField(4, `${record.gps.longitude}`)
-            pbf.writeStringField(5, `${record.gps.speed}`)
-
-            var buffer = pbf.finish();
-
-            // publish the mqtt message
-            mqtt_client.publish(`/tft100-server/${dev_id}/_gps`, buffer, { qos: 0, retain: true }, (error) => {
-                if (error) {
-                    console.error(error)
+                // Check Lock Status if the AVL ID of DigOut(1/2) exists on the record
+                if (digOutAvlID){
+                    json_records.every(record => {
+                        let ioElements = record.ioElements
+                        res = ioElements.find(o => o.id === digOutAvlID)
+                        if(res){
+                            let locked = res.value;
+                            mqtt_client.publish(`/tft100-server/${dev_id}/isLocked`, locked, { qos: 0, retain: true }, (error) => {
+                                if (error) {
+                                    console.error(error)
+                                }
+                                log(`Published Lock Status of devID ${dev_id}: ${locked}`)
+                            })
+                            return false; // break from loop
+                        }
+                        else return true
+                    })
                 }
-                log(`Published GPS of devID ${dev_id}`)
-            })
+
+                // Published GPS details
+
+                let record = json_records[json_records.length - 1]
+                let pbf = new Pbf();
+                let obj = TFTDevice.read(pbf);
+                TFTDevice.write(obj, pbf);
+                pbf.writeStringField(1, `${dev_id}`)
+                pbf.writeStringField(2, `${record.timestamp}`)
+                pbf.writeStringField(3, `${record.gps.latitude}`)
+                pbf.writeStringField(4, `${record.gps.longitude}`)
+                pbf.writeStringField(5, `${record.gps.speed}`)
+
+                var buffer = pbf.finish();
+
+                // publish the mqtt message
+                mqtt_client.publish(`/tft100-server/${dev_id}/_gps`, buffer, { qos: 0, retain: true }, (error) => {
+                    if (error) {
+                        console.error(error)
+                    }
+                    log(`Published GPS of devID ${dev_id}`)
+                })
 
 
-            
+                
+            }
+            else{
+                log("Received data is not an AVL record")
+            }
+        } catch (error) {
+            log("Received data is not JSON-parseable")
         }
-        else{
-            log("Received data is not an AVL record")
-        }
-    } catch (error) {
-        log("Received data is not JSON-parseable")
+    }
+    else{
+        let pbf = new Pbf(buffer);
+        let payload = DeviceResponse.read(pbf).toString()
+
+        console.log(payload)
+        
     }
 
 })
