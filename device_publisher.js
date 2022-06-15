@@ -126,7 +126,7 @@ mqtt_client.on('message', (topic, buffer) => {
         console.log(`Search for '${regex}'`)
         
         let re = new RegExp(regex)
-        let result = re.match(message)
+        let result = message.match(re)
         console.log("result: ", result)
         
         if(result){
