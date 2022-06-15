@@ -15,7 +15,6 @@ console = consoleFormatter(console)
 
 const PREFIX = "APP-SERVER"
 const lockParam = require('./lockparameter.json');
-const { isBuffer } = require('util');
 const digOut = lockParam.digOut
 
 process.stdout.write("\x1Bc")
@@ -133,7 +132,7 @@ function processAppCommand(deviceId, command){
             let command = "setdigout"
 
             // Might need a discussion on which is more energy-efficient to set to 1, locking or unlocking?
-            let param = digOut == 1 ? "1 ?" : digOut == 2 ? "? 1" : "1 1";
+            let param = digOut == 1 ? "1?" : digOut == 2 ? "?1" : "11";
 
             SystemMessage.write(obj, pbf);
             pbf.writeStringField(1, `${id}`)
@@ -158,7 +157,7 @@ function processAppCommand(deviceId, command){
             let command = "setdigout"
 
             // Might need a discussion on which is more energy-efficient to set to 1, locking or unlocking?
-            let param = digOut == 1 ? "0 ?" : digOut == 2 ? "? 0" : "0 0";
+            let param = digOut == 1 ? "0?" : digOut == 2 ? "?0" : "00";
 
             SystemMessage.write(obj, pbf);
             pbf.writeStringField(1, `${id}`)
