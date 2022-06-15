@@ -62,6 +62,8 @@ mqtt_client.on('message', (topic, payload) => {
         log('Received Message from ' + topic.toString() + ": " + user_input)
 
         let ui_command = user_input.split(" ")[0];
+        console.log("uinput", user_input)
+        console.log("ui_command", ui_command)
         
         if (allowed_commands.includes(ui_command)){
             processAppCommand(id, ui_command)
