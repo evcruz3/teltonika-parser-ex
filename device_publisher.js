@@ -132,7 +132,8 @@ mqtt_client.on('message', (topic, buffer) => {
             console.log("result: ", result)
             
             if(result){
-                let isLocked = result[0]
+                let match = result[0]
+                let isLocked = match.split(":")[1]
                 console.log("isLocked: ", isLocked)
                 mqtt_client.publish(`/tft100-server/${dev_id}/isLocked`, isLocked, { qos: 0, retain: true }, (error) => {
                     if (error) {
