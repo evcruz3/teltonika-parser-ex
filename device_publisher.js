@@ -123,19 +123,19 @@ mqtt_client.on('message', (topic, buffer) => {
 
         let regex = digOut == 1 ? /DOUT1:\d/ : digOut == 2 ? /DOUT2:\d/ : null;
         if(regex){
-            console.log(message)
-            console.log(`Search for '${regex}'`)
+            //console.log(message)
+            //console.log(`Search for '${regex}'`)
             
             let re = new RegExp(regex)
             let result = message.match(re)
             message.match(re)
-            console.log("result: ", result)
+            //console.log("result: ", result)
             
             if(result){
                 let match = result[0]
                 let isLocked = match.split(":")[1]
                 let data = isLocked == "1" ? "0":"1";
-                console.log("isLocked: ", isLocked)
+                //console.log("isLocked: ", isLocked)
                 mqtt_client.publish(`/tft100-server/${dev_id}/isLocked`, data, { qos: 0, retain: true }, (error) => {
                     if (error) {
                         console.error(error)
