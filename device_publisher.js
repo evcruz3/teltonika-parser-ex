@@ -121,23 +121,29 @@ mqtt_client.on('message', (topic, buffer) => {
         let payload = DeviceResponse.read(pbf)
         let message = payload.response
 
-        let regex = `DOUT${digOut}:/\d`
-        console.log(message)
-        console.log(`Search for '${regex}'`)
-        
-        let re = new RegExp(regex)
-        let result = message.match(re)
-        console.log("result: ", result)
-        
-        if(result){
-            let isLocked = result[0].split(":")[1]
-            mqtt_client.publish(`/tft100-server/${dev_id}/isLocked`, buffer, { qos: 0, retain: true }, (error) => {
-                if (error) {
-                    console.error(error)
-                }
-                log(`Updated lock status of ${dev_id}:${isLocked}`)
-            })
+        let regex = digOut == 1 ? /DOUT1:\d/ : digOut == 2 ? /DOUT2:\d/ : null;
+        if(regex){
+            console.log(message)
+            console.log(`Search for '${regex}'`)
+            
+            let re = new RegExp(regex)
+            let result = message.match(re)
+            console.log("result: ", result)
+            
+            if(result){
+                let isLocked = result[0].split(":")[1]
+                mqtt_client.publish(`/tft100-server/${dev_id}/isLocked`, buffer, { qos: 0, retain: true }, (error) => {
+                    if (error) {
+                        console.error(error)
+                    }
+                    log(`Updated lock status of ${dev_id}:${isLocked}`)
+                })
+            }
         }
+        else{
+            log("NO DIGOUT PROPERLY SET FOR LOCKING/UNLOCKING DEVICE")
+        }
+        
         
         
     }
