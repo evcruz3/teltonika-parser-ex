@@ -42,12 +42,13 @@ function connect(){
 var IMEI = generateIMEI()
 console.log("START OF CYCLE")
 for(var cycle_count = 0; cycle_count<20; cycle_count++){
-    sleepRandomAmount(10000,30000)
-    connect()
+    let sleep_amount = randomIntFromInterval(10000,30000)
+    console.log("Sleeping for ", sleep_amount, "ms")
+    setTimeout(connect, sleep_amount);
     sendIMEI(IMEI)
     console.log("sending AVL Data...")
     sendAvlAtAnInterval()
-    client.destroy()
+    client.end()
 }
 
 // sleep
@@ -60,8 +61,9 @@ function sendAvlAtAnInterval(){
     let n = randomIntFromInterval(10, 20)
     let x = randomIntFromInterval(60000, 65000)
     for(var count = 0; count < n; count++){
-        client.write(AVL_buffer)
-        sleep(x)
+        setTimeout(function(){
+            client.write(AVL_buffer)
+        }, x);
     }
 }
 
