@@ -3,8 +3,13 @@ const fs = require('fs')
 
 var processes = {}
 
-await loadMainService()
-loadOtherServices()
+
+
+run()
+async function run(){
+    await loadMainService()
+    await loadOtherServices()
+}
 
 async function loadMainService(){
     let tft_server = spawn('node', ['tft-server.js'])
@@ -29,8 +34,7 @@ async function loadMainService(){
             delete processes[key]
         });
 
-        loadMainService()
-        loadOtherServices()
+        run()
     });
 }
 
