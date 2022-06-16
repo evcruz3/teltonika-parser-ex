@@ -19,12 +19,6 @@ const AVL_buffer = Buffer.from(AVL_HEX, "hex")
 
 var client = new net.Socket();
 
-function connect(){
-    client.connect(49366, 'localhost', () => {
-        console.log("Created a connection to tft-server")
-    })
-}
-
 client.on('data', (message) => {     
     console.log("Received from server: ", message, "; size: ", message.length)
 });  
@@ -36,16 +30,22 @@ client.on('error', (err) => {
     console.error(err); 
 }); 
 
+function connect(){
+    client.connect(49366, 'localhost', () => {
+        console.log("Created a connection to tft-server")
+    })
+}
+
 var IMEI = generateIMEI()
+console.log("START OF CYCLE")
 for(var cycle_count = 0; cycle_count<20; cycle_count++){
+    
     sleepRandomAmount(10000,30000)
     connect()
     sendIMEI(IMEI)
     sendAvlAtAnInterval()
     client.end()
 }
-
-
 
 // sleep
 // connect
@@ -84,8 +84,6 @@ function sleepRandomAmount(x, y){
 async function sleep(amount){
     await new Promise(resolve => setTimeout(resolve, amount));
 }
-
-
 
 function randomIntFromInterval(min, max) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min)
