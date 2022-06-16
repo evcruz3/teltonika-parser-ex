@@ -7,7 +7,7 @@ for(var i = 0; i<3; i++){
     child.on('exit', function (code, signal) {
         console.log(`child process ${children[child]} exited with ` +
                     `code ${code} and signal ${signal}`);
-        delete children[child]
+
     });
 
     child.stdout.on('data', (data) => {
@@ -20,3 +20,5 @@ for(var i = 0; i<3; i++){
 
     children[child] = i
 }
+
+console.log(children)
