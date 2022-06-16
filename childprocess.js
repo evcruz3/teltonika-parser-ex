@@ -17,19 +17,23 @@ const { assert } = require('console');
 const AVL_HEX = "000000000000002e8e01000001810116afe9004827f4c408c8bd7900000000000000018100010000000000000000000101810001110100001f43"
 const AVL_buffer = Buffer.from(AVL_HEX, "hex")
 
-var client = new net.Socket();
+var client = null;
 
-client.on('data', (message) => {     
-    console.log("Received from server: ", message, "; size: ", message.length)
-});  
-// Add a 'close' event handler for the client socket 
-client.on('close', () => { 
-    console.log('connection closed'); 
-});  
-client.on('error', (err) => { 
-    console.error(err); 
-}); 
-function connect(){
+
+async function connect(){
+    client = new net.Socket();
+
+    client.on('data', (message) => {     
+        console.log("Received from server: ", message, "; size: ", message.length)
+    });  
+    // Add a 'close' event handler for the client socket 
+    client.on('close', () => { 
+        console.log('connection closed'); 
+    });  
+    client.on('error', (err) => { 
+        console.error(err); 
+    }); 
+
     client.connect(49366, 'localhost', () => {
         console.log("Created a connection to tft-server")
     })
@@ -38,13 +42,12 @@ function connect(){
 var IMEI = generateIMEI()
 console.log("START OF CYCLE")
 for(var cycle_count = 0; cycle_count<20; cycle_count++){
-    let sleep_amount = randomIntFromInterval(10000,30000)
-    console.log("Sleeping for ", sleep_amount, "ms")
-    setTimeout(connect, sleep_amount);
-    sendIMEI(IMEI)
+    await sleepRandomAmount(10000,30000)
+    await connect()
+    await sendIMEI(IMEI)
     console.log("sending AVL Data...")
-    sendAvlAtAnInterval()
-    client.end()
+    await sendAvlAtAnInterval()
+    client.destroy()
 }
 
 // sleep
@@ -53,18 +56,17 @@ for(var cycle_count = 0; cycle_count<20; cycle_count++){
 // disconnect
 
 // send AVL hex at an interval x for n times
-function sendAvlAtAnInterval(){
+async function sendAvlAtAnInterval(){
     let n = randomIntFromInterval(10, 20)
     let x = randomIntFromInterval(60000, 65000)
     for(var count = 0; count < n; count++){
-        setTimeout(function(){
-            client.write(AVL_buffer)
-        }, x);
+        client.write(AVL_buffer)
+        sleep(x)
     }
 }
 
 
-function sendIMEI(IMEI){
+async function sendIMEI(IMEI){
     //let sizeInt = 15
     let size_hex = Buffer.from("000f", "hex");
     let imei_hex = Buffer.from(IMEI.toString(), 'utf-8')
@@ -77,7 +79,7 @@ function sendIMEI(IMEI){
     client.write(encoded_message)
 }
 
-function sleepRandomAmount(x, y){
+async function sleepRandomAmount(x, y){
     let amount = randomIntFromInterval(x, y)
     sleep(amount)
 }
