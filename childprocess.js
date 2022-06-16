@@ -1,10 +1,10 @@
 console.log("hello world")
 let amount = randomIntFromInterval(1000,5000)
 console.log(`sleeping for ${amount} ms...`)
-sleep()
+sleep(amount)
 console.log("goodbye world")
 
-function sleep(time){
+async function sleep(time){
     await new Promise(resolve => setTimeout(resolve, 5000));
 }
 
