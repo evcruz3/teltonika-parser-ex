@@ -56,7 +56,7 @@ for(var cycle_count = 0; cycle_count<20; cycle_count++){
 function sendAvlAtAnInterval(){
     let n = randomIntFromInterval(10, 20)
     let x = randomIntFromInterval(60000, 65000)
-    for(var count = 0; count < n, count++){
+    for(var count = 0; count < n; count++){
         client.write(AVL_buffer)
         sleep(x)
     }
