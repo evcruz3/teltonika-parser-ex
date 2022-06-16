@@ -20,7 +20,7 @@ async function connect(){
 
     client.on('data', (message) => {     
         //console.log("Received from server: ", message, "; size: ", message.length)
-        if(message.length > 4){
+        if(message.length > 5){
             let commandString = getGPRSCommand(message)
             
             let [command, _parameters] = commandString.split(" ")
