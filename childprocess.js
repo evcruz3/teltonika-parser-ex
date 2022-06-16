@@ -81,7 +81,7 @@ async function sendIMEI(IMEI){
 
 async function sleepRandomAmount(x, y){
     let amount = randomIntFromInterval(x, y)
-    sleep(amount)
+    await sleep(amount)
 }
 
 async function sleep(amount){
