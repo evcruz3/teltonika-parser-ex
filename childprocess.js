@@ -17,27 +17,24 @@ const { assert } = require('console');
 const AVL_HEX = "000000000000002e8e01000001810116afe9004827f4c408c8bd7900000000000000018100010000000000000000000101810001110100001f43"
 const AVL_buffer = Buffer.from(AVL_HEX, "hex")
 
-var client = null;
+var client = new net.Socket();
 
+client.on('data', (message) => {     
+    console.log("Received from server: ", message, "; size: ", message.length)
+});  
+// Add a 'close' event handler for the client socket 
+client.on('close', () => { 
+    console.log('connection closed'); 
+});  
+client.on('error', (err) => { 
+    console.error(err); 
+}); 
 
 
 function connect(){
-    client = new net.Socket();
-
     client.connect(49366, 'localhost', () => {
         console.log("Created a connection to tft-server")
     })
-
-    client.on('data', (message) => {     
-        console.log("Received from server: ", message, "; size: ", message.length)
-    });  
-    // Add a 'close' event handler for the client socket 
-    client.on('close', () => { 
-        console.log('connection closed'); 
-    });  
-    client.on('error', (err) => { 
-        console.error(err); 
-    }); 
 }
 
 var IMEI = generateIMEI()
@@ -48,7 +45,7 @@ for(var cycle_count = 0; cycle_count<20; cycle_count++){
     connect()
     sendIMEI(IMEI)
     sendAvlAtAnInterval()
-    client.end()
+    client.destroy()
 }
 
 // sleep
