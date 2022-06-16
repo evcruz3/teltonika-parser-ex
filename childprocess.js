@@ -45,10 +45,12 @@ run()
 async function run() {
     for(var cycle_count = 0; cycle_count<20; cycle_count++){
         await sleepRandomAmount(10000,30000)
+        console.log("Establishing connection...")
         await connect()
+        console.log("Sending IMEI...")
         await sendIMEI(IMEI)
-        console.log("sending AVL Data...")
         await sendAvlAtAnInterval()
+        console.log("Ending connection...")
         client.destroy()
     }
 }
@@ -64,6 +66,7 @@ async function sendAvlAtAnInterval(){
     let n = randomIntFromInterval(10, 20)
     let x = randomIntFromInterval(60000, 65000)
     for(var count = 0; count < n; count++){
+        console.log("sending AVL Data...")
         client.write(AVL_buffer)
         await sleep(x)
     }
