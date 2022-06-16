@@ -15,7 +15,7 @@ const { assert } = require('console');
 // console.log("goodbye world")
 
 const AVL_HEX = "000000000000002e8e01000001810116afe9004827f4c408c8bd7900000000000000018100010000000000000000000101810001110100001f43"
-const AVL_buffer = Buffer.from(AVL_buffer, "hex")
+const AVL_buffer = Buffer.from(AVL_HEX, "hex")
 
 var client = new net.Socket();
 
