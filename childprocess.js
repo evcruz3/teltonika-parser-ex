@@ -82,7 +82,7 @@ function getGPRSCommand(buffer){
 }
 
 function _toInt(bytes) {
-    return _toInt(bytes.toString('hex'), 16);
+    return parseInt(bytes.toString('hex'), 16);
 }
 
 // send AVL hex at an interval x for n times
