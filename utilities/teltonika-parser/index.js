@@ -24,7 +24,6 @@ class TeltonikaParser {
 
   checkIsImei() {
     let imeiLength = this._toInt(this._reader.ReadBytes(2)); 
-    console.log("imeilength: ", imeiLength)
     if (imeiLength > 0) {
       this.isImei = true;
       this.imei = this._reader.ReadBytes(imeiLength).toString();
