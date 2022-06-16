@@ -41,14 +41,18 @@ async function connect(){
 
 var IMEI = generateIMEI()
 console.log("START OF CYCLE")
-for(var cycle_count = 0; cycle_count<20; cycle_count++){
-    await sleepRandomAmount(10000,30000)
-    await connect()
-    await sendIMEI(IMEI)
-    console.log("sending AVL Data...")
-    await sendAvlAtAnInterval()
-    client.destroy()
+run()
+function run() {
+    for(var cycle_count = 0; cycle_count<20; cycle_count++){
+        await sleepRandomAmount(10000,30000)
+        await connect()
+        await sendIMEI(IMEI)
+        console.log("sending AVL Data...")
+        await sendAvlAtAnInterval()
+        client.destroy()
+    }
 }
+
 
 // sleep
 // connect
