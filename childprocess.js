@@ -81,7 +81,7 @@ function sleepRandomAmount(x, y){
     sleep(amount)
 }
 
-async function sleep(){
+async function sleep(amount){
     await new Promise(resolve => setTimeout(resolve, amount));
 }
 
