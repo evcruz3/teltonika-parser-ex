@@ -1,11 +1,6 @@
 const binutils = require('binutils64');
 const net = require('net');
 //const mongo = require('mongodb')
-const mqtt = require('mqtt')
-const uuid = require('uuid');
-const moment = require('moment');
-const { assert } = require('console');
-
 
 
 // console.log("hello world")
@@ -24,7 +19,14 @@ async function connect(){
     client = new net.Socket();
 
     client.on('data', (message) => {     
-        console.log("Received from server: ", message, "; size: ", message.length)
+        //console.log("Received from server: ", message, "; size: ", message.length)
+        if(message.length > 4){
+            let commandString = getGPRSCommand(message)
+            
+            let [command, _parameters] = commandString.split(" ")
+            console.log("Received GPRS Command: ", command, "; Parameters: ", _parameters)
+
+        }
     });  
     // Add a 'close' event handler for the client socket 
     client.on('close', () => { 
@@ -60,6 +62,28 @@ async function run() {
 // connect
 // send AVL hex at an interval x for n times
 // disconnect
+
+function getGPRSCommand(buffer){
+    let parser = new binutils.BinaryReader(buffer);
+
+    let preamble = _toInt(parser.ReadBytes(4));
+    let data_size = _toInt(parser.ReadBytes(4));
+    let codec_id = _toInt(parser.ReadBytes(1));
+    let command_quantity_1 =  _toInt(parser.ReadBytes(1));
+    let message_type = _toInt(parser.ReadBytes(1));
+    let message_size = _toInt(parser.ReadBytes(4));
+    let imei = null; // for codec 14
+    let message = parser.ReadBytes(message_size).toString();
+    let timestamp = null // for codec 13
+    let command_quantity_2 = _toInt(parser.ReadBytes(1));
+    let crc = parser.ReadBytes(4).toString("hex");
+
+    return message;
+}
+
+function _toInt(bytes) {
+    return _toInt(bytes.toString('hex'), 16);
+}
 
 // send AVL hex at an interval x for n times
 async function sendAvlAtAnInterval(){
