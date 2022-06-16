@@ -16,7 +16,7 @@ const moment = require('moment');
 let amount = randomIntFromInterval(1000,20000)
 sleep(amount)
 
-client = new net.Socket();
+var client = new net.Socket();
 
 client.connect(49366, 'localhost', () => {
     console.log("Created a connection to tft-server")
@@ -24,7 +24,7 @@ client.connect(49366, 'localhost', () => {
 
 client.on('data', (message) => {     
     console.log("Received from server: ", message, "; size: ", message.length)
-    client.close()
+    client.end()
     
 });  
 // Add a 'close' event handler for the client socket 
