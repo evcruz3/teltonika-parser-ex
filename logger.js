@@ -100,6 +100,7 @@ const tft_server = net.createServer((c) => {
         let parser = new Parser(buffer);
         if(parser.isImei){
             let id = -1
+            console.log(parser.imei)
             let dev = devices.getDeviceByImei(parser.imei)
             if (dev){
                 dev.updateSocket(c)
