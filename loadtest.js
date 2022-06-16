@@ -1,7 +1,7 @@
 const { spawn } = require('child_process');
 
 var children = {}
-for(var i = 0; i<500; i++){
+for(var i = 0; i<10; i++){
     var child;
     child = spawn('node', ['childprocess.js']);
     
