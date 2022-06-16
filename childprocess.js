@@ -79,7 +79,7 @@ async function sendIMEI(IMEI){
     client.write(encoded_message)
 }
 
-async function sleepRandomAmount(x, y){
+function sleepRandomAmount(x, y){
     let amount = randomIntFromInterval(x, y)
     await sleep(amount)
 }
