@@ -8,6 +8,7 @@ var processes = {}
 run()
 async function run(){
     await loadMainService()
+    await sleep(2000)
     await loadOtherServices()
 }
 
@@ -73,4 +74,8 @@ async function spawnService(serviceName){
 
         spawnService(serviceName)
     });
+}
+
+async function sleep(amount){
+    await new Promise(resolve => setTimeout(resolve, amount));
 }
