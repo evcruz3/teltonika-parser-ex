@@ -1,14 +1,13 @@
 const Parser = require('./utilities/teltonika-parser');
-const binutils = require('binutils64');
 const net = require('net');
-const ByteBuffer = require("bytebuffer");
-const Devices = require('./device/devices')
-const prompt = require('prompt-sync')
-const crc16ibm = require('./utilities/crc16ibm')
-const GprsCommandPacker = require("./utilities/gprsCommandPacker")
 const fs = require('fs')
 const myRL = require("serverline");
 const consoleFormatter = require("./utilities/consoleFormatter")
+const Pbf = require('pbf');
+const compile = require('pbf/compile');
+const schema = require('protocol-buffers-schema');
+const proto = schema.parse(fs.readFileSync('tftserver.proto'));
+const SystemMessage = compile(proto).SystemMessage;
 
 console = consoleFormatter(console)
 
@@ -42,16 +41,23 @@ class UI{
             let [ui_command, tmp, ...others] = user_input.split(" ");
             let message = others.join(" ");
 
-            //log("Command: " + comm);
-            //log("ID: " + id);
-            //log("Message: " + message);
 
             if (ui_command == "sendCommand"){
-                _inst.client.write(d)
-            }
-            else if (ui_command == "listDevices"){
-                //log("TODO: list all devices here and their status")
-                _inst.client.write(d)
+                //_inst.client.write(d)
+                var pbf = new Pbf();
+                var obj = SystemMessage.read(pbf);
+                //let command = others[0]
+                let command = others.splice(0,1)
+                let param = others.join(" ")
+
+                SystemMessage.write(obj, pbf);
+                pbf.writeStringField(1, `${tmp}`)
+                pbf.writeStringField(4, `${command}`)
+                pbf.writeStringField(5, `${param}`)
+                var buffer = pbf.finish();
+
+                _inst.client.write(buffer)
+                
             }
             else if (ui_command == "displayLog"){
                 if(isNaN(tmp)){
@@ -74,12 +80,24 @@ class UI{
                     log("Device not found / specified")
                 }
             }
-            else if (ui_command == "setDeviceName"){
-                _inst.client.write(d)
+            else{
+                var pbf = new Pbf();
+                var obj = SystemMessage.read(pbf);
+                //let command = others[0]
+                //let command = others.splice(0,1)
+                let param = tmp + " " + others.join(" ")
+
+                SystemMessage.write(obj, pbf);
+                pbf.writeStringField(1, `_sys`)
+                pbf.writeStringField(4, `${ui_command}`)
+                pbf.writeStringField(5, `${param}`)
+                var buffer = pbf.finish();
+
+                _inst.client.write(buffer)
             }
-            else if (ui_command == "getGpsAll"){
-                _inst.client.write(d)
-            }
+            // else if (ui_command == "getGpsAll"){
+            //     _inst.client.write(d)
+            // }
             
             
         });
@@ -91,11 +109,18 @@ class UI{
             log("Created a connection to ui node")
         })
 
-        this.client.on('data', (data) => {     
-            log(`Client received: ${data}`); 
-            if (data.toString().endsWith('exit')) { 
-                client.destroy(); 
-            } 
+        this.client.on('data', (message) => {     
+            log("Received Data")
+            try {
+                let pbf = new Pbf(message);
+                let data = SystemMessage.read(pbf)
+
+                log(data)
+            } catch (error) {
+                log(message)
+                log(error)
+            }
+            
         });  
         // Add a 'close' event handler for the client socket 
         this.client.on('close', () => { 

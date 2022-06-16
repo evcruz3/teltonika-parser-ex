@@ -3,15 +3,45 @@ syntax = "proto3";
 //option java_package = "ph.safetravel.app";
 option java_outer_classname = "protos";
 
-message AvlRecord {
-    string deviceId = 0;
-    string timestamp = 1;
-    string lat = 2;
-    string lng = 3;
-    string speed = 4;
-    string property_id = 5;
-    string property_label = 6;
-    string property_dimension = 7;
-    string property_value = 8;
-    string property_humanvalue = 9;
+message DeviceGps {
+    string deviceId = 1;
+    string timestamp = 2;
+    string lat = 3;
+    string lng = 4;
+    string speed = 5;
+    // string property_id = 6;
+    // string property_label = 7;
+    // string property_dimension = 8;
+    // string property_value = 9;
+    // string property_humanvalue = 10;
+}
+
+message SystemMessage {
+    enum MessageType {
+        REQUEST = 0;
+        RESPONSE = 1;
+    }
+
+    enum MessageCode {
+        OK = 0;
+        UNKNOWN_COMMAND = 1;
+        INVALID_FORMAT = 2; //Command exists, but format is invalid
+        DEVICE_OFFLINE = 3;
+        INVALID_DEVICE_ID = 4;
+        OTHER = 5; //see message for details
+    }
+    string deviceId = 1; // "_sys" if system, else deviceID / deviceName
+    optional MessageType type = 2; // 
+    optional MessageCode code = 3;
+    string command = 4;
+    optional string parameters = 5; // separated by whitespaces
+    optional string additional_info = 6;
+}
+
+message AvlRecords {
+    string data = 1;
+}
+
+message DeviceResponse {
+    string response = 1;
 }
