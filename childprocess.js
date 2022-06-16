@@ -26,12 +26,14 @@ async function connect(){
         if(message.length > 5){
             let commandString = getGPRSCommand(message)
             
-            let [command, _parameters] = commandString.split(" ")
+            let [command, _parameters, ...others] = commandString.split(" ")
             console.log(`Received GPRS Command: ${command}; Parameters: ${_parameters}`)
             let _param1 = _parameters.substring(0,1)
             let _param2 = _parameters.substring(1,1)
             let response1 = ""
             let response2 = ""
+
+            console.log(`p1: ${_param1}; p2: ${_param2}`)
 
             if (command == "setdigout"){
                 if(!(isNaN(_param1))){
