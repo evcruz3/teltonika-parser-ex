@@ -27,7 +27,7 @@ async function connect(){
             let commandString = getGPRSCommand(message)
             
             let [command, _parameters] = commandString.split(" ")
-            console.log("Received GPRS Command: ", command, "; Parameters: ", _parameters)
+            console.log(`Received GPRS Command: ${command}; Parameters: ${_parameters}`)
             let _param1 = _parameters.substring(0,1)
             let _param2 = _parameters.substring(1,1)
             let response1 = ""
