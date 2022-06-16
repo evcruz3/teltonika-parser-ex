@@ -3,7 +3,7 @@ const fs = require('fs')
 
 var processes = {}
 
-loadMainService()
+await loadMainService()
 loadOtherServices()
 
 async function loadMainService(){
