@@ -1,11 +1,20 @@
 const { spawn } = require('child_process');
 
-children = []
+var children = {}
 for(var i = 0; i<5; i++){
-    let child = spawn('node', ['childprocess.js']);
+    var child;
+    child = spawn('node', ['childprocess.js']);
+    
+    children[child.pid] = i
 
+    setChildEvents(child)
+    
+
+}
+
+function setChildEvents(child){
     child.on('exit', function (code, signal) {
-        console.log(`child process ${children[child]} exited with ` +
+        console.log(`child process ${children[child.pid]} exited with ` +
                     `code ${code} and signal ${signal}`);
 
     });
@@ -17,8 +26,6 @@ for(var i = 0; i<5; i++){
     child.stderr.on('data', (data) => {
         console.error(`child stderr:\n${data}`);
     });
-
-    children[child] = i
 }
 
 console.log(children)
