@@ -24,6 +24,7 @@ client.connect(49366, 'localhost', () => {
 
 client.on('data', (message) => {     
     console.log("Received from server: ", message, "; size: ", message.length)
+    client.close()
     
 });  
 // Add a 'close' event handler for the client socket 

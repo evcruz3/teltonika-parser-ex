@@ -20,7 +20,7 @@ function setChildEvents(child){
     });
 
     child.stdout.on('data', (data) => {
-        console.log(`child stdout:\n${data}`);
+        console.log(`${children[child.pid]}: ${data}`);
     });
 
     child.stderr.on('data', (data) => {
