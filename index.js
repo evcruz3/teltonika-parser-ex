@@ -27,7 +27,8 @@ async function loadMainService(){
     tft_server.stderr.on('data', (data) => {
         //console.error(`tft_server stderr:\n${data}`);
         let stream = fs.createWriteStream("error-log.txt", {flags:'a'});
-        stream.write(`tft-server.js: ${data}\n`)
+        let timestamp = '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + ']'
+        stream.write(`tft-server.js:: ${timestamp}\n${data}\n`)
         Object.keys(processes).forEach(key => {
             key.kill('SIGINT')
 
@@ -64,8 +65,9 @@ async function spawnService(serviceName){
     process.stderr.on('data', (data) => {
         //console.error(`tft_server stderr:\n${data}`);
         let serviceName = process.spawnargs[1]
+        let timestamp = '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + ']'
         let stream = fs.createWriteStream("error-log.txt", {flags:'a'});
-        stream.write(`${serviceName}: ${data}\n`)
+        stream.write(`${serviceName}:: ${timestamp}\n${data}\n`)
 
         delete processes[process]
 
