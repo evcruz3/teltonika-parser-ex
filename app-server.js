@@ -185,7 +185,7 @@ function processAppCommand(deviceId, command){
             break;
         }
         default:
-            console.log(command, " not a valid command")
+            //console.log(command, " not a valid command")
             break;
     }
 }

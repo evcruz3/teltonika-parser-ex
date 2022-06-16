@@ -36,7 +36,7 @@ Date.prototype.toJSON = function(){ return moment(this).format(); }
      * 
      */
     // constructor (){
-const PREFIX = "LOGGER"
+const PREFIX = "TFT-SERVER"
 
 function log (message){
     console.log(`[${PREFIX}] `, message);
@@ -243,7 +243,7 @@ let commandReceiver = net.createServer((c) => {
             let pbf = new Pbf(message);
             let data = SystemMessage.read(pbf)
 
-            log(data)
+            //log(data)
             
             let deviceId = data.deviceId
             // let messageType = data.type

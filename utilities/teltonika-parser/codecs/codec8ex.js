@@ -237,7 +237,7 @@ class Codec8e extends Codec {
       let property_id = this.toInt(this.reader.ReadBytes(2));
       let ioValueLength = this.toInt(this.reader.ReadBytes(2));
 
-      console.log(`Property: ${property_id}; io value length: ${ioValueLength} `)
+      //console.log(`Property: ${property_id}; io value length: ${ioValueLength} `)
       //let value = null
       let value = ""
       if (property_id == 385){
