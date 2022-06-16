@@ -45,6 +45,7 @@ for(var cycle_count = 0; cycle_count<20; cycle_count++){
     sleepRandomAmount(10000,30000)
     connect()
     sendIMEI(IMEI)
+    console.log("sending AVL Data...")
     sendAvlAtAnInterval()
     client.destroy()
 }
