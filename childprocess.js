@@ -43,7 +43,7 @@ sendIMEI(IMEI)
 function sendIMEI(IMEI){
     let sizeInt = 15
     let size_hex = Buffer.from("0f", "hex");
-    let imei_hex = Buffer.from(IMEI.toString(16), 'utf-8')
+    let imei_hex = Buffer.from(IMEI.toString(), 'utf-8')
 
     let encoded_message = Buffer.concat([size_hex, imei_hex])
 
