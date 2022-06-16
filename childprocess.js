@@ -1,5 +1,6 @@
 const binutils = require('binutils64');
 const net = require('net');
+const GprsResponsePacker = require("./utilities/gprsResponsePacker")
 //const mongo = require('mongodb')
 
 
@@ -13,6 +14,8 @@ const AVL_HEX = "000000000000002e8e01000001810116afe9004827f4c408c8bd79000000000
 const AVL_buffer = Buffer.from(AVL_HEX, "hex")
 
 var client = null;
+var digOut1 = 0;
+var digOut2 = 0;
 
 
 async function connect(){
@@ -25,6 +28,49 @@ async function connect(){
             
             let [command, _parameters] = commandString.split(" ")
             console.log("Received GPRS Command: ", command, "; Parameters: ", _parameters)
+            let _param1 = _parameters.substring(0,1)
+            let _param2 = _parameters.substring(1,1)
+            let response1 = ""
+            let response2 = ""
+
+            if (command == "setdigout"){
+                if(!(isNaN(_param1))){
+                    let intParam1 = parseInt(_param1)
+                    if(digOut1 != intParam1){
+                        digOut1 = intParam1
+                        response1 = `DOUT1:${digOut1} Timeout:INFINITY`
+                    }
+                    else{
+                        response1 = `DOUT1:Already set to ${digOut1}`
+                    }
+                    
+                }
+                else {
+                    response1 = `DOUT1:IGNORED`
+                }
+
+                if(!(isNaN(_param2))){
+                    let intParam2 = parseInt(_param2)
+                    if(digOut2 != intParam2){
+                        digOut2 = intParam2
+                        response2 = `DOUT2:${digOut2} Timeout:INFINITY`
+                    }
+                    else{
+                        response2 = `DOUT2:Already set to ${digOut2}`
+                    }
+                    
+                }
+                else {
+                    response2 = `DOUT2:IGNORED`
+                }
+
+                let response = `${response1} ${response2}`
+
+                let gprsResponsePacker = new GprsResponsePacker(response)
+                let outBuffer = gprsResponsePacker.getGprsMessageBuffer()
+
+                client.write(outBuffer)
+            }
 
         }
     });  
