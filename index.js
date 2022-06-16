@@ -44,10 +44,10 @@ async function loadOtherServices(){
 
 async function spawnService(serviceName){
     let process = spawn('node', [serviceName])
-    processes[process] = process.spawnargs[0]
+    processes[process] = process.spawnargs[1]
 
     process.on('exit', function (code, signal) {
-        console.log(`service ${process.spawnargs[0]} exited with ` +
+        console.log(`service ${process.spawnargs[1]} exited with ` +
                     `code ${code} and signal ${signal}`);
 
         delete processes[process]
@@ -59,7 +59,7 @@ async function spawnService(serviceName){
     
     process.stderr.on('data', (data) => {
         //console.error(`tft_server stderr:\n${data}`);
-        let serviceName = process.spawnargs[0]
+        let serviceName = process.spawnargs[1]
         let stream = fs.createWriteStream("error-log.txt", {flags:'a'});
         stream.write(`${serviceName}: ${data}\n`)
 
