@@ -47,7 +47,7 @@ function sendIMEI(IMEI){
 
     let encoded_message = Buffer.concat([size_hex, imei_hex])
 
-    console.log("Connecting to server with IMEI: ", IMEI)
+    console.log("Connecting to server with IMEI: ", IMEI, "; size: ", size_hex.toString("hex"))
     console.log("Payload: ", encoded_message.toString("hex"))
     client.write(encoded_message)
 }
