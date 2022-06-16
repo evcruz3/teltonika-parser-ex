@@ -18,7 +18,7 @@ const lockParam = require('./lockparameter.json');
 const digOut = lockParam.digOut
 
 process.stdout.write("\x1Bc")
-log(Array(process.stdout.rows + 1).join('\n'));
+//log(Array(process.stdout.rows + 1).join('\n'));
 
 /*-----------------------
  --------- MQTT ---------

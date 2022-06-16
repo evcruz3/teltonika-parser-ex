@@ -14,7 +14,7 @@ console = consoleFormatter(console)
 const PREFIX = "MONGGO_LOGGER"
 
 process.stdout.write("\x1Bc")
-log(Array(process.stdout.rows + 1).join('\n'));
+//log(Array(process.stdout.rows + 1).join('\n'));
 
 var MongoClient = mongo.MongoClient
 var mongoUrl = "mongodb://tft-server:tft100@167.71.159.65:27017/tft-server"
