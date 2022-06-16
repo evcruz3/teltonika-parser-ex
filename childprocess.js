@@ -33,8 +33,6 @@ async function connect(){
             let response1 = ""
             let response2 = ""
 
-            console.log(`p1: ${_param1}; p2: ${_param2}`)
-
             if (command == "setdigout"){
                 if(!(isNaN(_param1))){
                     let intParam1 = parseInt(_param1)
@@ -72,6 +70,7 @@ async function connect(){
                 let outBuffer = gprsResponsePacker.getGprsMessageBuffer()
 
                 client.write(outBuffer)
+                console.log(`Sent a response: ${response}`)
             }
 
         }
