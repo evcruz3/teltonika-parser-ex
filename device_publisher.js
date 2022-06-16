@@ -17,7 +17,7 @@ const PREFIX = "DEV_PUBLISHER"
 // BROADCASTS GPS OF ALL DEVICES TO THE MQTT BROKER
 
 process.stdout.write("\x1Bc")
-log(Array(process.stdout.rows + 1).join('\n'));
+//log(Array(process.stdout.rows + 1).join('\n'));
 
 
 const host = '167.71.159.65'
