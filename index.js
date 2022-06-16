@@ -35,7 +35,7 @@ async function loadMainService(){
 }
 
 async function loadOtherServices(){
-    let serviceNames = ['device_publisher.js', 'mongo_logger.js', 'device_publisher.js']
+    let serviceNames = ['device_publisher.js', 'mongo_logger.js', 'app-server.js']
     
     serviceNames.forEach(serviceName => {
         spawnService(serviceName)
