@@ -27,12 +27,12 @@ async function loadMainService(){
 
     tft_server.stderr.on('data', (data) => {
         //console.error(`tft_server stderr:\n${data}`);
+        console.log(data)
         let stream = fs.createWriteStream("error-log.txt", {flags:'a'});
         let timestamp = '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + ']'
         stream.write(`tft-server.js:: ${timestamp}\n${data}\n`)
         Object.keys(processes).forEach(key => {
             key.kill('SIGINT')
-
             delete processes[key]
         });
 
