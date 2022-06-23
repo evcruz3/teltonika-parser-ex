@@ -32,6 +32,7 @@ async function loadMainService(){
         let timestamp = '[' + (new Date().toLocaleString("en-US", {timeZone: "Asia/Manila"})) + ']'
         stream.write(`tft-server.js:: ${timestamp}\n${data}\n`)
         Object.keys(processes).forEach(key => {
+            console.log("Ending process ", processes[key])
             key.kill('SIGINT')
             delete processes[key]
         });
