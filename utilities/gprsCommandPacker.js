@@ -1,7 +1,6 @@
 'use strict';
 
 const binutils = require('binutils64');
-const assert = require('assert');
 const crc16ibm = require('./crc16ibm');
 const Gprs = require('./gprs')
 
